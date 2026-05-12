@@ -65,8 +65,8 @@ function handleMouseLeave(event) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  border-radius: 0.5rem;
+  gap: 8px;
+  border-radius: 8px;
   font-family: 'Manrope', sans-serif;
   font-weight: 400;
   cursor: pointer;
@@ -97,24 +97,24 @@ function handleMouseLeave(event) {
 
   // Sizes
   &--small {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.75rem;
+    padding: 6px 12px;
+    font-size: 12px;
   }
 
   &--medium {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
+    padding: 8px 16px;
+    font-size: 14px;
   }
 
   &--large {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
+    padding: 12px 24px;
+    font-size: 16px;
   }
 
   &--icon-only {
-    padding: 0.5rem;
-    &.tech-btn--small { padding: 0.375rem; }
-    &.tech-btn--large { padding: 0.75rem; }
+    padding: 8px;
+    &.tech-btn--small { padding: 6px; }
+    &.tech-btn--large { padding: 12px; }
   }
 
   // Variants

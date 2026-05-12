@@ -247,27 +247,27 @@ function downloadImage(url) {
 }
 
 .imagegen-header {
-  padding: 0.75rem 1rem;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
 .imagegen-model-selectors {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .imagegen-model-select,
 .imagegen-size-select,
 .imagegen-quality-select {
-  padding: 0.375rem 0.625rem;
-  border-radius: 0.375rem;
+  padding: 6px 10px;
+  border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 0.8125rem;
+  font-size: 13px;
   cursor: pointer;
 
   &:focus {
@@ -279,10 +279,10 @@ function downloadImage(url) {
 .imagegen-chat-container {
   height: 320px;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 16px;
   flex-shrink: 0;
 }
 
@@ -293,20 +293,20 @@ function downloadImage(url) {
   justify-content: center;
   height: 100%;
   color: var(--text-secondary);
-  gap: 0.5rem;
+  gap: 8px;
 
   .imagegen-empty-icon {
-    font-size: 3rem;
+    font-size: 48px;
   }
 
   p {
-    font-size: 0.875rem;
+    font-size: 14px;
   }
 }
 
 .imagegen-message {
   display: flex;
-  gap: 0.75rem;
+  gap: 12px;
   max-width: 85%;
 }
 
@@ -317,7 +317,7 @@ function downloadImage(url) {
   .imagegen-message-content {
     background: var(--secondary);
     color: white;
-    border-radius: 1rem 1rem 0.25rem 1rem;
+    border-radius: 16px 16px 4px 16px;
   }
 
   .imagegen-message-time {
@@ -331,30 +331,30 @@ function downloadImage(url) {
   .imagegen-message-content {
     background: var(--surface);
     color: var(--text-primary);
-    border-radius: 1rem 1rem 1rem 0.25rem;
+    border-radius: 16px 16px 16px 4px;
     border: 1px solid var(--border);
   }
 }
 
 .imagegen-message-avatar {
   flex-shrink: 0;
-  width: 2rem;
-  height: 2rem;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
+  font-size: 20px;
 }
 
 .imagegen-message-content {
-  padding: 0.75rem 1rem;
+  padding: 12px 16px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .imagegen-message-text {
-  font-size: 0.875rem;
+  font-size: 14px;
   line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;
@@ -368,7 +368,7 @@ function downloadImage(url) {
 .imagegen-message-image {
   max-width: 280px;
   max-height: 200px;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   cursor: pointer;
   transition: opacity 0.2s;
 
@@ -379,18 +379,18 @@ function downloadImage(url) {
 
 .imagegen-download-btn {
   position: absolute;
-  bottom: 0.5rem;
-  right: 0.5rem;
+  bottom: 8px;
+  right: 8px;
   background: rgba(0, 0, 0, 0.6);
   color: white;
   border: none;
-  border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  padding: 4px 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  font-size: 0.75rem;
+  gap: 4px;
+  font-size: 12px;
   transition: background 0.2s;
 
   &:hover {
@@ -399,19 +399,19 @@ function downloadImage(url) {
 }
 
 .imagegen-download-icon {
-  font-size: 0.875rem;
+  font-size: 14px;
   line-height: 1;
 }
 
 .imagegen-revised-prompt {
   background: var(--surface-variant);
-  border-radius: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.75rem;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
 
   .imagegen-label {
     color: var(--text-secondary);
-    margin-bottom: 0.25rem;
+    margin-bottom: 4px;
     display: block;
   }
 
@@ -424,9 +424,9 @@ function downloadImage(url) {
 .imagegen-loading {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 14px;
 
   .iconfont {
     animation: spin 1s linear infinite;
@@ -441,23 +441,23 @@ function downloadImage(url) {
 .imagegen-error {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 6px;
   color: var(--error);
-  font-size: 0.8125rem;
+  font-size: 13px;
 
   .iconfont {
-    font-size: 0.875rem;
+    font-size: 14px;
   }
 }
 
 .imagegen-message-time {
-  font-size: 0.6875rem;
+  font-size: 11px;
   color: var(--text-secondary);
   align-self: flex-end;
 }
 
 .imagegen-input-area {
-  padding: 1rem;
+  padding: 16px;
   border-top: 1px solid var(--border);
   background: var(--surface);
   flex-shrink: 0;
@@ -465,21 +465,21 @@ function downloadImage(url) {
 
 .imagegen-input-wrapper {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
   align-items: flex-end;
 }
 
 .imagegen-chat-input {
   flex: 1;
-  padding: 0.75rem 1rem;
-  border-radius: 1.5rem;
+  padding: 12px 16px;
+  border-radius: 24px;
   border: 1px solid var(--border);
   background: var(--surface-variant);
   color: var(--text-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 0.9375rem;
+  font-size: 15px;
   resize: none;
-  min-height: 3.5rem;
+  min-height: 56px;
   max-height: 120px;
   overflow-y: auto;
   line-height: 1.5;
@@ -495,8 +495,8 @@ function downloadImage(url) {
 }
 
 .imagegen-send-btn {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: none;
   background: var(--secondary);
@@ -518,7 +518,7 @@ function downloadImage(url) {
   }
 
   .iconfont {
-    font-size: 1.125rem;
+    font-size: 18px;
   }
 }
 
@@ -544,17 +544,17 @@ function downloadImage(url) {
 .imagegen-preview-image {
   max-width: 100%;
   max-height: 90vh;
-  border-radius: 0.5rem;
+  border-radius: 8px;
 }
 
 .imagegen-preview-close {
   position: absolute;
-  top: -2rem;
+  top: -32px;
   right: 0;
   background: none;
   border: none;
   color: white;
-  font-size: 2rem;
+  font-size: 32px;
   cursor: pointer;
   line-height: 1;
 }

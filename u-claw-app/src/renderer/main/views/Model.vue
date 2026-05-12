@@ -1324,7 +1324,7 @@ function switchModel(model) {
   .model-restart-btn {
     padding: 6px 12px;
     border-radius: 6px;
-    font-size: 0.8rem;
+    font-size: 13px;
     font-weight: 400;
     cursor: pointer;
     transition: all 0.2s;

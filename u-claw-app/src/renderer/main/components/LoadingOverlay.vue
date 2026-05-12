@@ -86,23 +86,23 @@ onMounted(() => {
   text-align: center;
   color: #fff;
   max-width: 400px;
-  padding: 2rem;
+  padding: 32px;
 }
 
 .loading-overlay-logo {
   @extend %flex-center;
-  gap: 0.75rem;
-  margin-bottom: 2rem;
+  gap: 12px;
+  margin-bottom: 32px;
 }
 
 .loading-overlay-logo-icon {
-  width: 3rem;
-  height: 3rem;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
 }
 
 .loading-overlay-logo-text {
-  font-size: 2rem;
+  font-size: 32px;
   font-weight: 400;
   background: linear-gradient(135deg, #ff6b35, #ff8f65);
   -webkit-background-clip: text;
@@ -113,8 +113,8 @@ onMounted(() => {
 .loading-overlay-progress-container {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 16px;
+  margin-bottom: 24px;
   justify-content: center;
 }
 
@@ -134,21 +134,21 @@ onMounted(() => {
 }
 
 .loading-overlay-progress-percent {
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
   color: #ff8f65;
-  min-width: 3rem;
+  min-width: 48px;
 }
 
 .loading-overlay-text {
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 400;
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 }
 
 .loading-overlay-detail {
-  font-size: 0.875rem;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 </style>

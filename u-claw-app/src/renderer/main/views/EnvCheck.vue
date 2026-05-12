@@ -57,15 +57,15 @@ async function handleRecheck() {
 @use '@renderer/public/assets/styles/mixins';
 
 .env-check-env-check-view {
-  padding:1rem;
+  padding:16px;
 
   .env-check-page-header {
     @extend %flex-between;
-    margin-bottom: 1.5rem;
+    margin-bottom: 24px;
   }
 
   .env-check-page-title {
-    font-size: 1.5rem;
+    font-size: 24px;
     font-weight: 400;
     font-family: 'Manrope', sans-serif;
     color: var(--text-primary);
@@ -74,13 +74,13 @@ async function handleRecheck() {
   .env-check-btn-check {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    gap: 8px;
+    padding: 8px 16px;
     border: 1px solid var(--border);
-    border-radius: 0.75rem;
+    border-radius: 12px;
     background: var(--surface);
     color: var(--text-primary);
-    font-size: 0.875rem;
+    font-size: 14px;
     font-weight: 400;
     cursor: pointer;
     transition: all 0.2s;
@@ -110,12 +110,12 @@ async function handleRecheck() {
   .env-check-check-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
+    gap: 16px;
   }
 
   .env-check-check-card { 
     @extend %card-base;
-    padding: 1.25rem;
+    padding: 20px;
     transition: all 0.2s;
  
     &.env-check-status-pass { 
@@ -132,33 +132,33 @@ async function handleRecheck() {
     .env-check-card-header {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1rem;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
     .env-check-card-icon {
-      font-size: 1.5rem;
+      font-size: 24px;
       color: var(--primary);
     }
 
     .env-check-card-title {
-      font-size: 1rem;
+      font-size: 16px;
       font-weight: 400;
       color: var(--text-primary);
       font-family: 'Manrope', sans-serif;
     }
 
     .env-check-card-status {
-      margin-bottom: 0.5rem;
+      margin-bottom: 8px;
     }
 
     .env-check-status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.375rem;
-      padding: 0.25rem 0.75rem;
+      gap: 6px;
+      padding: 4px 12px;
       border-radius: 9999px;
-      font-size: 0.75rem;
+      font-size: 12px;
       font-weight: 400;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -184,8 +184,8 @@ async function handleRecheck() {
       }
 
       .env-check-status-dot {
-        width: 0.5rem;
-        height: 0.5rem;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         background: currentColor;
       }
@@ -201,7 +201,7 @@ async function handleRecheck() {
     }
 
     .env-check-card-detail {
-      font-size: 0.75rem;
+      font-size: 12px;
       color: var(--text-secondary);
       font-family: monospace;
       word-break: break-all;

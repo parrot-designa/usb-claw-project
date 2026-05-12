@@ -267,25 +267,25 @@ function clearTerminal() {
 .home-home-view {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 16px;
+  padding: 16px;
 }
 
 .home-status-bar {
   @extend %flex-between;
   @extend %card-base;
-  padding: 1rem;
+  padding: 16px;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 16px;
 }
 
 .home-status-info {
   @extend %flex-column;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .home-status-title {
-  font-size: 1.25rem;
+  font-size: 20px;
   font-weight: 400;
   font-family: 'Manrope', sans-serif;
   color: var(--text-primary);
@@ -293,8 +293,8 @@ function clearTerminal() {
 
 .home-status-badges {
   @extend %flex-center;
-  gap: 1rem;
-  margin-top: 0.25rem;
+  gap: 16px;
+  margin-top: 4px;
 }
 
 .home-status-badge {
@@ -314,8 +314,8 @@ function clearTerminal() {
 }
 
 .home-dot {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: currentColor;
 }
@@ -331,17 +331,17 @@ function clearTerminal() {
 
 .home-port-info {
   @extend %flex-center;
-  gap: 0.25rem;
+  gap: 4px;
 }
 
 .home-port-info .label {
-  font-size: 0.75rem;
+  font-size: 12px;
   color: var(--text-secondary);
   font-family: 'Manrope', sans-serif;
 }
 
 .home-port-info .value {
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
   font-family: monospace;
   color: var(--primary);
@@ -349,7 +349,7 @@ function clearTerminal() {
 
 .home-action-buttons {
   @extend %flex-center;
-  gap: 0.75rem;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -361,12 +361,12 @@ function clearTerminal() {
 .home-terminal-header {
   @extend %flex-between;
   background: var(--surface);
-  padding: 0.5rem 1rem;
+  padding: 8px 16px;
   border-bottom: 1px solid var(--border);
 }
 
 .home-terminal-title {
-  font-size: 0.75rem;
+  font-size: 12px;
   font-family: monospace;
   color: var(--text-secondary);
   font-weight: 400;
@@ -376,7 +376,7 @@ function clearTerminal() {
 
 .home-terminal-actions {
   @extend %flex-center;
-  gap: 1rem;
+  gap: 16px;
 }
 
 .home-terminal-logs {
@@ -397,9 +397,9 @@ function clearTerminal() {
 
 .home-no-logs {
   @extend %flex-column-center;
-  gap: 1rem;
+  gap: 16px;
   height: 100%;
-  min-height: 12rem;
+  min-height: 132px;
   justify-content: center;
 }
 
@@ -411,7 +411,7 @@ function clearTerminal() {
 
 .home-no-logs-text {
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 14px;
   font-family: 'Manrope', sans-serif;
 }
 
@@ -422,33 +422,33 @@ function clearTerminal() {
 
 .home-log-time {
   color: #6b7280;
-  font-size: 0.75rem;
-  margin-right: 0.5rem;
+  font-size: 12px;
+  margin-right: 8px;
 }
 
 .home-log-type {
-  margin-right: 0.5rem;
-  font-size: 0.75rem;
+  margin-right: 8px;
+  font-size: 12px;
 }
 
 .home-log-message {
   color: #87898c;
-  font-size: 0.75rem;
+  font-size: 12px;
 }
 
 .home-env-checks {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 0.75rem;
+  gap: 12px;
 }
 
 .home-env-check-card {
   @extend %card-base;
-  padding: 0.75rem;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
   transition: all 0.2s;
 
   &.home-env-check-status-fail {
@@ -462,13 +462,13 @@ function clearTerminal() {
 
 .home-env-check-icon {
   .iconfont {
-    font-size: 1.25rem;
+    font-size: 20px;
     color: var(--primary);
   }
 }
 
 .home-env-check-title {
-  font-size: 0.75rem;
+  font-size: 12px;
   color: var(--text-primary);
   font-family: 'Manrope', sans-serif;
 }
@@ -476,8 +476,8 @@ function clearTerminal() {
 .home-env-check-badge {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  font-size: 0.625rem;
+  gap: 4px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 
@@ -499,8 +499,8 @@ function clearTerminal() {
 }
 
 .home-env-check-dot {
-  width: 0.375rem;
-  height: 0.375rem;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: currentColor;
 
@@ -510,29 +510,29 @@ function clearTerminal() {
 }
 
 .home-quick-start { 
-  padding: 1rem;   
+  padding: 16px;   
   @extend %card-base;
 }
 
 .home-quick-start-title {
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
   color: var(--text-primary);
   font-family: 'Manrope', sans-serif;
-  margin-bottom: 0.75rem;
+  margin-bottom: 12px;
 }
 
 .home-quick-start-steps {
   @extend %flex-column;
-  gap: 0.5rem;
-  font-size: 0.75rem;
+  gap: 8px;
+  font-size: 12px;
   color: var(--text-secondary);
 }
 
 .home-step {
   @extend %flex-row;
   align-items: flex-start;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .home-step-num {

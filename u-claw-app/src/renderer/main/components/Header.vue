@@ -53,7 +53,7 @@ const pageTitle = computed(() => {
 .header-header {
   height: 56px;
   @extend %flex-between;
-  padding: 0 1rem;
+  padding: 0 16px;
   background: var(--background);
   backdrop-filter: blur(12px);
   position: fixed;
@@ -66,7 +66,7 @@ const pageTitle = computed(() => {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 16px;
 }
 
 .header-badge {
@@ -88,14 +88,14 @@ const pageTitle = computed(() => {
 .header-page-title {
   font-family: 'Manrope', sans-serif;
   font-weight: 400;
-  font-size: 0.875rem;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 12px;
 
   .iconfont{
     font-size: 11px;
@@ -111,6 +111,6 @@ const pageTitle = computed(() => {
 }
 
 .header-theme-switcher-wrapper {
-  margin-left: 0.5rem;
+  margin-left: 8px;
 }
 </style>

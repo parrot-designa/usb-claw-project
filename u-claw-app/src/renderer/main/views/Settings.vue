@@ -129,7 +129,7 @@ function restartApp() {
 
       .settings-label {
         color: var(--text-secondary);
-        font-size: 0.9375rem;
+        font-size: 15px;
         flex-shrink: 0;
       }
 

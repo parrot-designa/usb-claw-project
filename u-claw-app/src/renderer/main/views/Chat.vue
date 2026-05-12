@@ -241,34 +241,34 @@ async function disconnectWeChat() {
 @use '@renderer/public/assets/styles/mixins';
 
 .chat-chat-view {
-  padding: 1rem;
+  padding: 16px;
 }
 
 .page-title {
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: 400;
   font-family: 'Manrope', sans-serif;
   color: var(--text-primary);
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .tab-bar {
   display: flex;
-  gap: 0.25rem;
-  padding: 0.25rem;
+  gap: 4px;
+  padding: 4px;
   background: var(--surface);
-  border-radius: 0.5rem;
+  border-radius: 8px;
   width: fit-content;
-  margin-bottom: 0.75rem;
+  margin-bottom: 12px;
 }
 
 .chat-chat-tool-tab {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 400;
   transition: all 0.2s;
   background: none;
@@ -283,14 +283,14 @@ async function disconnectWeChat() {
 }
 
 .chat-chat-content {
-  margin-top: 1rem;
+  margin-top: 16px;
   
 }
 
 .chat-wechat-card {
   @extend %card-base;
-  padding: 1.25rem;
-  max-width: 42rem;
+  padding: 20px;
+  max-width: 432px;
   text-align: center;
 }
 
@@ -305,30 +305,30 @@ async function disconnectWeChat() {
 }
 
 .chat-wechat-title {
-  font-size: 1rem;
+  font-size: 16px;
   font-weight: 400;
   font-family: 'Manrope', sans-serif;
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 }
 
 .chat-wechat-status {
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 }
 
 .chat-status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.9rem;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 
 .chat-wechat-desc {
-  font-size: 0.85rem;
+  font-size: 14px;
   color: var(--text-secondary);
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .chat-placeholder {
@@ -338,45 +338,45 @@ async function disconnectWeChat() {
 .chat-process-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
   text-align: left;
 }
 
 .chat-process-title {
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 400;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 }
 
 .chat-process-steps {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
-  font-size: 0.875rem;
+  gap: 6px;
+  font-size: 14px;
   color: var(--text-primary);
 }
 
 .chat-process-step {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .chat-step-num {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: var(--secondary-container);
   color: var(--secondary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 400;
   flex-shrink: 0;
 }
@@ -390,14 +390,14 @@ async function disconnectWeChat() {
 .chat-btn-scan {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1.25rem;
+  gap: 8px;
+  padding: 8px 20px;
   background: var(--secondary);
   color: white;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   font-weight: 400;
-  font-size: 0.875rem;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
 
@@ -407,23 +407,23 @@ async function disconnectWeChat() {
 }
 
 .chat-tip-card { 
-  padding: 0.75rem;
-  margin-top: 0.75rem;
-  max-width: 42rem;
+  padding: 12px;
+  margin-top: 12px;
+  max-width: 432px;
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
+  gap: 8px;
   @extend %card-base;
 
 
   .iconfont {
     color: var(--accent);
-    font-size: 1rem;
+    font-size: 16px;
     flex-shrink: 0;
   }
 
   p {
-    font-size: 0.75rem;
+    font-size: 12px;
     color: var(--text-secondary);
     line-height: 2;
   }
@@ -432,8 +432,8 @@ async function disconnectWeChat() {
 .chat-feishu-card {
   background: var(--surface-low);
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1rem;
+  border-radius: 12px;
+  padding: 16px;
 }
 
 .text-on-surface-variant {
@@ -441,7 +441,7 @@ async function disconnectWeChat() {
 }
 
 .text-sm {
-  font-size: 0.875rem;
+  font-size: 14px;
 }
 
 .chat-btn-install.spinning .icon-clawinstall-fill,
@@ -500,7 +500,7 @@ async function disconnectWeChat() {
 
 .chat-qr-loading-text {
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 14px;
 }
 
 .chat-scan-actions {
@@ -531,7 +531,7 @@ async function disconnectWeChat() {
 .chat-scan-logs {
   margin-top: 16px;
   background: var(--background);
-  border-radius: 0.75rem;
+  border-radius: 12px;
   border: 1px solid var(--border);
   overflow: hidden;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -540,7 +540,7 @@ async function disconnectWeChat() {
 
 .chat-scan-logs-header {
   background: var(--surface);
-  padding: 0.5rem 1rem;
+  padding: 8px 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -548,7 +548,7 @@ async function disconnectWeChat() {
 }
 
 .chat-scan-logs-title {
-  font-size: 0.75rem;
+  font-size: 12px;
   font-family: monospace;
   color: var(--text-secondary);
   font-weight: 400;
@@ -558,7 +558,7 @@ async function disconnectWeChat() {
 
 .chat-scan-logs-actions {
   display: flex;
-  gap: 1rem;
+  gap: 16px;
 }
 
 .icon-btn {
@@ -575,10 +575,10 @@ async function disconnectWeChat() {
 }
 
 .chat-scan-logs-content {
-  padding: 1rem;
+  padding: 16px;
   font-family: monospace;
-  font-size: 0.875rem;
-  max-height: 16rem;
+  font-size: 14px;
+  max-height: 256px;
   overflow-y: auto;
 
   .chat-log-line {
@@ -589,12 +589,12 @@ async function disconnectWeChat() {
 
   .chat-log-time {
     color: #6b7280;
-    font-size: 0.75rem;
-    margin-right: 0.5rem;
+    font-size: 12px;
+    margin-right: 8px;
   }
 
   .chat-log-type {
-    margin-right: 0.5rem;
+    margin-right: 8px;
   }
 
   .chat-log-message {

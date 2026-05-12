@@ -23,20 +23,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 16px;
 
   .contact-page-title {
-    font-size: 1.5rem;
+    font-size: 24px;
     font-weight: 400;
     font-family: 'Manrope', sans-serif;
     color: var(--text-primary);
-    margin-bottom: 1.5rem;
+    margin-bottom: 24px;
     align-self: flex-start;
   }
 
   .contact-contact-card {
     @extend %card-base;
-    padding: 1.5rem;
+    padding: 24px;
     text-align: center;
     width:400px;
     height: 400px;
@@ -44,7 +44,7 @@
     .contact-contact-icon {
       display: flex;
       justify-content: center;
-      margin-bottom: 1rem;
+      margin-bottom: 16px;
 
       .contact-wrapper {
         width: 300px;
@@ -63,29 +63,29 @@
     }
 
     .contact-contact-title {
-      font-size: 1.125rem;
+      font-size: 18px;
       font-weight: 400;
       font-family: 'Manrope', sans-serif;
       color: var(--text-primary);
-      margin-bottom: 1rem;
+      margin-bottom: 16px;
     }
 
     .contact-contact-qr {
       display: flex;
       justify-content: center;
-      margin-bottom: 1rem;
+      margin-bottom: 16px;
 
       img {
         width: 280px;
         height: 280px;
-        border-radius: 0.75rem;
+        border-radius: 12px;
         object-fit: cover;
         border: 1px solid var(--border);
       }
     }
 
     .contact-contact-wechat {
-      font-size: 0.875rem;
+      font-size: 14px;
       color: var(--text-secondary);
 
       .contact-highlight {

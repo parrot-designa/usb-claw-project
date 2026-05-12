@@ -87,13 +87,13 @@ function handleMouseLeave(event) {
 .theme-switcher-btn {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
+  gap: 4px;
+  padding: 4px 8px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 9999px;
   color: var(--text-secondary);
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -138,7 +138,7 @@ function handleMouseLeave(event) {
   }
 
   .iconfont {
-    font-size: 1rem;
+    font-size: 16px;
   }
 }
 
@@ -149,35 +149,35 @@ function handleMouseLeave(event) {
   width: 220px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1rem;
+  border-radius: 12px;
+  padding: 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   z-index: 100;
 }
 
 .theme-switcher-panel-title {
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-muted);
-  margin-bottom: 0.75rem;
+  margin-bottom: 12px;
 }
 
 .theme-switcher-options {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .theme-switcher-option {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem;
+  gap: 12px;
+  padding: 8px;
   background: var(--surface-low);
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
@@ -230,20 +230,20 @@ function handleMouseLeave(event) {
 }
 
 .theme-switcher-name {
-  font-size: 0.8125rem;
+  font-size: 13px;
   font-weight: 400;
   color: var(--text-primary);
 }
 
 .theme-switcher-clear-btn {
   width: 100%;
-  margin-top: 0.75rem;
-  padding: 0.5rem;
+  margin-top: 12px;
+  padding: 8px;
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: 8px;
   color: var(--text-secondary);
-  font-size: 0.8125rem;
+  font-size: 13px;
   font-weight: 400;
   cursor: pointer;
   transition: all 0.2s;

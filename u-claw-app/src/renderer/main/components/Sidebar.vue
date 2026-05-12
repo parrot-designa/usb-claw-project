@@ -134,21 +134,21 @@ async function handleStart() {
 
 .sidebar-nav-list {
   flex: 1;
-  padding: 1rem 0.75rem;
+  padding: 16px 12px;
   @extend %flex-column;
-  gap: 0.125rem;
+  gap: 2px;
 }
 
 .sidebar-nav-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.75rem 0.5rem 1rem;
-  border-radius: 0.5rem;
+  gap: 12px;
+  padding: 8px 12px 8px 16px;
+  border-radius: 8px;
   color: var(--text2);
   text-decoration: none;
   font-family: 'Manrope', sans-serif;
-  font-size: 0.875rem;
+  font-size: 14px;
   transition: all 0.3s ease;
   position: relative;
   border: 1px solid transparent;
@@ -197,13 +197,13 @@ async function handleStart() {
   }
  
   .iconfont {
-    font-size: 1.25rem;
+    font-size: 20px;
   }
 }
 
 .sidebar-gateway-controls {
-  padding: 0.75rem;
+  padding: 12px;
   @extend %flex-column;
-  gap: 0.5rem;
+  gap: 8px;
 }
 </style>
