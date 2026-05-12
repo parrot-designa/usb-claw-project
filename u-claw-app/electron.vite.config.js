@@ -109,7 +109,12 @@ export default defineConfig({
           main: resolve(__dirname, 'src/renderer/main/index.html'),
         },
         output: {
-          assetFileNames: '[name]-[hash][extname]',
+          assetFileNames: (info) => {
+            if (/\.(png|jpe?g|gif|svg|webp|ico)$/i.test(info.name)) {
+              return '[name][extname]';
+            }
+            return '[name]-[hash][extname]';
+          },
         },
       },
     },
