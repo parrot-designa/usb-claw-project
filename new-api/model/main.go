@@ -89,13 +89,11 @@ func createRootAccountIfNeed() error {
 }
 
 func CheckSetup() {
-	setup := GetSetup()
-	if setup == nil {
-		// No setup record exists, check if we have a root user
-		if RootUserExists() {
+	setup := GetSetup()                          // 从数据库获取系统初始化记录
+	if setup == nil {                              // 不存在初始化记录
+		if RootUserExists() {                       // 但存在 root 用户（可能是旧版本升级）
 			common.SysLog("system is not initialized, but root user exists")
-			// Create setup record
-			newSetup := Setup{
+			newSetup := Setup{                      // 创建新的初始化记录
 				Version:       common.Version,
 				InitializedAt: time.Now().Unix(),
 			}
@@ -103,15 +101,14 @@ func CheckSetup() {
 			if err != nil {
 				common.SysLog("failed to create setup record: " + err.Error())
 			}
-			constant.Setup = true
-		} else {
+			constant.Setup = true                   // 标记系统已初始化
+		} else {                                     // 既没有初始化记录，也没有 root 用户
 			common.SysLog("system is not initialized and no root user exists")
-			constant.Setup = false
+			constant.Setup = false                  // 标记系统未初始化（首次安装）
 		}
-	} else {
-		// Setup record exists, system is initialized
+	} else {                                        // 已存在初始化记录
 		common.SysLog("system is already initialized at: " + time.Unix(setup.InitializedAt, 0).String())
-		constant.Setup = true
+		constant.Setup = true                        // 标记系统已初始化
 	}
 }
 
@@ -175,37 +172,36 @@ func chooseDB(envName string, isLog bool) (*gorm.DB, error) {
 }
 
 func InitDB() (err error) {
-	db, err := chooseDB("SQL_DSN", false)
-	if err == nil {
-		if common.DebugEnabled {
+	db, err := chooseDB("SQL_DSN", false) // 根据 SQL_DSN 环境变量选择并连接数据库（MySQL/SQLite/PostgreSQL）
+	if err == nil {                            // 连接成功
+		if common.DebugEnabled {               // 调试模式开启时，启用 GORM Debug 日志
 			db = db.Debug()
 		}
-		DB = db
-		// MySQL charset/collation startup check: ensure Chinese-capable charset
-		if common.UsingMySQL {
+		DB = db                                  // 将数据库实例赋值给全局变量 DB
+		if common.UsingMySQL {                  // 使用 MySQL 时检查中文编码支持
 			if err := checkMySQLChineseSupport(DB); err != nil {
-				panic(err)
+				panic(err)                      // 中文编码不支持则直接 panic
 			}
 		}
-		sqlDB, err := DB.DB()
+		sqlDB, err := DB.DB()                   // 获取原生 sql.DB 对象
 		if err != nil {
-			return err
+			return err                          // 获取失败则返回错误
 		}
-		sqlDB.SetMaxIdleConns(common.GetEnvOrDefault("SQL_MAX_IDLE_CONNS", 100))
-		sqlDB.SetMaxOpenConns(common.GetEnvOrDefault("SQL_MAX_OPEN_CONNS", 1000))
-		sqlDB.SetConnMaxLifetime(time.Second * time.Duration(common.GetEnvOrDefault("SQL_MAX_LIFETIME", 60)))
+		sqlDB.SetMaxIdleConns(common.GetEnvOrDefault("SQL_MAX_IDLE_CONNS", 100))         // 设置最大空闲连接数，默认 100
+		sqlDB.SetMaxOpenConns(common.GetEnvOrDefault("SQL_MAX_OPEN_CONNS", 1000))       // 设置最大打开连接数，默认 1000
+		sqlDB.SetConnMaxLifetime(time.Second * time.Duration(common.GetEnvOrDefault("SQL_MAX_LIFETIME", 60))) // 设置连接最大生命周期，默认 60 秒
 
-		if !common.IsMasterNode {
+		if !common.IsMasterNode {               // 非主节点无需执行数据库迁移
 			return nil
 		}
-		if common.UsingMySQL {
-			//_, _ = sqlDB.Exec("ALTER TABLE channels MODIFY model_mapping TEXT;") // TODO: delete this line when most users have upgraded
+		if common.UsingMySQL {                   // MySQL 特定操作（暂注释）
+			// _, _ = sqlDB.Exec("ALTER TABLE channels MODIFY model_mapping TEXT;")
 		}
-		common.SysLog("database migration started")
-		err = migrateDB()
+		common.SysLog("database migration started") // 记录数据库迁移开始日志
+		err = migrateDB()                          // 执行数据库迁移（创建/更新表结构）
 		return err
 	} else {
-		common.FatalLog(err)
+		common.FatalLog(err)                    // 连接失败则记录 Fatal 日志
 	}
 	return err
 }

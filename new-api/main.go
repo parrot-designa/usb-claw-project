@@ -41,7 +41,7 @@ var buildFS embed.FS
 var indexPage []byte
 
 func main() {
-	startTime := time.Now()
+	startTime := time.Now() // 记录服务启动时间，用于计算运行时长和性能指标
 
 	err := InitResources()
 	if err != nil {
@@ -240,77 +240,83 @@ func InjectGoogleAnalytics() {
 }
 
 func InitResources() error {
-	// Initialize resources here if needed
-	// This is a placeholder function for future resource initialization
+	// 尝试加载 .env 文件，用于开发环境配置
 	err := godotenv.Load(".env")
+	// 如果有错误
 	if err != nil {
 		if common.DebugEnabled {
 			common.SysLog("No .env file found, using default environment variables. If needed, please create a .env file and set the relevant variables.")
 		}
 	}
 
-	// 加载环境变量
+	// 初始化环境变量，从环境或配置文件读取系统配置
 	common.InitEnv()
 
+	// 初始化日志系统，设置日志格式和输出
 	logger.SetupLogger()
 
-	// Initialize model settings
+	// 初始化费率设置，包括分组费率、模型费率等
 	ratio_setting.InitRatioSettings()
 
+	// 初始化 HTTP 客户端，配置超时和连接池
 	service.InitHttpClient()
 
+	// 初始化 Token 编码器，用于 Token 加密解密
 	service.InitTokenEncoders()
 
-	// Initialize SQL Database
+	// 初始化 SQL 数据库（MySQL/SQLite/PostgreSQL）
 	err = model.InitDB()
 	if err != nil {
 		common.FatalLog("failed to initialize database: " + err.Error())
 		return err
 	}
 
+	// 检查系统是否需要初始化（首次运行检测）
 	model.CheckSetup()
 
-	// Initialize options, should after model.InitDB()
+	// 初始化系统选项表，将数据库中的配置加载到内存缓存
 	model.InitOptionMap()
 
-	// 清理旧的磁盘缓存文件
+	// 清理旧的磁盘缓存文件，释放磁盘空间
 	common.CleanupOldCacheFiles()
 
-	// 初始化模型
+	// 初始化模型定价信息，从数据库加载模型价格表
 	model.GetPricing()
 
-	// Initialize SQL Database
+	// 初始化日志数据库，用于存储请求日志和错误日志
 	err = model.InitLogDB()
 	if err != nil {
 		return err
 	}
 
-	// Initialize Redis
+	// 初始化 Redis 客户端，连接 Redis 服务器用于缓存和队列
 	err = common.InitRedisClient()
 	if err != nil {
 		return err
 	}
 
-	// 启动系统监控
+	// 启动系统监控 Goroutine，监控 CPU/内存/磁盘等资源使用
 	common.StartSystemMonitor()
 
-	// Initialize i18n
+	// 初始化国际化（i18n），加载语言包支持多语言
 	err = i18n.Init()
 	if err != nil {
 		common.SysError("failed to initialize i18n: " + err.Error())
-		// Don't return error, i18n is not critical
+		// i18n 不是关键功能，初始化失败不影响系统运行
 	} else {
 		common.SysLog("i18n initialized with languages: " + strings.Join(i18n.SupportedLanguages(), ", "))
 	}
-	// Register user language loader for lazy loading
+
+	// 注册用户语言加载器，用于懒加载用户语言偏好
 	i18n.SetUserLangLoader(model.GetUserLanguage)
 
-	// Load custom OAuth providers from database
+	// 从数据库加载自定义 OAuth providers（GitHub/Discord/微信等第三方登录）
 	err = oauth.LoadCustomProviders()
 	if err != nil {
 		common.SysError("failed to load custom OAuth providers: " + err.Error())
-		// Don't return error, custom OAuth is not critical
+		// 自定义 OAuth 不是关键功能，失败不影响系统运行
 	}
 
+	// 所有资源初始化完成
 	return nil
 }
