@@ -119,26 +119,26 @@ async function toggleSkill(name, enabled) {
   top: 0;
   z-index: 10;
   flex-shrink: 0;
-  padding-bottom: 0.5rem;
-  padding-left:1rem;
-  padding-right:1rem;
+  padding-bottom: 8px;
+  padding-left:16px;
+  padding-right:16px;
 }
 
 .skill-header-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  margin-bottom: 12px;
 }
 
 .skill-stats {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .skill-stats-text {
-  font-size: 0.875rem;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 
@@ -148,36 +148,36 @@ async function toggleSkill(name, enabled) {
 }
 
 .skill-page-title {
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: 400;
   font-family: 'Manrope', sans-serif;
   color: var(--text-primary);
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
   flex-shrink: 0;
 }
 
 .skill-search-wrapper {
   position: relative;
-  max-width: 28rem; 
+  max-width: 448px; 
 }
 
 .skill-search-icon {
   position: absolute;
-  left: 0.75rem;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-secondary);
-  font-size: 1.25rem;
+  font-size: 20px;
 }
 
 .skill-search-input {
   width: 100%;
-  padding: 0.625rem 0.75rem 0.625rem 2.5rem;
+  padding: 10px 12px 10px 40px;
   background: var(--surface-low);
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
+  border-radius: 12px;
   color: var(--text-primary);
-  font-size: 0.875rem;
+  font-size: 14px;
 
   &:focus {
     outline: none;
@@ -187,21 +187,21 @@ async function toggleSkill(name, enabled) {
 
 .skill-tab-bar {
   display: flex;
-  gap: 0.25rem;
+  gap: 4px;
   background: var(--surface-low);
-  padding: 0.25rem;
-  border-radius: 0.75rem;
+  padding: 4px;
+  border-radius: 12px;
   width: fit-content;
 }
 
 .skill-tab-btn {
-  padding: 0.375rem 1rem;
+  padding: 6px 16px;
   border: none;
   background: transparent;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
 
@@ -214,45 +214,45 @@ async function toggleSkill(name, enabled) {
 .skill-scroll {
   min-height: 0;
   overflow-y: auto;
-  padding-right: 0.25rem;
+  padding-right: 4px;
   padding: 10px 0;
   height: 580px;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .skill-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
+  gap: 12px;
 }
 
 .skill-card { 
   @extend %card-base;
-  padding: 1rem;
+  padding: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 12px;
 }
 
 .skill-info {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 12px;
   min-width: 0;
 }
 
 .skill-icon {
-  width: 2rem;
-  height: 2rem;
+  width: 32px;
+  height: 32px;
   background: var(--primary-container);
-  border-radius: 0.5rem;
+  border-radius: 8px;
   color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 16px;
   flex-shrink: 0;
 }
 
@@ -263,8 +263,8 @@ async function toggleSkill(name, enabled) {
 .skill-name-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
+  gap: 8px;
+  margin-bottom: 4px;
 }
 
 .skill-name {
@@ -277,7 +277,7 @@ async function toggleSkill(name, enabled) {
 }
 
 .skill-desc {
-  font-size: 0.75rem;
+  font-size: 12px;
   color: var(--text-secondary);
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -302,8 +302,8 @@ async function toggleSkill(name, enabled) {
 }
 
 .skill-toggle-track {
-  width: 2.75rem;
-  height: 1.5rem;
+  width: 44px;
+  height: 24px;
   background: var(--surface-high);
   border-radius: 9999px;
   position: relative;
@@ -312,10 +312,10 @@ async function toggleSkill(name, enabled) {
   &::after {
     content: '';
     position: absolute;
-    top: 0.1875rem;
-    left: 0.1875rem;
-    width: 1rem;
-    height: 1rem;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
     background: white;
     border-radius: 50%;
     transition: all 0.2s;
@@ -328,7 +328,7 @@ async function toggleSkill(name, enabled) {
       background: var(--accent);
 
       &::after {
-        transform: translateX(1.25rem);
+        transform: translateX(20px);
       }
     }
   }
@@ -336,12 +336,12 @@ async function toggleSkill(name, enabled) {
 
 .skill-no-skills {
   text-align: center;
-  padding: 3rem;
+  padding: 48px;
   color: var(--text-secondary);
 
   .iconfont {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
+    font-size: 48px;
+    margin-bottom: 8px;
   }
 }
 </style>

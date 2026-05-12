@@ -490,51 +490,51 @@ onMounted(async () => {
 @use '@renderer/public/assets/styles/mixins';
 
 .recharge-recharge-view {
-  padding: 1rem;
+  padding: 16px;
 }
 
 .page-title {
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: 400;
   font-family: 'Manrope', sans-serif;
   color: var(--text-primary);
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .recharge-balance-panel {
   @extend %card-base;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  padding: 16px;
+  margin-bottom: 16px;
 }
 
 .recharge-balance-title {
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
   color: var(--text-primary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 12px;
 }
 
 .recharge-balance-content {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 12px;
 }
 
 .recharge-usage-bar-container {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 6px;
 }
 
 .recharge-usage-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.9rem;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 
 .recharge-usage-bar-bg {
-  height: 0.75rem;
+  height: 12px;
   background: var(--surface);
   border-radius: 9999px;
   overflow: hidden;
@@ -570,23 +570,23 @@ onMounted(async () => {
 .recharge-balance-stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .recharge-stat-item {
   background: var(--surface);
-  border-radius: 0.5rem;
-  padding: 0.625rem;
+  border-radius: 8px;
+  padding: 10px;
 }
 
 .recharge-stat-label {
-  font-size: 0.75rem;
+  font-size: 12px;
   color: var(--text-secondary);
-  margin-bottom: 0.125rem;
+  margin-bottom: 2px;
 }
 
 .recharge-stat-value {
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: 800;
   color: #4fd183;
   text-align: center;
@@ -601,77 +601,77 @@ onMounted(async () => {
 .recharge-balance-warning {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem;
+  gap: 8px;
+  padding: 10px;
   background: rgba(255, 152, 0, 0.1);
   border: 1px solid rgba(255, 152, 0, 0.3);
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
+  border-radius: 8px;
+  font-size: 14px;
   color: #ff9800;
 }
 
 .recharge-warning-icon {
-  font-size: 1rem;
+  font-size: 16px;
 }
 
 .recharge-tip-card {
   display: flex;
-  gap: 0.75rem;
-  padding: 0.875rem;
+  gap: 12px;
+  padding: 14px;
   background: rgba(33, 150, 243, 0.08);
   border: 1px solid rgba(33, 150, 243, 0.2);
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
+  border-radius: 8px;
+  margin-bottom: 16px;
 }
 
 .recharge-tip-icon {
   flex-shrink: 0;
-  font-size: 1rem;
+  font-size: 16px;
 }
 
 .recharge-tip-content {
-  font-size: 0.8125rem;
+  font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.5;
 }
 
 .recharge-recharge-panel {
   @extend %card-base;
-  padding: 1rem;
+  padding: 16px;
 }
 
 .recharge-recharge-title {
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
   color: var(--text-primary);
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .recharge-section-label {
   display: block;
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 400;
   color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 }
 
 .recharge-amount-section {
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .recharge-amount-options {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .recharge-amount-btn {
-  padding: 0.5rem 1rem;
+  padding: 8px 16px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: 8px;
   color: var(--text-primary);
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
   cursor: pointer;
   transition: all 0.2s;
@@ -694,30 +694,30 @@ onMounted(async () => {
   right: -6px;
   background: #ff6b35;
   color: white;
-  font-size: 0.625rem;
+  font-size: 10px;
   font-weight: 400;
-  padding: 0.125rem 0.375rem;
+  padding: 2px 6px;
   border-radius: 9999px;
 }
 
 .recharge-custom-amount-section {
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .recharge-input-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .recharge-form-input {
   flex: 1;
-  padding: 0.5rem 0.75rem;
+  padding: 8px 12px;
   background: var(--surface);
   border: 1px solid var(--outline);
-  border-radius: 0.5rem;
+  border-radius: 8px;
   color: var(--text-primary);
-  font-size: 0.875rem;
+  font-size: 14px;
 
   &:focus {
     border-color: var(--accent);
@@ -727,16 +727,16 @@ onMounted(async () => {
 
 .recharge-input-suffix {
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 14px;
 }
 
 .recharge-payment-section {
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .recharge-payment-tabs {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .recharge-payment-tab {
@@ -744,13 +744,13 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
+  gap: 8px;
+  padding: 12px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: 8px;
   color: var(--text-primary);
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
   cursor: pointer;
   transition: all 0.2s;
@@ -777,16 +777,16 @@ onMounted(async () => {
 
 .recharge-details {
   background: var(--surface);
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
 }
 
 .recharge-detail-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.375rem 0;
+  padding: 6px 0;
 
   &:not(:last-child) {
     border-bottom: 1px solid var(--border);
@@ -810,22 +810,22 @@ onMounted(async () => {
 }
 
 .recharge-detail-discount {
-  font-size: 0.75rem;
+  font-size: 12px;
   background: rgba(255, 107, 53, 0.1);
   color: #ff6b35;
-  padding: 0.125rem 0.375rem;
-  border-radius: 0.25rem;
-  margin-left: 0.375rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
   font-weight: 400;
 }
 
 .recharge-detail-label {
-  font-size: 0.875rem;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 
 .recharge-detail-value {
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
   color: var(--text-primary);
 }
@@ -835,14 +835,14 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  gap: 8px;
+  padding: 12px 16px;
   background: linear-gradient(135deg, var(--accent), #ff8f65);
   color: white;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   font-weight: 400;
-  font-size: 1rem;
+  font-size: 16px;
   cursor: pointer;
   transition: all 0.2s;
 
@@ -858,8 +858,8 @@ onMounted(async () => {
 }
 
 .recharge-loading-spinner {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 20px;
+  height: 20px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: white;
   border-radius: 50%;
@@ -872,32 +872,32 @@ onMounted(async () => {
 }
 
 .recharge-qrcode-section {
-  margin-top: 1.5rem;
+  margin-top: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 12px;
 }
 
 .recharge-qrcode-container {
-  padding: 1rem;
+  padding: 16px;
   background: white;
-  border-radius: 0.5rem;
+  border-radius: 8px;
 }
 
 .recharge-qrcode-hint {
-  font-size: 0.875rem;
+  font-size: 14px;
   color: var(--text-secondary);
   text-align: center;
 }
 
 .recharge-btn-cancel {
-  padding: 0.5rem 1rem;
+  padding: 8px 16px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: 8px;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
 
@@ -908,12 +908,12 @@ onMounted(async () => {
 }
 
 .recharge-btn-secondary {
-  padding: 0.5rem 1rem;
+  padding: 8px 16px;
   background: var(--accent);
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   color: white;
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
   cursor: pointer;
   transition: all 0.2s;
@@ -938,7 +938,7 @@ onMounted(async () => {
 
 .recharge-dialog {
   background: var(--surface);
-  border-radius: 0.75rem;
+  border-radius: 12px;
   width: 90%;
   max-width: 400px;
   overflow: hidden;
@@ -949,24 +949,24 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 16px;
   border-bottom: 1px solid var(--border);
   font-weight: 400;
   color: var(--text-primary);
 }
 
 .recharge-dialog-close {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: none;
   border: none;
-  font-size: 1.25rem;
+  font-size: 20px;
   color: var(--text-secondary);
   cursor: pointer;
-  border-radius: 0.25rem;
+  border-radius: 4px;
 
   &:hover {
     background: var(--surface-high);
@@ -975,29 +975,29 @@ onMounted(async () => {
 }
 
 .recharge-dialog-body {
-  padding: 1rem;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 12px;
 }
 
 .recharge-url-display {
-  padding: 0.75rem;
+  padding: 12px;
   background: var(--surface-high);
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
+  border-radius: 8px;
+  font-size: 12px;
   word-break: break-all;
   color: var(--text-secondary);
   font-family: monospace;
 }
 
 .recharge-btn-copy {
-  padding: 0.625rem 1rem;
+  padding: 10px 16px;
   background: linear-gradient(135deg, var(--accent), #ff8f65);
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 8px;
   color: white;
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
   cursor: pointer;
   transition: all 0.2s;
@@ -1032,35 +1032,35 @@ onMounted(async () => {
 // Recharge Records
 .recharge-records-panel {
   @extend %card-base;
-  padding: 1rem;
-  margin-top: 1rem;
+  padding: 16px;
+  margin-top: 16px;
 }
 
 .recharge-records-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .recharge-records-title {
-  font-size: 0.875rem;
+  font-size: 14px;
   font-weight: 400;
   color: var(--text-primary);
 }
 
 .recharge-btn-refresh {
-  padding: 0.375rem 0.75rem;
+  padding: 6px 12px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.375rem;
+  border-radius: 6px;
   color: var(--text-secondary);
-  font-size: 0.75rem;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 4px;
 
   &:hover:not(:disabled) {
     border-color: var(--accent);
@@ -1074,8 +1074,8 @@ onMounted(async () => {
 }
 
 .recharge-loading-spinner-small {
-  width: 0.875rem;
-  height: 0.875rem;
+  width: 14px;
+  height: 14px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: var(--text-secondary);
   border-radius: 50%;
@@ -1089,10 +1089,10 @@ onMounted(async () => {
 .recharge-records-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: 14px;
 
   th, td {
-    padding: 0.625rem 0.5rem;
+    padding: 10px 8px;
     text-align: left;
     border-bottom: 1px solid var(--border);
   }
@@ -1100,7 +1100,7 @@ onMounted(async () => {
   th {
     font-weight: 400;
     color: var(--text-secondary);
-    font-size: 0.75rem;
+    font-size: 12px;
     background: var(--surface);
   }
 
@@ -1115,9 +1115,9 @@ onMounted(async () => {
 
 .recharge-status {
   display: inline-block;
-  padding: 0.125rem 0.5rem;
+  padding: 2px 8px;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 400;
 
   &.recharge-status-success {
@@ -1134,28 +1134,28 @@ onMounted(async () => {
 .recharge-records-empty,
 .recharge-records-loading {
   text-align: center;
-  padding: 2rem;
+  padding: 32px;
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 14px;
 }
 
 .recharge-pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
   border-top: 1px solid var(--border);
 }
 
 .recharge-pagination-btn {
-  padding: 0.375rem 0.75rem;
+  padding: 6px 12px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 0.375rem;
+  border-radius: 6px;
   color: var(--text-primary);
-  font-size: 0.75rem;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
 
@@ -1170,7 +1170,7 @@ onMounted(async () => {
 }
 
 .recharge-pagination-info {
-  font-size: 0.75rem;
+  font-size: 12px;
   color: var(--text-secondary);
 }
 </style>

@@ -100,28 +100,28 @@ function restartApp() {
 
 .settings-settings-view {
   @extend %flex-column;
-  padding: 1rem;
+  padding: 16px;
 
   .settings-page-title {
-    font-size: 1.5rem;
+    font-size: 24px;
     font-weight: 400;
     font-family: 'Manrope', sans-serif;
     color: var(--text-primary);
-    margin-bottom: 1.5rem;
+    margin-bottom: 24px;
   }
 
   .settings-settings-card {
     @extend %card-base; 
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 1rem;
+    padding: 20px 24px;
+    margin-bottom: 16px;
     box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.15); 
 
     .settings-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      padding: 0.875rem 0;
-      gap: 2rem;
+      padding: 14px 0;
+      gap: 32px;
 
       &:not(:last-child) {
         border-bottom: 1px solid var(--border);
@@ -134,7 +134,7 @@ function restartApp() {
       }
 
       .settings-value {
-        font-size: 1rem;
+        font-size: 16px;
         font-weight: 400;
         color: var(--text-primary);
         text-align: right;
@@ -158,18 +158,18 @@ function restartApp() {
 
   .settings-settings-actions {
     display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    gap: 8px;
+    margin-top: 8px;
 
     .settings-btn-action {
       @extend %btn-ghost;
-      padding: 0.5rem 1rem;
-      border-radius: 0.75rem;
-      font-size: 0.875rem;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.375rem;
+      gap: 6px;
 
       &:hover:not(:disabled) {
         background: var(--bg-secondary);

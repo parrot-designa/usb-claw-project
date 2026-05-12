@@ -651,30 +651,30 @@ function switchModel(model) {
 @use '@renderer/public/assets/styles/mixins';
 
 .model-model-view { 
-  padding: 1rem;
+  padding: 16px;
 
   .model-page-title {
-    font-size: 1.5rem;
+    font-size: 24px;
     font-weight: 400;
     font-family: 'Manrope', sans-serif;
     color: var(--text-primary);
-    margin-bottom: 1rem;
+    margin-bottom: 16px;
   }
 
   .model-selected-models {
     display: flex;
     flex-direction: column;
-    gap: 0.375rem;
-    margin-bottom: 1rem;
+    gap: 6px;
+    margin-bottom: 16px;
   }
 
   .model-model-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.5rem 0.75rem; 
+    padding: 8px 12px; 
     @extend %card-base;
-    font-size: 0.875rem;
+    font-size: 14px;
     color: var(--text-primary);
     cursor: pointer;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
@@ -694,8 +694,8 @@ function switchModel(model) {
       display: flex;
       align-items: center;
       gap: 2px;
-      padding: 0.25rem;
-      margin-right: 0.5rem;
+      padding: 4px;
+      margin-right: 8px;
       color: var(--text-secondary);
       cursor: grab;
       opacity: 0.5;
@@ -745,12 +745,12 @@ function switchModel(model) {
       .model-model-badge {
         display: inline-flex;
         align-items: center;
-        gap: 0.25rem;
+        gap: 4px;
         color: var(--text-secondary);
 
         .model-badge-icon {
-          width: 0.875rem;
-          height: 0.875rem;
+          width: 14px;
+          height: 14px;
         }
       }
 
@@ -789,20 +789,20 @@ function switchModel(model) {
 
   .model-tab-bar {
     display: flex;
-    gap: 0.25rem;
-    padding: 0.25rem;
+    gap: 4px;
+    padding: 4px;
     background: var(--surface);
-    border-radius: 0.5rem;
+    border-radius: 8px;
     width: fit-content;
-    margin-bottom: 0.75rem;
+    margin-bottom: 12px;
 
     .model-model-tab {
       display: flex;
       align-items: center;
-      gap: 0.25rem;
-      padding: 0.375rem 0.75rem;
-      border-radius: 0.375rem;
-      font-size: 0.875rem;
+      gap: 4px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 14px;
       font-weight: 400;
       transition: all 0.2s;
       background: none;
@@ -816,108 +816,108 @@ function switchModel(model) {
       }
 
       .model-tab-icon {
-        width: 1.25rem;
-        height: 1.25rem;
+        width: 20px;
+        height: 20px;
         object-fit: contain;
       }
     }
   }
 
   .model-tab-content {
-    margin-top: 1rem;
+    margin-top: 16px;
   }
 
   .model-grid-layout {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 1rem;
+    gap: 16px;
 
     .model-config-panel { 
       @extend %card-base;
-      padding: 1rem;
+      padding: 16px;
 
       .model-panel-header {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 0.75rem;
+        gap: 12px;
+        margin-bottom: 12px;
 
         .model-panel-icon {
-          width: 2.5rem;
-          height: 2.5rem;
-          border-radius: 0.5rem;
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
           display: flex;
           align-items: center;
           justify-content: center;
 
           img {
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 24px;
+            height: 24px;
           }
         }
 
         .model-panel-title {
-          font-size: 1rem;
+          font-size: 16px;
           font-weight: 400;
           color: var(--text-primary);
           font-family: 'Manrope', sans-serif;
         }
 
         .model-panel-subtitle {
-          font-size: 0.75rem;
+          font-size: 12px;
           color: var(--text-secondary);
         }
       }
 
       .model-panel-desc {
-        font-size: 0.75rem;
+        font-size: 12px;
         color: var(--text-secondary);
-        margin-bottom: 0.75rem;
+        margin-bottom: 12px;
       }
 
       .model-feature-list {
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
-        margin-bottom: 0.75rem;
+        gap: 4px;
+        margin-bottom: 12px;
 
         .model-feature {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          font-size: 0.875rem;
+          gap: 8px;
+          font-size: 14px;
           color: var(--text-primary);
 
           .iconfont {
             color: var(--secondary);
-            font-size: 1rem;
+            font-size: 16px;
           }
 
           .model-check-icon {
-            width: 1rem;
-            height: 1rem;
+            width: 16px;
+            height: 16px;
             object-fit: contain;
           }
         }
       }
 
       .model-form-group {
-        margin-bottom: 0.75rem;
+        margin-bottom: 12px;
 
         .model-form-label {
           display: block;
-          font-size: 0.75rem;
+          font-size: 12px;
           font-weight: 400;
           color: var(--text-secondary);
-          margin-bottom: 0.375rem;
+          margin-bottom: 6px;
         }
 
         .model-input-row {
           display: flex;
-          gap: 0.5rem;
+          gap: 8px;
 
           &.model-password-row {
-            gap: 0.25rem;
+            gap: 4px;
 
             input[type='password']{
               letter-spacing: -5px;
@@ -927,12 +927,12 @@ function switchModel(model) {
           .model-form-select,
           .model-form-input {
             flex: 1;
-            padding: 0.5rem 0.75rem;
+            padding: 8px 12px;
             background: var(--surface);
             border: 1px solid var(--outline);
-            border-radius: 0.5rem;
+            border-radius: 8px;
             color: var(--text-primary);
-            font-size: 0.875rem;
+            font-size: 14px;
 
             &:focus {
               border-color: var(--accent);
@@ -941,10 +941,10 @@ function switchModel(model) {
           }
 
           .model-btn-icon {
-            padding: 0.5rem;
+            padding: 8px;
             background: var(--surface-low);
             border: 1px solid var(--border);
-            border-radius: 0.5rem;
+            border-radius: 8px;
             color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.2s;
@@ -965,12 +965,12 @@ function switchModel(model) {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
+        gap: 8px;
+        padding: 8px 16px;
         background: linear-gradient(135deg, var(--accent), #ff8f65);
         color: white;
         border: none;
-        border-radius: 0.5rem;
+        border-radius: 8px;
         font-weight: 400;
         cursor: pointer;
         transition: all 0.2s;
@@ -984,35 +984,35 @@ function switchModel(model) {
 
     .model-balance-panel {
       @extend %card-base;
-      padding: 1rem;
+      padding: 16px;
       align-self: start;
 
       .model-balance-title {
-        font-size: 0.875rem;
+        font-size: 14px;
         font-weight: 400;
         color: var(--text-primary);
-        margin-bottom: 0.75rem;
+        margin-bottom: 12px;
       }
 
       .model-balance-content {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: 12px;
 
         .model-usage-bar-container {
           display: flex;
           flex-direction: column;
-          gap: 0.375rem;
+          gap: 6px;
 
           .model-usage-labels {
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
+            font-size: 14px;
             color: var(--text-secondary);
           }
 
           .model-usage-bar-bg {
-            height: 0.75rem;
+            height: 12px;
             background: var(--surface);
             border-radius: 9999px;
             overflow: hidden;
@@ -1044,21 +1044,21 @@ function switchModel(model) {
         .model-balance-stats {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 0.5rem;
+          gap: 8px;
 
           .model-stat-item {
             background: var(--surface);
-            border-radius: 0.5rem;
-            padding: 0.625rem;
+            border-radius: 8px;
+            padding: 10px;
 
             .model-stat-label {
-              font-size: 0.75rem;
+              font-size: 12px;
               color: var(--text-secondary);
-              margin-bottom: 0.125rem;
+              margin-bottom: 2px;
             }
 
             .model-stat-value {
-              font-size: 1.5rem;
+              font-size: 24px;
               font-weight: 500;
               color:#4fd183;
               text-align: center;
@@ -1077,13 +1077,13 @@ function switchModel(model) {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 0.25rem;
-          padding: 0.375rem 0.75rem;
+          gap: 4px;
+          padding: 6px 12px;
           background: var(--surface);
           border: 1px solid var(--border);
-          border-radius: 0.5rem;
+          border-radius: 8px;
           color: var(--text-secondary);
-          font-size: 0.75rem;
+          font-size: 12px;
           cursor: pointer;
           transition: all 0.2s;
 
@@ -1098,12 +1098,12 @@ function switchModel(model) {
   .model-model-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    gap: 12px;
+    margin-bottom: 16px;
 
     .model-model-card {
       @extend %card-base;
-      padding: 1rem;
+      padding: 16px;
       cursor: pointer;
       transition: all 0.2s; 
 
@@ -1113,25 +1113,25 @@ function switchModel(model) {
       }
 
       h4 {
-        margin: 0.5rem 0;
-        font-size: 0.9rem;
+        margin: 8px 0;
+        font-size: 14px;
         font-weight: 400;
         color: var(--text-primary);
       }
 
       p {
-        margin: 0 0 0.5rem;
-        font-size: 0.75rem;
+        margin: 0 0 8px;
+        font-size: 12px;
         color: var(--text-secondary);
       }
 
       .model-tag {
         display: inline-block;
-        padding: 0.125rem 0.375rem;
-        border-radius: 0.25rem;
-        font-size: 0.625rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
         font-weight: 400;
-        margin-right: 0.25rem;
+        margin-right: 4px;
         background: var(--surface);
         color: var(--text-secondary);
 
@@ -1143,7 +1143,7 @@ function switchModel(model) {
       }
 
       .model-buy-link {
-        font-size: 0.75rem;
+        font-size: 12px;
         color: var(--accent);
         text-decoration: none;
 
@@ -1160,8 +1160,8 @@ function switchModel(model) {
   }
 
   .model-config-form { 
-    padding: 1rem;
-    margin-top: 1rem;
+    padding: 16px;
+    margin-top: 16px;
     @extend %card-base;
   
     .model-form-input {
@@ -1169,24 +1169,24 @@ function switchModel(model) {
     }
 
     .model-form-group {
-      margin-bottom: 0.75rem;
+      margin-bottom: 12px;
 
       .model-form-label {
         display: block;
-        font-size: 0.75rem;
+        font-size: 12px;
         font-weight: 400;
         color: var(--text-secondary);
-        margin-bottom: 0.375rem;
+        margin-bottom: 6px;
       }
 
       .model-form-input {
         flex: 1;
-        padding: 0.5rem 0.75rem;
+        padding: 8px 12px;
         background: var(--surface);
         border: 1px solid var(--outline);
-        border-radius: 0.5rem;
+        border-radius: 8px;
         color: var(--text-primary);
-        font-size: 0.875rem;
+        font-size: 14px;
 
         &:focus {
           border-color: var(--accent);
@@ -1197,10 +1197,10 @@ function switchModel(model) {
 
     .model-input-row {
       display: flex;
-      gap: 0.5rem;
+      gap: 8px;
 
       &.model-password-row {
-        gap: 0.25rem;
+        gap: 4px;
       }
     }
 
@@ -1208,11 +1208,11 @@ function switchModel(model) {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 16px;
 
       h4 {
         margin: 0;
-        font-size: 1rem;
+        font-size: 16px;
         font-weight: 400;
         color: var(--text-primary);
       }
@@ -1220,7 +1220,7 @@ function switchModel(model) {
       .model-close-btn {
         background: none;
         border: none;
-        font-size: 1.5rem;
+        font-size: 24px;
         color: var(--text-secondary);
         cursor: pointer;
         padding: 0;
@@ -1237,12 +1237,12 @@ function switchModel(model) {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
+      gap: 8px;
+      padding: 8px 16px;
       background: linear-gradient(135deg, var(--accent), #ff8f65);
       color: white;
       border: none;
-      border-radius: 0.5rem;
+      border-radius: 8px;
       font-weight: 400;
       cursor: pointer;
       transition: all 0.2s;
@@ -1255,17 +1255,17 @@ function switchModel(model) {
   }
 
   .model-custom-intro {
-    margin-bottom: 1rem;
+    margin-bottom: 16px;
 
     h3 {
-      font-size: 1rem;
+      font-size: 16px;
       font-weight: 400;
       color: var(--text-primary);
-      margin: 0 0 0.375rem;
+      margin: 0 0 6px;
     }
 
     p {
-      font-size: 0.875rem;
+      font-size: 14px;
       color: var(--text-secondary);
       margin: 0;
     }
@@ -1295,35 +1295,35 @@ function switchModel(model) {
 
 .model-restart-card {
   background: linear-gradient(135deg, var(--accent), #ff8f65);
-  border-radius: 0.75rem;
-  padding: 0.875rem 1rem;
-  margin-bottom: 1rem;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 16px;
 
   .model-restart-content {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
     color: white;
     font-weight: 400;
-    font-size: 0.9rem;
+    font-size: 14px;
 
     .model-restart-icon {
-      font-size: 1.1rem;
+      font-size: 1.16px;
     }
   }
 
   .model-restart-actions {
     display: flex;
-    gap: 0.5rem;
+    gap: 8px;
   }
 
   .model-restart-btn {
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.375rem;
+    padding: 6px 12px;
+    border-radius: 6px;
     font-size: 0.8rem;
     font-weight: 400;
     cursor: pointer;
