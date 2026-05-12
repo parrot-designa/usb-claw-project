@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\OpenClawUpdate\\OpenClawUpdate\\OpenClawUpdate.csproj": {}
+    "c:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\OpenClawUpdate\\OpenClawUpdate\\OpenClawUpdate.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\OpenClawUpdate\\OpenClawUpdate\\OpenClawUpdate.csproj": {
+    "c:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\OpenClawUpdate\\OpenClawUpdate\\OpenClawUpdate.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\OpenClawUpdate\\OpenClawUpdate\\OpenClawUpdate.csproj",
+        "projectUniqueName": "c:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\OpenClawUpdate\\OpenClawUpdate\\OpenClawUpdate.csproj",
         "projectName": "OpenClawUpdate",
-        "projectPath": "C:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\OpenClawUpdate\\OpenClawUpdate\\OpenClawUpdate.csproj",
+        "projectPath": "c:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\OpenClawUpdate\\OpenClawUpdate\\OpenClawUpdate.csproj",
         "packagesPath": "C:\\Users\\jiabao\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\OpenClawUpdate\\OpenClawUpdate\\obj\\",
+        "outputPath": "c:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\OpenClawUpdate\\OpenClawUpdate\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jiabao\\AppData\\Roaming\\NuGet\\NuGet.Config"

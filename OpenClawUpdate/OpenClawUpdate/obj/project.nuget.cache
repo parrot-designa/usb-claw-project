@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "5TtCI9UqUC0=",
+  "dgSpecHash": "hZgsT9v5IDg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\OpenClawUpdate\\OpenClawUpdate\\OpenClawUpdate.csproj",
+  "projectFilePath": "c:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\OpenClawUpdate\\OpenClawUpdate\\OpenClawUpdate.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jiabao\\.nuget\\packages\\communitytoolkit.mvvm\\8.2.2\\communitytoolkit.mvvm.8.2.2.nupkg.sha512"
   ],
