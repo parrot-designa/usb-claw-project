@@ -36,11 +36,19 @@
       <router-link
         to="/chat"
         class="sidebar-nav-item"
-        :class="{ active: $route.path === '/chat' }" 
+        :class="{ active: $route.path === '/chat' }"
       >
         <span class="iconfont icon-clawliaotiangongju-qun"></span>
         <span>聊天工具</span>
       </router-link>
+      <!-- <router-link
+        to="/image-gen"
+        class="sidebar-nav-item"
+        :class="{ active: $route.path === '/image-gen' }"
+      >
+        <span class="iconfont icon-clawimage"></span>
+        <span>AI图片生成</span>
+      </router-link> -->
       <router-link
         to="/contact"
         class="sidebar-nav-item"
@@ -94,7 +102,7 @@ import TechButton from './TechButton.vue';
 import { useToast } from '../composables/useToast'
 
 const { showToast } = useToast();
- 
+
 const gatewayStore = useGatewayStore();
 const { loading, startGatewayHook, stopGatewayHook } = useGateway();  
 

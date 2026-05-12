@@ -7,6 +7,7 @@ import Contact from '../views/Contact.vue';
 import Settings from '../views/Settings.vue';
 import EnvCheck from '../views/EnvCheck.vue';
 import Recharge from '../views/Recharge.vue';
+import ImageGen from '../views/ImageGen.vue';
 
 const routes = [
   { path: '/', redirect: '/home' },
@@ -14,6 +15,7 @@ const routes = [
   { path: '/model', name: 'model', component: Model },
   { path: '/skill', name: 'skill', component: Skill },
   { path: '/chat', name: 'chat', component: Chat },
+  { path: '/image-gen', name: 'image-gen', component: ImageGen },
   { path: '/contact', name: 'contact', component: Contact },
   { path: '/settings', name: 'settings', component: Settings },
   { path: '/recharge', name: 'recharge', component: Recharge },

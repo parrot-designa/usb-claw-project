@@ -38,6 +38,7 @@ const pageTitle = computed(() => {
     '/model': '模型配置',
     '/skill': '技能管理',
     '/chat': '聊天工具',
+    '/image-gen': 'AI图片生成',
     '/contact': '联系客服',
     '/recharge': '官方模型充值',
     '/settings': '设置',
