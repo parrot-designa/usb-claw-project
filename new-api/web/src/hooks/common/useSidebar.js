@@ -55,6 +55,7 @@ export const DEFAULT_ADMIN_CONFIG = {
     setting: true,
     usb_key: true,
     payment_records: true,
+    version: true,
   },
 };
 

@@ -50,6 +50,7 @@ import PersonalSetting from './components/settings/PersonalSetting';
 import Setup from './pages/Setup';
 import SetupCheck from './components/layout/SetupCheck';
 import USBKey from './pages/USBKey';
+import Version from './pages/Version';
 import SettingsPaymentRecords from './pages/Setting/Payment/SettingsPaymentRecords';
 
 const Home = lazy(() => import('./pages/Home'));
@@ -386,6 +387,16 @@ function App() {
             <AdminRoute>
               <Suspense fallback={<Loading></Loading>} key={location.pathname}>
                 <USBKey />
+              </Suspense>
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/console/version'
+          element={
+            <AdminRoute>
+              <Suspense fallback={<Loading></Loading>} key={location.pathname}>
+                <Version />
               </Suspense>
             </AdminRoute>
           }

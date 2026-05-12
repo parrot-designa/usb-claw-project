@@ -51,6 +51,7 @@ const routerMap = {
   personal: '/console/personal',
   usb_key: '/console/usb-key',
   payment_records: '/console/payment-records',
+  version: '/console/version',
 };
 
 const SiderBar = ({ onNavigate = () => {} }) => {
@@ -189,6 +190,12 @@ const SiderBar = ({ onNavigate = () => {} }) => {
         text: t('U盘管理'),
         itemKey: 'usb_key',
         to: '/console/usb-key',
+        className: isAdmin() ? '' : 'tableHiddle',
+      },
+      {
+        text: t('版本管理'),
+        itemKey: 'version',
+        to: '/console/version',
         className: isAdmin() ? '' : 'tableHiddle',
       },
       {

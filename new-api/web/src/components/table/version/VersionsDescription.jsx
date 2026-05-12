@@ -17,12 +17,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-export * from './channel.constants';
-export * from './user.constants';
-export * from './toast.constants';
-export * from './common.constant';
-export * from './dashboard.constants';
-export * from './playground.constants';
-export * from './redemption.constants';
-export * from './channel-affinity-template.constants';
-export * from './version.constants';
+import React from 'react';
+import { Typography } from '@douyinfe/semi-ui';
+
+const { Text } = Typography;
+
+const VersionsDescription = ({ compactMode, setCompactMode, t }) => {
+  return (
+    <div>
+      <Text type="tertiary" spacing="none">
+        {t('管理应用版本，发布新版本供用户下载更新')}
+      </Text>
+    </div>
+  );
+};
+
+export default VersionsDescription;

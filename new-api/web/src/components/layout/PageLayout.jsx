@@ -60,6 +60,7 @@ const PageLayout = () => {
     '/console/task',
     '/console/models',
     '/console/usb-key',
+    '/console/version',
     '/console/payment-records',
     '/pricing',
   ];

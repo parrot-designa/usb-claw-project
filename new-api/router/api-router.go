@@ -267,6 +267,30 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.POST("/usb_key/activate", controller.BindUSBKey)
 		apiRouter.POST("/usb_key/login", controller.LoginUSBKey)
 		apiRouter.POST("/usb_key/validate", controller.ValidateActivation)
+
+		// Version 路由 - 公开接口（版本检查和下载）
+		versionPublicRoute := apiRouter.Group("/version")
+		versionPublicRoute.Use(middleware.CORS())
+		{
+			versionPublicRoute.GET("/check", controller.CheckVersionUpdate)
+			versionPublicRoute.GET("/:id/download", controller.DownloadVersion)
+		}
+
+		// Version 路由 - 需要管理员权限
+		versionRoute := apiRouter.Group("/version")
+		versionRoute.Use(middleware.AdminAuth())
+		{
+			versionRoute.GET("/", controller.GetAllVersions)
+			versionRoute.GET("/search", controller.SearchVersions)
+			versionRoute.GET("/:id", controller.GetVersion)
+			versionRoute.POST("/", controller.CreateVersion)
+			versionRoute.PUT("/", controller.UpdateVersion)
+			versionRoute.DELETE("/:id", controller.DeleteVersion)
+			versionRoute.POST("/:id/publish", controller.PublishVersion)
+			versionRoute.POST("/:id/unpublish", controller.UnpublishVersion)
+			versionRoute.POST("/upload", controller.UploadVersionFile)
+		}
+
 		// token info 公开接口，供 U-Claw 获取令牌对应的用户和分组信息
 		apiRouter.GET("/token/info", controller.GetTokenInfoByKey)
 		// token list 公开接口，供 U-Claw 获取用户的所有令牌

@@ -17,12 +17,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-export * from './channel.constants';
-export * from './user.constants';
-export * from './toast.constants';
-export * from './common.constant';
-export * from './dashboard.constants';
-export * from './playground.constants';
-export * from './redemption.constants';
-export * from './channel-affinity-template.constants';
-export * from './version.constants';
+import React from 'react';
+import { VersionsTable } from '../../components/table/version';
+
+const Version = () => {
+  return (
+    <div className="mt-[60px] px-2">
+      <VersionsTable />
+    </div>
+  );
+};
+
+export default Version;
