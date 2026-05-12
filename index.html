@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>龙虾 Gateway</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#0B0E14;color:#fff;min-height:100vh;padding:16px;padding-bottom:100px}
+.card{background:#151923;border:1px solid #2A3040;border-radius:14px;padding:18px;margin-bottom:16px}
+.card-title{font-size:17px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.card-icon{width:28px;height:28px;background:rgba(79,140,255,.1);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#4F8CFF;font-size:14px}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 20px;border-radius:10px;font-size:15px;font-weight:500;border:none;cursor:pointer;transition:all .15s;width:100%}
+.btn:active{transform:scale(.97)}
+.btn-blue{background:#4F8CFF;color:#fff;box-shadow:0 4px 14px rgba(79,140,255,.3)}
+.btn-red{background:#FF6B6B;color:#fff;box-shadow:0 4px 14px rgba(255,107,107,.3)}
+.tag{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:12px;font-size:12px;font-weight:500}
+.tag-red{background:rgba(255,107,107,.12);color:#FF6B6B;border:1px solid rgba(255,107,107,.2)}
+.tag-green{background:rgba(0,212,170,.12);color:#00D4AA;border:1px solid rgba(0,212,170,.2)}
+.tag-dot{width:6px;height:6px;border-radius:50%}
+.tag-red .tag-dot{background:#FF6B6B}
+.tag-green .tag-dot{background:#00D4AA}
+.row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.port{font-size:13px;color:#8B95A8;font-family:monospace}
+.port span{color:#fff;font-weight:600}
+.log-box{background:#0B0E14;border:1px solid #2A3040;border-radius:10px;min-height:160px;max-height:220px;overflow-y:auto;padding:12px}
+.log-box::-webkit-scrollbar{width:3px}
+.log-box::-webkit-scrollbar-thumb{background:#2A3040}
+.log-empty{text-align:center;padding:30px 20px;color:#5A6270;font-size:14px}
+.log-item{padding:6px 0;border-bottom:1px solid rgba(42,48,64,.4);font-family:monospace;font-size:11px;display:flex;gap:8px;align-items:flex-start}
+.log-time{color:#5A6270;flex-shrink:0;font-size:10px}
+.log-lv{flex-shrink:0;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:600;text-transform:uppercase}
+.log-lv.i{background:rgba(79,140,255,.15);color:#4F8CFF}
+.log-lv.s{background:rgba(0,212,170,.15);color:#00D4AA}
+.log-lv.w{background:rgba(255,179,71,.15);color:#FFB347}
+.log-msg{color:#8B95A8;word-break:break-all}
+.step{display:flex;align-items:flex-start;gap:12px;padding:14px;background:#0B0E14;border:1px solid #2A3040;border-radius:10px;margin-bottom:10px}
+.step-num{width:26px;height:26px;border-radius:50%;background:#4F8CFF;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.step-num.done{background:#00D4AA}
+.step-title{font-size:14px;line-height:1.4}
+.step-desc{font-size:12px;color:#5A6270;margin-top:3px}
+.nav{position:fixed;bottom:0;left:0;right:0;height:60px;background:#151923;border-top:1px solid #2A3040;display:flex;align-items:center;justify-content:space-around;padding-bottom:env(safe-area-inset-bottom)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;color:#5A6270;font-size:10px;border:none;background:none}
+.nav-btn.on{color:#4F8CFF}
+.nav-btn .i{font-size:20px}
+.toast{position:fixed;top:16px;left:16px;right:16px;background:#151923;border:1px solid #2A3040;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.4);animation:tIn .3s ease;z-index:200}
+@keyframes tIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.toast-ic{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.ok .toast-ic{background:rgba(0,212,170,.15);color:#00D4AA}
+.if .toast-ic{background:rgba(79,140,255,.15);color:#4F8CFF}
+</style>
+<base target="_blank">
+</head>
+<body>
+<div class="card">
+<div class="card-title"><div class="card-icon">🖥️</div>Gateway 控制台</div>
+<div class="row">
+<div style="display:flex;align-items:center;gap:10px">
+<span class="tag tag-red" id="gTag"><span class="tag-dot"></span><span id="gText">未启动</span></span>
+<span class="port">端口: <span id="gPort">—</span></span>
+</div>
+</div>
+<button class="btn btn-blue" id="gBtn" onclick="toggle()">⏻ 启动 Gateway</button>
+</div>
+<div class="card">
+<div class="card-title"><div class="card-icon">📋</div>实时日志</div>
+<div class="log-box" id="logBox">
+<div class="log-empty" id="logEmpty">暂无日志<br><span style="font-size:12px">启动后查看运行日志</span></div>
+<div id="logList" style="display:none"></div>
+</div>
+</div>
+<div class="card">
+<div class="card-title"><div class="card-icon">🚀</div>快速开始</div>
+<div class="step"><div class="step-num" id="s1">1</div><div><div class="step-title">点击【启动】按钮启动 Gateway</div><div class="step-desc">连接微信与 AI 的核心服务</div></div></div>
+<div class="step"><div class="step-num" id="s2">2</div><div><div class="step-title">配置 AI 模型的 API Key</div><div class="step-desc">支持 OpenAI、Claude、Gemini</div></div></div>
+<div class="step"><div class="step-num" id="s3">3</div><div><div class="step-title">扫码连接微信</div><div class="step-desc">建立消息通道</div></div></div>
+<div class="step"><div class="step-num" id="s4">4</div><div><div class="step-title">在微信里发消息给 AI</div><div class="step-desc">AI 将自动回复</div></div></div>
+</div>
+<div class="nav">
+<button class="nav-btn on"><span class="i">🏠</span>首页</button>
+<button class="nav-btn"><span class="i">⚙️</span>模型</button>
+<button class="nav-btn"><span class="i">💎</span>充值</button>
+<button class="nav-btn"><span class="i">🔧</span>设置</button>
+</div>
+<div id="toastBox"></div>
+<script>
+let running=false,timer=null;
+const logs=[{lv:'i',msg:'Gateway 初始化中...'},{lv:'s',msg:'WebSocket 启动成功'},{lv:'i',msg:'监听端口 8080'},{lv:'i',msg:'连接微信客户端...'},{lv:'s',msg:'微信连接成功'},{lv:'i',msg:'AI 模型加载完成'},{lv:'i',msg:'等待消息...'},{lv:'i',msg:'收到消息 [用户A]: 你好'},{lv:'i',msg:'AI 处理中...'},{lv:'s',msg:'回复已发送'},{lv:'w',msg:'网络波动，自动重连'},{lv:'s',msg:'网络已恢复'}];
+let li=0;
+function toggle(){
+ const tag=document.getElementById('gTag'),txt=document.getElementById('gText'),port=document.getElementById('gPort'),btn=document.getElementById('gBtn'),s1=document.getElementById('s1');
+ if(!running){running=true;tag.className='tag tag-green';txt.textContent='运行中';port.textContent='8080';btn.className='btn btn-red';btn.innerHTML='⏻ 停止 Gateway';s1.classList.add('done');s1.textContent='✓';toast('ok','Gateway 已启动','服务运行在端口 8080');startLog()}
+ else{running=false;tag.className='tag tag-red';txt.textContent='未启动';port.textContent='—';btn.className='btn btn-blue';btn.innerHTML='⏻ 启动 Gateway';s1.classList.remove('done');s1.textContent='1';toast('if','Gateway 已停止','服务已关闭');stopLog()}
+}
+function startLog(){document.getElementById('logEmpty').style.display='none';document.getElementById('logList').style.display='block';document.getElementById('logList').innerHTML='';li=0;timer=setInterval(()=>{if(li<logs.length)addLog(logs[li++]);else addLog({lv:'i',msg:'心跳检测正常'})},1500)}
+function stopLog(){if(timer){clearInterval(timer);timer=null}}
+function addLog(l){const t=new Date().toLocaleTimeString();const d=document.createElement('div');d.className='log-item';d.innerHTML='<span class="log-time">'+t+'</span><span class="log-lv '+l.lv+'">'+l.lv+'</span><span class="log-msg">'+l.msg+'</span>';const b=document.getElementById('logList');b.appendChild(d);b.scrollTop=b.scrollHeight}
+function toast(type,title,desc){const b=document.getElementById('toastBox');const d=document.createElement('div');d.className='toast '+type;d.innerHTML='<div class="toast-ic">'+(type==='ok'?'✓':'ℹ')+'</div><div><div style="font-size:14px;font-weight:600">'+title+'</div><div style="font-size:12px;color:#8B95A8;margin-top:2px">'+desc+'</div></div>';b.appendChild(d);setTimeout(()=>d.remove(),2500)}
+</script>
+</body>
+</html>

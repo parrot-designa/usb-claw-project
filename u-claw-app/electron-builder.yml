@@ -1,0 +1,33 @@
+appId: org.open-claw-pro.desktop
+productName: OpenClawPro
+copyright: Copyright © 2026 OpenClawPro
+
+directories:
+  output: release
+  buildResources: resources
+
+asar: false
+compression: maximum
+
+files:
+  - dist/**/*
+  - resources/**/*
+
+mac:
+  target:
+    - target: dir
+      arch:
+        - arm64
+        - x64
+  icon: src/assets/icon.icns
+  category: public.app-category.developer-tools
+
+win:
+  target:
+    - target: portable
+      arch:
+        - x64
+  icon: src/assets/icon.ico
+
+portable:
+  artifactName: OpenClawPro-${version}-portable.exe

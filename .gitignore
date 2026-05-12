@@ -1,0 +1,37 @@
+# ── Runtime dependencies (too large for git, download on build) ──
+u-claw-app/node_modules/ 
+u-claw-app/dist/
+u-claw-app/data/ 
+u-claw-app/extensions/
+u-claw-app/runtime/
+u-claw-app/skills/
+u-claw-app/release/
+u-claw-app/.license
+u-claw-app/out
+u-claw-app/usb_info.txt
+
+new-api/linux-new-api8
+
+
+# ── Non-dev assets (stored locally, not in repo) ──
+archive/
+reference/
+releases/
+toolkit/
+marketing/
+social-assets/
+
+# ── Build cache & temp ──
+.download-cache/
+linux-new-api*/
+*.dmg
+*.exe
+!website/downloads/agent.exe
+*.blockmap
+builder-debug.yml
+ 
+
+# ── OS files ──
+.DS_Store
+Thumbs. 
+.worktrees/

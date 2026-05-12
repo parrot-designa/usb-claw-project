@@ -1,0 +1,62 @@
+import { app, Menu } from 'electron';
+import { execSync } from 'child_process';
+import { showActivateDialog, waitForActivation, closeActivateWindow } from './activation.js';
+import { ensureOpenClawDirectories,getLocalBase,extractRuntime } from './paths.js';
+import { APP_NAME, IS_DEV } from './utils/env.js';
+import { createGatewayManager } from './gateway.js';
+import { setupLifecycle } from './lifecycle.js';
+import { createWindow, getMainWindow, createSplash,updateSplash } from './window-manager.js';
+import { ensurePlugins } from './js/plugin.js'; 
+import { registerIPCHandlers,registerWechatIPCHandler } from './register-ipc-handlers.js';
+import { initWechat } from "./plugin/wechat-init.js";
+
+
+// ============================================================
+// Electron 主进程启动入口
+// ============================================================
+app.whenReady().then(async () => { 
+
+  // 创建 Gateway Manager（必须在最前面，因为其他组件依赖它）
+  const gateway = createGatewayManager();
+
+  // 禁用原生菜单栏，仅打包后生效（开发模式保留菜单方便调试）
+  if (!IS_DEV) {
+    Menu.setApplicationMenu(null);
+  }
+
+  app.isQuitting = false;
+
+  // 第0步：注册 IPC 通信处理器（最早注册以便渲染进程通信）
+  registerIPCHandlers({ gateway });
+
+  // ============================================================
+  // App 生命周期事件监听（在 gateway 创建后才能设置）
+  // ============================================================
+  setupLifecycle({ getGateway: () => gateway });
+
+  // 第1步：显示激活窗口（检查逻辑在激活窗口的 UI 中进行）
+  showActivateDialog();
+  // 等待激活完成
+  await waitForActivation();
+
+  // 第7步：关闭激活窗口并创建主窗口
+  closeActivateWindow();
+
+  createSplash();
+
+  updateSplash('正在启动...'); 
+
+  await extractRuntime();
+
+  await ensureOpenClawDirectories();
+
+  await ensurePlugins();
+
+  updateSplash('正在加载微信插件...',80);
+
+  registerWechatIPCHandler({ gateway });
+
+  updateSplash('正在加载界面...',100);
+  
+  createWindow();   
+});
