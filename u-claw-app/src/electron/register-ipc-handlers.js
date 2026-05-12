@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import { ipcMain, dialog, app, shell } from 'electron';
+import { RUNTIME_DIR, getAppRoot } from './paths.js';
 import { exec,spawn } from 'child_process';
 import {
   setupActivationIPC,
@@ -595,6 +596,79 @@ function registerIPCHandlers({ gateway }) {
       });
       server.listen(port, '127.0.0.1');
     });
+  });
+
+  // Chat history persistence (ImageGen)
+  const CHAT_HISTORY_DIR = path.join(appRoot, 'runtime', 'chat-history');
+  const IMAGE_GEN_HISTORY_FILE = path.join(CHAT_HISTORY_DIR, 'image-gen.json');
+
+  ipcMain.handle('save-image-gen-history', async (_, messages) => {
+    try {
+      if (!fs.existsSync(CHAT_HISTORY_DIR)) {
+        fs.mkdirSync(CHAT_HISTORY_DIR, { recursive: true });
+      }
+      fs.writeFileSync(IMAGE_GEN_HISTORY_FILE, JSON.stringify(messages, null, 2), 'utf-8');
+      return { ok: true };
+    } catch (err) {
+      console.error('[save-image-gen-history] failed:', err);
+      return { ok: false, error: err.message };
+    }
+  });
+
+  ipcMain.handle('load-image-gen-history', async () => {
+    try {
+      if (!fs.existsSync(IMAGE_GEN_HISTORY_FILE)) {
+        return { ok: true, messages: [] };
+      }
+      const content = fs.readFileSync(IMAGE_GEN_HISTORY_FILE, 'utf-8');
+      const messages = JSON.parse(content);
+      return { ok: true, messages };
+    } catch (err) {
+      console.error('[load-image-gen-history] failed:', err);
+      return { ok: true, messages: [] };
+    }
+  });
+
+  // Image generation via gateway
+  ipcMain.handle('generate-image', async (_, { prompt, model, size, quality }) => {
+    try {
+      // Forward to gateway's image generation endpoint
+      // Gateway API format: POST /v1/images/generations
+      const url = `http://127.0.0.1:${GATEWAY_DEFAULT_PORT}/v1/images/generations`;
+      const body = {
+        model: model || 'dall-e-3',
+        prompt,
+        size: size || '1024x1024',
+        quality: quality || 'standard',
+        n: 1
+      };
+      console.log('[generate-image] Request:', body);
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      const data = await response.json();
+      console.log('[generate-image] Response:', data);
+
+      if (!response.ok) {
+        return { error: data.error?.message || `HTTP ${response.status}` };
+      }
+
+      if (data.data && data.data[0]) {
+        return {
+          url: data.data[0].url,
+          revisedPrompt: data.data[0].revised_prompt || ''
+        };
+      }
+
+      return { error: 'No image returned' };
+    } catch (err) {
+      console.error('[generate-image] Error:', err);
+      return { error: err.message };
+    }
   });
 
   let currentWeChatProcess = null;  

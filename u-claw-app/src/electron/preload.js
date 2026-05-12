@@ -69,4 +69,9 @@ contextBridge.exposeInMainWorld('uclaw', {
   },
   // Session invalid - show activation window
   ipcShowActivation: () => ipcRenderer.invoke('show-activation'),
+  // ImageGen chat history
+  ipcSaveImageGenHistory: (messages) => ipcRenderer.invoke('save-image-gen-history', messages),
+  ipcLoadImageGenHistory: () => ipcRenderer.invoke('load-image-gen-history'),
+  // Image generation
+  generateImage: (params) => ipcRenderer.invoke('generate-image', params),
 });
