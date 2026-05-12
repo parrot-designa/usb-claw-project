@@ -77,9 +77,8 @@
           v-model="inputText"
           class="imagegen-chat-input"
           placeholder="描述你想要生成的图片..."
-          rows="1"
-          @keydown.enter.exact.prevent="sendMessage"
-          @input="autoResize"
+          :rows="3"
+          @keydown.enter.exact.prevent="sendMessage" 
         ></textarea>
         <button
           @click="sendMessage"
@@ -104,6 +103,7 @@
 
 <script setup>
 import { ref, nextTick, onMounted, toRaw } from 'vue';
+import axios from 'axios';
 import { useToast } from '../composables/useToast';
 
 const { showToast } = useToast();
@@ -123,11 +123,7 @@ onMounted(async () => {
   await loadHistory();
 });
 
-function autoResize(e) {
-  const textarea = e.target;
-  textarea.style.height = 'auto';
-  textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-}
+ 
 
 async function loadHistory() {
   try {
@@ -192,29 +188,38 @@ async function sendMessage() {
   scrollToBottom();
 
   try {
-    const result = await window.uclaw.generateImage({
-      prompt: text,
-      model: selectedModel.value,
-      size: imageSize.value,
-      quality: imageQuality.value,
+    // 直接请求网关生成图片
+    const response = await axios({
+      method: 'POST',
+      url: `http://127.0.0.1:${import.meta.env.VITE_GATEWAY_DEFAULT_PORT}/v1/images/generations`,
+      headers: { 'Content-Type': 'application/json' },
+      data: {
+        model: selectedModel.value,
+        prompt: text,
+        size: imageSize.value,
+        quality: imageQuality.value,
+        n: 1
+      }
     });
 
     aiMsg.loading = false;
 
-    if (result?.error) {
-      aiMsg.error = result.error;
-      showToast(result.error, true);
-    } else if (result?.url) {
-      aiMsg.imageUrl = result.url;
-      aiMsg.revisedPrompt = result.revisedPrompt || '';
+    if (data.error) {
+      aiMsg.error = data.error.message || '请求失败';
+      showToast(aiMsg.error, true);
+    } else if (data.data && data.data[0]) {
+      aiMsg.imageUrl = data.data[0].url;
+      aiMsg.revisedPrompt = data.data[0].revised_prompt || '';
       showToast('图片生成成功');
+    } else {
+      aiMsg.error = '未返回图片';
+      showToast('未返回图片', true);
     }
   } catch (e) {
     aiMsg.loading = false;
-    aiMsg.error = e.message || '生成失败';
-    showToast('生成失败: ' + e.message, true);
+    aiMsg.error = e.response?.data?.error?.message || e.message || '生成失败';
+    showToast('生成失败: ' + aiMsg.error, true);
   } finally {
-    console.log("测试==>")
     generating.value = false;
     aiMsg.time = formatTime();
     await saveHistory();
@@ -277,7 +282,7 @@ function downloadImage(url) {
 }
 
 .imagegen-chat-container {
-  height: 320px;
+  height: 510px;
   overflow-y: auto;
   padding: 16px;
   display: flex;
@@ -479,8 +484,7 @@ function downloadImage(url) {
   font-family: 'Manrope', sans-serif;
   font-size: 15px;
   resize: none;
-  min-height: 56px;
-  max-height: 120px;
+  height: 80px; 
   overflow-y: auto;
   line-height: 1.5;
 
