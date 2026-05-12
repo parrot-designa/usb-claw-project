@@ -321,14 +321,17 @@ function showRestartCardNotice() {
 }
 
 async function handleRestart() {
-  showRestartCard.value = false; 
-
-  try { 
+  showRestartCard.value = false;
+  window.showLoadingOverlayVue?.();
+  try {
     await window.uclaw.ipcRestartGateway();
+    if (window.hideLoadingOverlayVue) {
+      setTimeout(() => window.hideLoadingOverlayVue(), 500);
+    }
   } catch (err) {
     console.error('重启失败:', err);
     if (window.hideLoadingOverlayVue) {
-      window.hideLoadingOverlayVue();
+      setTimeout(() => window.hideLoadingOverlayVue(), 500);
     }
     if (window.showToastVue) {
       window.showToastVue('重启失败: ' + err.message, true);
