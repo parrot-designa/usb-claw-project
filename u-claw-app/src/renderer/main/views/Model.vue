@@ -227,6 +227,21 @@
               placeholder="请输入 API Key"
             />
           </div>
+          <div class="model-form-group">
+            <label class="model-form-label">模型名称</label>
+            <input
+              type="text"
+              class="model-form-input"
+              v-model="recommendModelName"
+              :placeholder="'请输入模型名称，如 ' + selectedRecommendModel.model"
+            />
+          </div>
+          <div class="model-form-group">
+            <label class="model-form-label">API 类型</label>
+            <select class="model-form-input" v-model="recommendApiType">
+              <option v-for="opt in recommendApiTypeOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+            </select>
+          </div>
           <button @click="saveRecommendConfig" class="model-btn-save">保存配置</button>
         </div>
       </Transition>
@@ -379,6 +394,13 @@ function onDrop(event, index) {
 const selectedRecommendModel = ref(null);
 const recommendUrl = ref('');
 const recommendKey = ref('');
+const recommendModelName = ref('');
+const recommendApiType = ref('openai-completions');
+
+const recommendApiTypeOptions = [
+  { value: 'openai-completions', label: 'OpenAI (兼容格式)' },
+  { value: 'anthropic-messages', label: 'Anthropic Claude' },
+];
 
 // 自定义模型配置
 const customUrl = ref('');
@@ -409,6 +431,8 @@ function selectRecommendedModel(model) {
   selectedRecommendModel.value = model;
   recommendUrl.value = model.base || '';
   recommendKey.value = '';
+  recommendModelName.value = '';
+  recommendApiType.value = model.provider === 'minimax' ? 'anthropic-messages' : 'openai-completions';
 }
 
 function closeRecommendForm() {
@@ -416,6 +440,8 @@ function closeRecommendForm() {
   recommendUrl.value = '';
   recommendKey.value = '';
   customModelName.value = '';
+  recommendModelName.value = '';
+  recommendApiType.value = 'openai-completions';
 }
 
 function saveRecommendConfig() {
@@ -427,10 +453,14 @@ function saveRecommendConfig() {
     showToast('请填写 API Key，不可为空', true);
     return;
   }
+  if (!recommendModelName.value) {
+    showToast('请填写模型名称，不可为空', true);
+    return;
+  }
 
-  const modelName = selectedRecommendModel.value.model;
-  const modelValue = `${selectedRecommendModel.value.provider}-${selectedRecommendModel.value.model}`;
-  const label = selectedRecommendModel.value.name;
+  const modelName = recommendModelName.value;
+  const modelValue = `${selectedRecommendModel.value.provider}-${recommendModelName.value}`;
+  const label = selectedRecommendModel.value.name + ' / ' + recommendModelName.value;
   const source = 'recommend';
 
   const exists = modelsStore.selectedModels.some(m => m.value === modelValue);
@@ -447,6 +477,7 @@ function saveRecommendConfig() {
     key: recommendKey.value,
     model: modelName,
     provider: selectedRecommendModel.value.provider,
+    api: recommendApiType.value,
   };
 
   const updatedModels = [...modelsStore.selectedModels];

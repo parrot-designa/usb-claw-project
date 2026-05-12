@@ -19,15 +19,15 @@ export const useModelsStore = defineStore('models', () => {
   function setSelectedModels(models) {
     const userStore = useUserStore();
     const userToken = userStore.userInfo?.token;
-    const modelUrl = import.meta.env.VITE_OPENCLAW_MODEL_URL || ''; 
+    const modelUrl = import.meta.env.VITE_OPENCLAW_MODEL_URL || '';
 
     const processedModels = models.map(model => {
-      if (model.source === 'official') { 
+      if (model.source === 'official') {
         return {
             ...model,
             url: modelUrl,
             key: `sk-${userToken?.key}`|| ''
-        }; 
+        };
       }
       return model;
     });
