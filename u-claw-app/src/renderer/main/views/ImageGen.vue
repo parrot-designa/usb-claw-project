@@ -277,12 +277,13 @@ function downloadImage(url) {
 }
 
 .imagegen-chat-container {
-  flex: 1;
+  height: 320px;
   overflow-y: auto;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  flex-shrink: 0;
 }
 
 .imagegen-empty-state {
@@ -456,7 +457,7 @@ function downloadImage(url) {
 }
 
 .imagegen-input-area {
-  padding: 0.75rem 1rem;
+  padding: 1rem;
   border-top: 1px solid var(--border);
   background: var(--surface);
   flex-shrink: 0;
@@ -470,17 +471,18 @@ function downloadImage(url) {
 
 .imagegen-chat-input {
   flex: 1;
-  padding: 0.625rem 0.875rem;
+  padding: 0.75rem 1rem;
   border-radius: 1.5rem;
   border: 1px solid var(--border);
   background: var(--surface-variant);
   color: var(--text-primary);
   font-family: 'Manrope', sans-serif;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   resize: none;
+  min-height: 3.5rem;
   max-height: 120px;
   overflow-y: auto;
-  line-height: 1.4;
+  line-height: 1.5;
 
   &:focus {
     outline: none;
