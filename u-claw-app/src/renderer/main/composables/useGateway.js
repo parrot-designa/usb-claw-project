@@ -36,6 +36,10 @@ export function useGateway() {
       window.updateLoadingProgress?.(progress, title, detail);
       if (phase === 'done') {
         window.hideLoadingOverlayVue?.();
+      }else if(phase === 'error'){
+        setTimeout(()=>{
+          window.hideLoadingOverlayVue?.();
+        },1000);
       }
     };
     window.uclaw.onGatewayBootPhase(bootPhaseHandler);
