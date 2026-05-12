@@ -103,7 +103,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted } from 'vue';
+import { ref, nextTick, onMounted, toRaw } from 'vue';
 import { useToast } from '../composables/useToast';
 
 const { showToast } = useToast();
@@ -143,7 +143,9 @@ async function loadHistory() {
 
 async function saveHistory() {
   try {
-    await window.uclaw.ipcSaveImageGenHistory(messages.value);
+    // 使用 toRaw 去除 Vue 响应式代理，转换为普通对象
+    const plainMessages = toRaw(messages.value);
+    await window.uclaw.ipcSaveImageGenHistory(plainMessages);
   } catch (e) {
     console.error('[ImageGen] Save history failed:', e);
   }
@@ -212,6 +214,7 @@ async function sendMessage() {
     aiMsg.error = e.message || '生成失败';
     showToast('生成失败: ' + e.message, true);
   } finally {
+    console.log("测试==>")
     generating.value = false;
     aiMsg.time = formatTime();
     await saveHistory();

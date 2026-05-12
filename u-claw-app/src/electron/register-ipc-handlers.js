@@ -604,6 +604,7 @@ function registerIPCHandlers({ gateway }) {
 
   ipcMain.handle('save-image-gen-history', async (_, messages) => {
     try {
+      console.log("我来保存")
       if (!fs.existsSync(CHAT_HISTORY_DIR)) {
         fs.mkdirSync(CHAT_HISTORY_DIR, { recursive: true });
       }
