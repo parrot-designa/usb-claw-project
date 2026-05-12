@@ -44,6 +44,9 @@ func GetPageQuery(c *gin.Context) *PageInfo {
 	if page, err := strconv.Atoi(c.Query("p")); err == nil {
 		pageInfo.Page = page
 	}
+	if page, err := strconv.Atoi(c.Query("page")); err == nil && pageInfo.Page == 0 {
+		pageInfo.Page = page
+	}
 	if pageSize, err := strconv.Atoi(c.Query("page_size")); err == nil {
 		pageInfo.PageSize = pageSize
 	}
