@@ -137,13 +137,6 @@ function registerIPCHandlers({ gateway }) {
 
   setupActivationIPC(ipcMain, app);
 
-  ipcMain.handle('check-passed', async () => {
-  // 单窗口模式：通过路由切换到主页
-  const { navigateTo } = await import('./window-manager.js');
-  navigateTo('/home');
-  return { ok: true };
-});
-
   ipcMain.handle('navigate-to', async (_, route) => {
     const { navigateTo } = await import('./window-manager.js');
     navigateTo(route);
@@ -187,8 +180,6 @@ function registerIPCHandlers({ gateway }) {
       if (serial !== licenseData.serial) {
         return { ok: false, error: 'U盘序列号不匹配' };
       }
-      // 存入运行时存储
-      runtimeStore.license = licenseData;
       return { ok: true, license: licenseData };
     } catch (e) {
       return { ok: false, error: e.message };

@@ -39,9 +39,12 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import ActivateForm from '../components/ActivateForm.vue';
 import { apiRequest } from '@renderer/js/api.js';
 import { useSessionStore } from '@/stores/session.js';
+
+const router = useRouter();
 
 const STEP_DELAY = 10;
 const sessionStore = useSessionStore();
@@ -72,6 +75,7 @@ function onActivationSuccess(result) {
     sessionStore.setSessionCookie(result.data.session_cookie);
   }
   window.dispatchEvent(new CustomEvent('main-init'));
+  router.push('/home');
 }
 
 async function startCheck() {
@@ -84,13 +88,7 @@ async function startCheck() {
     updateProgress(0);
     let stepResult = await window.uclaw.ipcCheckStepNetwork();
     await delay(STEP_DELAY);
-
-    if (!stepResult.ok) {
-      progressItems[0].done = false;
-      progressItems[0].error = stepResult.error || '网络不可用，请检查网络连接';
-    } else {
-      progressItems[0].done = true;
-    }
+    progressItems[0].done = true; 
     progressItems[0].active = false;
     await delay(STEP_DELAY);
 
@@ -99,15 +97,13 @@ async function startCheck() {
     stepResult = await window.uclaw.ipcCheckStepSerial();
 
     if (isDev) {
-      stepResult = { ok: true, serial: 'FOCF56A83156249B' };
-      window.uclaw.ipcSetRuntimeStore({key:'serial',value:'FOCF56A83156249B'})
+      stepResult = { ok: true, serial: 'FOCF56A83156249B' }; 
     }
     await delay(STEP_DELAY);
 
     if (!stepResult.ok) {
       progressItems[1].done = false;
-      progressItems[1].error = stepResult.error || '获取序列号失败';
-      currentSerial = 'FOCF56A83156249B';
+      progressItems[1].error = stepResult.error || '获取序列号失败'; 
     } else {
       currentSerial = stepResult.serial;
       progressItems[1].done = true;
@@ -150,7 +146,7 @@ async function startCheck() {
 
     status.value = 'ready';
     window.dispatchEvent(new CustomEvent('main-init'));
-    await window.uclaw.ipcCheckPassed();
+    router.push('/home');
   } catch (e) {
     errorMessage.value = e.message || '检查失败';
     status.value = 'error';

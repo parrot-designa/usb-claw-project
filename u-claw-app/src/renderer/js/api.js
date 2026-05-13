@@ -19,10 +19,7 @@ async function clearSessionCookie() {
     sessionStore.clearSessionCookie();
   } catch {
     // store 不可用时通过 IPC 清除
-  }
-  if (window.uclaw?.ipcSetRuntimeStore) {
-    await window.uclaw.ipcSetRuntimeStore({ key: 'session_cookie', value: null });
-  }
+  } 
 }
 
 /**
