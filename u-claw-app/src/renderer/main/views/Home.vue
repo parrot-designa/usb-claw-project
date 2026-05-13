@@ -85,7 +85,7 @@
       </div>
       <div id="terminal-logs" class="home-terminal-logs custom-scrollbar" :class='{"has-data":logs.length > 0}'>
         <div v-if="logs.length === 0" class="home-no-logs">
-          <img src="/no-log.png" alt="暂无日志" class="home-no-logs-icon" />
+          <img src="@assets/no-log.png" alt="暂无日志" class="home-no-logs-icon" />
           <span class="home-no-logs-text">暂无日志</span>
         </div>
         <div v-else v-for="log in logs" :key="log.id" class="home-log-line">

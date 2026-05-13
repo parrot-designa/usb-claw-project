@@ -8,7 +8,7 @@
         :class="{ 'chat-active': activeChatTab === 'wechat' }"
         @click="activeChatTab = 'wechat'"
       >
-        <img src="/wechat.png" alt="wechat" style="width:20px;height:20px;vertical-align:middle;" />
+        <img src="@assets/wechat.png" alt="wechat" style="width:20px;height:20px;vertical-align:middle;" />
         <span>微信</span>
       </button>
       <button
@@ -16,7 +16,7 @@
         :class="{ 'chat-active': activeChatTab === 'feishu' }"
         @click="activeChatTab = 'feishu'"
       >
-       <img src="/feishu.png" alt="wechat" style="width:20px;height:20px;vertical-align:middle;" />
+       <img src="@assets/feishu.png" alt="wechat" style="width:20px;height:20px;vertical-align:middle;" />
         <span>飞书</span>
       </button>
     </div>
@@ -26,7 +26,7 @@
       <!-- Loading/Installing state -->
       <div v-if="wechatStore.scanStep === 'loading'" class="chat-wechat-card">
         <div class="chat-wechat-icon">
-          <img src="/send-msg.png" alt="wechat" />
+          <img src="@assets/send-msg.png" alt="wechat" />
         </div>
         <h2 class="chat-wechat-title">{{ '正在加载二维码...' }}</h2>
         <p class="chat-wechat-desc">{{ '请稍候...' }}</p>
@@ -35,7 +35,7 @@
       <!-- Refreshing QR state -->
       <div v-else-if="wechatStore.scanStep === 'refreshing'" class="chat-wechat-card">
         <div class="chat-wechat-icon">
-          <img src="/send-msg.png" alt="wechat" />
+          <img src="@assets/send-msg.png" alt="wechat" />
         </div>
         <h2 class="chat-wechat-title">二维码已过期</h2>
         <p class="chat-wechat-desc">正在刷新二维码，请稍候...</p>
@@ -47,7 +47,7 @@
       <!-- QR Code display state -->
       <div v-else-if="wechatStore.scanStep === 'qr'" class="chat-wechat-card">
         <div class="chat-wechat-icon">
-          <img src="/send-msg.png" alt="wechat" />
+          <img src="@assets/send-msg.png" alt="wechat" />
         </div>
         <h2 class="chat-wechat-title">请使用微信扫码</h2>
         <p class="chat-wechat-desc">请使用手机微信扫描下方二维码进行连接</p>
@@ -80,12 +80,12 @@
       <!-- Default state: installed but not scanning -->
       <div v-else class="chat-wechat-card">
         <div class="chat-wechat-icon">
-          <img src="/send-msg.png" alt="wechat" />
+          <img src="@assets/send-msg.png" alt="wechat" />
         </div>
         <h2 class="chat-wechat-title">{{ '一键安装微信插件' }}</h2>
         <div class="chat-wechat-status">
           <span class="chat-status-badge">
-            <img src="/installed.png" style="width: 20px;height: 20px;">
+            <img src="@assets/installed.png" style="width: 20px;height: 20px;">
             <span>{{ statusText }}</span>
           </span>
         </div>

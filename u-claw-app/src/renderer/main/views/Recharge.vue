@@ -87,7 +87,7 @@
             :class="{ 'recharge-active': paymentMethod === 'alipay' }"
             @click="paymentMethod = 'alipay'"
           >
-            <img src="/zhifubao.png" class="recharge-payment-icon" />
+            <img src="@assets/zhifubao.png" class="recharge-payment-icon" />
             <span>支付宝支付</span>
           </button>
           <button
@@ -95,7 +95,7 @@
             :class="{ 'recharge-active': paymentMethod === 'wechat' }"
             @click="onWechatClick"
           >
-            <img src="/wechat.png" class="recharge-payment-icon wechat" />
+            <img src="@assets/wechat.png" class="recharge-payment-icon wechat" />
             <span>微信支付</span>
           </button>
         </div>

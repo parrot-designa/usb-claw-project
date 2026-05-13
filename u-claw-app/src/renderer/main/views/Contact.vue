@@ -5,7 +5,7 @@
     <div class="contact-contact-card"> 
       <div class="contact-contact-title">联系客服</div>
       <div class="contact-contact-qr">
-        <img src="/wechat-contact.jpg" alt="微信二维码" />
+        <img src="@assets/wechat-contact.jpg" alt="微信二维码" />
       </div>
       <div class="contact-contact-wechat">
         微信号: <span class="contact-highlight">LunoAi789</span>
