@@ -103,10 +103,12 @@
 
 <script setup>
 import { ref, nextTick, onMounted, toRaw } from 'vue';
-import axios from 'axios';
 import { useToast } from '../composables/useToast';
+import { useModelsStore } from '../stores/models';
+import { apiRequest } from '../js/api';
 
 const { showToast } = useToast();
+const modelsStore = useModelsStore();
 
 const inputText = ref('');
 const selectedModel = ref('dall-e-3');
@@ -188,13 +190,15 @@ async function sendMessage() {
   scrollToBottom();
 
   try {
-    // 直接请求网关生成图片
-    const response = await axios({
+    // 获取当前选中的模型配置
+    const currentModel = modelsStore.currentModel;
+    const modelName = currentModel?.model || selectedModel.value;
+
+    // 调用图片生成接口
+    const result = await apiRequest('/v1/images/generations', {
       method: 'POST',
-      url: `http://127.0.0.1:${import.meta.env.VITE_GATEWAY_DEFAULT_PORT}/v1/images/generations`,
-      headers: { 'Content-Type': 'application/json' },
-      data: {
-        model: selectedModel.value,
+      body: {
+        model: modelName,
         prompt: text,
         size: imageSize.value,
         quality: imageQuality.value,
@@ -204,12 +208,12 @@ async function sendMessage() {
 
     aiMsg.loading = false;
 
-    if (data.error) {
-      aiMsg.error = data.error.message || '请求失败';
-      showToast(aiMsg.error, true);
-    } else if (data.data && data.data[0]) {
-      aiMsg.imageUrl = data.data[0].url;
-      aiMsg.revisedPrompt = data.data[0].revised_prompt || '';
+    if (result.error) {
+      aiMsg.error = result.error;
+      showToast('生成失败: ' + result.error, true);
+    } else if (result.url) {
+      aiMsg.imageUrl = result.url;
+      aiMsg.revisedPrompt = result.revisedPrompt || '';
       showToast('图片生成成功');
     } else {
       aiMsg.error = '未返回图片';
@@ -217,8 +221,8 @@ async function sendMessage() {
     }
   } catch (e) {
     aiMsg.loading = false;
-    aiMsg.error = e.response?.data?.error?.message || e.message || '生成失败';
-    showToast('生成失败: ' + aiMsg.error, true);
+    aiMsg.error = e.message || '生成失败';
+    showToast('生成失败: ' + e.message, true);
   } finally {
     generating.value = false;
     aiMsg.time = formatTime();
