@@ -198,7 +198,7 @@ async function sendMessage() {
     const result = await apiRequest('/v1/images/generations', {
       method: 'POST',
       body: {
-        model: modelName,
+        model: 'gpt-image-2',
         prompt: text,
         size: imageSize.value,
         quality: imageQuality.value,
