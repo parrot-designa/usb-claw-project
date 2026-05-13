@@ -43,6 +43,40 @@ export function closeSplash() {
   if (splashWindow && !splashWindow.isDestroyed()) { splashWindow.close(); splashWindow = null; }
 }
 
+export function navigateTo(route) {
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    console.warn('[navigateTo] mainWindow is null or destroyed');
+    return;
+  }
+
+  if (IS_DEV) {
+    const url = `http://localhost:${RENDER_PORT}${route}`;
+    console.log('[navigateTo] DEV: loading', url);
+    mainWindow.loadURL(url);
+  } else {
+    // 生产模式：使用 hash 路由
+    const indexPath = path.join(import.meta.dirname, '..', 'assets', 'main', 'index.html');
+    const hashUrl = `file://${indexPath}#${route}`;
+    console.log('[navigateTo] PROD: loading', hashUrl);
+    mainWindow.loadURL(hashUrl);
+  }
+}
+
+export function loadActivationPage() {
+  if (!mainWindow) {
+    console.warn('[loadActivationPage] mainWindow is null');
+    return;
+  }
+
+  if (IS_DEV) {
+    mainWindow.loadURL(`http://localhost:${RENDER_PORT}/activate/index.html`);
+  } else {
+    const activatePath = path.join(import.meta.dirname, '..', 'assets', 'activate', 'index.html');
+    console.log('[loadActivationPage] PROD: loading', activatePath);
+    mainWindow.loadFile(activatePath);
+  }
+}
+
 export function loadConfigPage() {
   if (!mainWindow) {
     console.warn(`加载主页面 skipped: mainWindow is null`);
@@ -137,8 +171,6 @@ export function createWindow() {
     if (url.startsWith('http')) shell.openExternal(url);
     return { action: 'deny' };
   });
- 
-  loadConfigPage();
 }
 
 export function getMainWindow() {
