@@ -46,8 +46,11 @@
 import { ref, reactive, onMounted } from 'vue';
 import ActivateForm from './components/ActivateForm.vue';
 import MenuBar from '../main/components/MenuBar.vue';
+import { apiRequest } from '@renderer/js/api.js';
+import { useSessionStore } from '@main/stores/session.js';
 
 const STEP_DELAY = 100; // 每步至少停留 200ms
+const sessionStore = useSessionStore();
 
 const status = ref('checking'); // checking | needActivate | error
 const errorMessage = ref('');
@@ -130,10 +133,16 @@ async function startCheck() {
       await delay(STEP_DELAY);
  
       const { serial, activation_code } = stepResult.license;
-      const loginResult = await window.uclaw.ipcCheckStepLogin({ serial, activation_code });
+      // 直接调用登录 API
+      const loginResult = await apiRequest('/api/usb_key/login', {
+        method: 'POST',
+        body: { serial_number: serial, activation_code: activation_code }
+      });
 
-      if (!loginResult.ok) {
-        errorMessage.value = loginResult.error || '登录校验失败';
+      if (loginResult.success && loginResult.data?.session_cookie) {
+        sessionStore.setSessionCookie(loginResult.data.session_cookie);
+      } else {
+        errorMessage.value = loginResult.message || '登录校验失败';
         status.value = 'error';
         return;
       }

@@ -18,9 +18,12 @@
 
 <script setup>
 import { ref } from 'vue';
+import { apiRequest } from '@renderer/js/api.js';
+import { useSessionStore } from '@main/stores/session.js';
 
 const activationCode = ref('');
 const loading = ref(false);
+const sessionStore = useSessionStore();
 
 async function handleActivate() {
   const code = activationCode.value.trim();
@@ -30,10 +33,15 @@ async function handleActivate() {
   }
 
   loading.value = true;
-  try { 
-    // 调用激活接口
-    const result = await window.uclaw.ipcDoBindActivation(code);
-    if (result.success) {
+  try {
+    // 直接调用激活接口
+    const result = await apiRequest('/api/usb_key/activate', {
+      method: 'POST',
+      body: { activation_code: code }
+    });
+
+    if (result.success && result.data?.session_cookie) {
+      sessionStore.setSessionCookie(result.data.session_cookie);
       window.uclaw.ipcActivationSuccess();
     } else {
       await window.uclaw.ipcShowErrorDialog('激活失败', result.message || result.error || '激活失败');

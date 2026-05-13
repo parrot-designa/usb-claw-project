@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { useSessionStore } from '@/main/stores/session.js';
+
 const apiClient = axios.create({
   withCredentials: true // 支持 Cookie 认证
 });
@@ -12,6 +14,12 @@ export const SESSION_INVALID_MESSAGE = '当前登录信息已失效，将自动�
  * 清除会话 cookie
  */
 async function clearSessionCookie() {
+  try {
+    const sessionStore = useSessionStore();
+    sessionStore.clearSessionCookie();
+  } catch {
+    // store 不可用时通过 IPC 清除
+  }
   if (window.uclaw?.ipcSetRuntimeStore) {
     await window.uclaw.ipcSetRuntimeStore({ key: 'session_cookie', value: null });
   }
@@ -69,7 +77,18 @@ export async function apiRequest(path, options = {}) {
   let params = options.params || null;
   let headers = options.headers || null;
 
-  const sessionCookie = await window.uclaw.ipcGetSessionCookie();
+  // 优先从 Pinia store 获取 session_cookie，否则回退到 IPC
+  let sessionCookie = null;
+  try {
+    const sessionStore = useSessionStore();
+    sessionCookie = sessionStore.sessionCookie;
+  } catch {
+    // store 不可用时通过 IPC 获取
+  }
+  if (!sessionCookie && window.uclaw?.ipcGetSessionCookie) {
+    sessionCookie = await window.uclaw.ipcGetSessionCookie();
+  }
+
   if (sessionCookie) {
     // 将 cookie 放入 data 中
     data = { ...data, session_cookie: sessionCookie };
