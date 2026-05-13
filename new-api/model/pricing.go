@@ -177,6 +177,7 @@ func updatePricing() {
 	}
 
 	modelGroupsMap := make(map[string]*types.Set[string])
+	modelTagsMap := make(map[string]string)
 
 	for _, ability := range enableAbilities {
 		groups, ok := modelGroupsMap[ability.Model]
@@ -185,6 +186,10 @@ func updatePricing() {
 			modelGroupsMap[ability.Model] = groups
 		}
 		groups.Add(ability.Group)
+		// 收集 ability 的 tag 作为备选
+		if ability.Tag != nil && *ability.Tag != "" {
+			modelTagsMap[ability.Model] = *ability.Tag
+		}
 	}
 
 	//这里使用切片而不是Set，因为一个模型可能支持多个端点类型，并且第一个端点是优先使用端点
@@ -291,6 +296,12 @@ func updatePricing() {
 			pricing.Icon = meta.Icon
 			pricing.Tags = meta.Tags
 			pricing.VendorID = meta.VendorID
+		}
+		// 如果 models 表没有 tags，则使用 ability 的 tag 作为备选
+		if pricing.Tags == "" {
+			if tag, ok := modelTagsMap[model]; ok {
+				pricing.Tags = tag
+			}
 		}
 		modelPrice, findPrice := ratio_setting.GetModelPrice(model, false)
 		if findPrice {
