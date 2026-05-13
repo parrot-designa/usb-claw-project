@@ -4,8 +4,7 @@
 
 import { execSync } from 'child_process';
 
-function getCurrentDiskSerial(appPath) {
-
+function getCurrentDiskSerial(appPath) { 
 
   const targetPath = appPath || process.execPath;
 
