@@ -160,62 +160,22 @@ function isActivated(configDir) {
 
 // ── 激活窗口 ──
 
-function showActivateDialog() { 
-  if (activateWindow) {
-    activateWindow.show();
-    activateWindow.focus();
-    return;
-  }
+// ── 激活窗口（单窗口模式：已禁用独立窗口） ──
 
-  const iconPath = !IS_DEV
-    ? path.join(process.resourcesPath, 'assets', 'icon.png')
-    : path.join(import.meta.dirname, '..', 'assets', 'icon.png');
-
-  activateWindow = new BrowserWindow({
-    width: 420,
-    height: 530, 
-    maximizable: false,
-    minimizable: false,
-    fullscreenable: false,
-    title: 'U盘便携版Claw - 激活',
-    icon: iconPath,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      preload: path.join(import.meta.dirname, '..', 'preload', 'index.js'),
-      devTools: IS_DEV,
-    },
-    show: false,
-    backgroundColor: '#0a0a0a',
-    titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      color: '#0B0E14',      // 覆盖层的背景色
-      symbolColor: 'white' // 按钮图标的颜色
-    }
-  });
-
-  activateWindow.setMenu(null);
-  
-  if (IS_DEV) {
-    activateWindow.loadURL(`http://localhost:${RENDER_PORT}/activate/index.html`);
-  } else {
-    activateWindow.loadFile(path.join(import.meta.dirname, '..', 'assets', 'activate', 'index.html'));
-  }
-
-  activateWindow.once('ready-to-show', () => {
-    activateWindow.show();
-  });
-
-  activateWindow.on('closed', () => {
-    activateWindow = null;
-  });
+/**
+ * 显示激活对话框（单窗口模式下禁用）
+ * @deprecated 单窗口模式下使用主窗口的激活界面
+ */
+function showActivateDialog() {
+  console.log('[激活] showActivateDialog 调用已禁用（单窗口模式）');
 }
 
+/**
+ * 关闭激活窗口（单窗口模式下禁用）
+ * @deprecated 单窗口模式下不关闭独立窗口
+ */
 function closeActivateWindow() {
-  if (activateWindow) {
-    activateWindow.close();
-    activateWindow = null;
-  }
+  console.log('[激活] closeActivateWindow 调用已禁用（单窗口模式）');
 }
 
 // ── 阻塞式等待激活 ──
@@ -271,11 +231,11 @@ function setupActivationIPC(ipcMain) {
   });
 
   ipcMain.handle('activation-success', () => {
-    // 设置标志：激活成功后的窗口关闭不触发 quit
-    app.activationSucceeded = true;
-    closeActivateWindow(); 
-    resumeStartup();
-  });
+  // 设置标志：激活成功
+  app.activationSucceeded = true;
+  // 单窗口模式下不关闭独立窗口，窗口会通过 check-passed 中的 loadConfigPage() 切换到主界面
+  resumeStartup();
+});
 }
 
 
