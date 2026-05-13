@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld('uclaw', {
   ipcActivationSuccess: () => ipcRenderer.invoke('activation-success'),  
   ipcDoBindActivation: (code) => ipcRenderer.invoke('do-bind-activation', code),
   ipcWriteOpenClawConfig: ({ models }, type) => ipcRenderer.invoke('write-openclaw-config', { models }, type),
+  ipcWriteLicenseFile: (serial, activationCode) => ipcRenderer.invoke('write-license-file', { serial, activationCode }),
   // Gateway control
   ipcStartGateway: () => ipcRenderer.invoke('start-gateway'),
   ipcStopGateway: () => ipcRenderer.invoke('stop-gateway'),

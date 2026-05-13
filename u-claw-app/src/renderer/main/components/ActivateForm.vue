@@ -47,6 +47,10 @@ async function handleActivate() {
     });
 
     if (result.success) {
+      // 写入验证文件
+      if (props.serial && activationCode.value) {
+        await window.uclaw.ipcWriteLicenseFile(props.serial, activationCode.value);
+      }
       emit('activation-success', result);
     } else {
       await window.uclaw.ipcShowErrorDialog('激活失败', result.message || result.error || '激活失败');

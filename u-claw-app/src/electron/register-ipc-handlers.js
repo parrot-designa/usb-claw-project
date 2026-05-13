@@ -11,7 +11,7 @@ import {
   resumeStartup,
   showActivateDialog,
 } from './activation.js';
-import { getGatewayEnv, getNodeBin, getNpmBin, getOpenClawPath, getPaths, readLicenseFile, writeOpenClawConfig} from './paths.js';
+import { getGatewayEnv, getNodeBin, getNpmBin, getOpenClawPath, getPaths, readLicenseFile, writeLicenseFile, writeOpenClawConfig} from './paths.js';
 import skillNameMap from './skill-name-map.js';
 import net from 'net';
 import { GATEWAY_DEFAULT_PORT } from './utils/env.js';
@@ -129,6 +129,16 @@ function registerIPCHandlers({ gateway }) {
   ipcMain.handle('write-openclaw-config', async (_, { models }, type) => {
     await writeOpenClawConfig({ models }, type);
     return { ok: true };
+  });
+
+  ipcMain.handle('write-license-file', async (_, { serial, activationCode }) => {
+    try {
+      writeLicenseFile(serial, activationCode);
+      return { ok: true };
+    } catch (e) {
+      console.error('write-license-file failed:', e.message);
+      return { ok: false, error: e.message };
+    }
   });
 
   ipcMain.handle('get-data-dir', () => dataRoot);
