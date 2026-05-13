@@ -66,8 +66,7 @@ export function loadActivationPage() {
   if (!mainWindow) {
     console.warn('[loadActivationPage] mainWindow is null');
     return;
-  }
-
+  } 
   if (IS_DEV) {
     mainWindow.loadURL(`http://localhost:${RENDER_PORT}/activate/index.html`);
   } else {
@@ -149,11 +148,11 @@ export function createWindow() {
   });
 
   mainWindow.webContents.on('did-start-loading', () => {
-    // console.log(`Page started loading`);
+    console.log(`Page started loading`);
   });
 
   mainWindow.webContents.on('did-finish-load', () => {
-    // console.log(`Page finished loading, showing window`);
+    console.log(`Page finished loading, showing window`);
     closeSplash();
     mainWindow.show();
   });

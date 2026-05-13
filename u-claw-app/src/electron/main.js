@@ -32,6 +32,10 @@ app.whenReady().then(async () => {
     } catch { /* port not in use, good */ }
   }
 
+  createSplash();
+
+  updateSplash('正在启动...'); 
+
   // 创建 Gateway Manager（必须在最前面，因为其他组件依赖它）
   const gateway = createGatewayManager();
 
@@ -48,27 +52,8 @@ app.whenReady().then(async () => {
   // ============================================================
   // App 生命周期事件监听（在 gateway 创建后才能设置）
   // ============================================================
-  setupLifecycle({ getGateway: () => gateway });
-
-  // 第1步：创建主窗口
-  createWindow();
-
-  // 第2步：加载激活页面
-  loadActivationPage();
-
-  // 第3步：等待激活完成（带60秒超时保护）
-  await Promise.race([
-    waitForActivation(),
-    new Promise((_, reject) => setTimeout(() => reject(new Error('激活超时（60秒）')), 60000))
-  ]).catch((err) => {
-    console.error('[启动] 激活失败:', err.message);
-    app.exit(1);
-  });
-
-  createSplash();
-
-  updateSplash('正在启动...'); 
-
+  setupLifecycle({ getGateway: () => gateway }); 
+ 
   updateSplash('正在清理旧程序...', 4); 
 
   await extractRuntime();
@@ -82,4 +67,10 @@ app.whenReady().then(async () => {
   registerWechatIPCHandler({ gateway });
 
   updateSplash('正在加载界面...',100);
+
+   // 第1步：创建主窗口
+  createWindow();
+
+  // 第2步：加载激活页面
+  loadActivationPage(); 
 });
