@@ -109,7 +109,6 @@ export default defineConfig({
       outDir: resolve(__dirname, 'dist/assets'),
       rollupOptions: {
         input: {
-          activate: resolve(__dirname, 'src/renderer/activate/index.html'),
           main: resolve(__dirname, 'src/renderer/main/index.html'),
         },
         output: {
