@@ -1,11 +1,11 @@
 import { app, Menu } from 'electron';
 import { execSync } from 'child_process';
-import { showActivateDialog, waitForActivation, closeActivateWindow } from './activation.js';
+import { waitForActivation } from './activation.js';
 import { ensureOpenClawDirectories,getLocalBase,extractRuntime } from './paths.js';
 import { APP_NAME, GATEWAY_DEFAULT_PORT, IS_DEV } from './utils/env.js';
 import { createGatewayManager } from './gateway.js';
 import { setupLifecycle } from './lifecycle.js';
-import { createWindow, getMainWindow, createSplash,updateSplash } from './window-manager.js';
+import { createWindow, getMainWindow, createSplash,updateSplash, loadActivationPage } from './window-manager.js';
 import { ensurePlugins } from './js/plugin.js'; 
 import { registerIPCHandlers,registerWechatIPCHandler } from './register-ipc-handlers.js';
 import { initWechat } from "./plugin/wechat-init.js";
@@ -50,13 +50,14 @@ app.whenReady().then(async () => {
   // ============================================================
   setupLifecycle({ getGateway: () => gateway });
 
-  // 第1步：显示激活窗口（检查逻辑在激活窗口的 UI 中进行）
-  showActivateDialog();
-  // 等待激活完成
-  await waitForActivation();
+  // 第1步：创建主窗口
+  createWindow();
 
-  // 第7步：关闭激活窗口并创建主窗口
-  closeActivateWindow();
+  // 第2步：加载激活页面
+  loadActivationPage();
+
+  // 第3步：等待激活完成
+  await waitForActivation();
 
   createSplash();
 
@@ -75,6 +76,4 @@ app.whenReady().then(async () => {
   registerWechatIPCHandler({ gateway });
 
   updateSplash('正在加载界面...',100);
-  
-  createWindow();   
 });
