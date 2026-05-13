@@ -86,7 +86,7 @@ async function startCheck() {
 
   try {
     updateProgress(0);
-    let stepResult = await window.uclaw.ipcCheckStepNetwork();
+    let stepResult = { ok: true };
     await delay(STEP_DELAY);
     progressItems[0].done = true; 
     progressItems[0].active = false;

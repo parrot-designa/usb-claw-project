@@ -170,7 +170,6 @@ function registerIPCHandlers({ gateway }) {
   ipcMain.handle('check-step-license', async (_, serial) => {
     try {
       const licenseData = readLicenseFile(serial);
-      console.log("获取验证信息", licenseData);
       if (!licenseData) {
         return { ok: false, error: '权限文件不存在' };
       }
