@@ -195,7 +195,7 @@ async function sendMessage() {
     const modelName = currentModel?.model || selectedModel.value;
 
     // 调用图片生成接口
-    const result = await apiRequest('/api/v1/images/generations', {
+    const result = await apiRequest('/v1/images/generations', {
       method: 'POST',
       body: {
         model: 'gpt-image-2',
