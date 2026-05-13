@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue';
+import { onMounted, onUnmounted, watch } from 'vue';
 import Sidebar from './components/Sidebar.vue';
 import Header from './components/Header.vue';
 import MenuBar from './components/MenuBar.vue';
@@ -33,13 +33,20 @@ const userStore = useUserStore();
 const gatewayStore = useGatewayStore();
 const { checkItems, runAllChecks } = useEnvCheck();
 
-onMounted(async () => {
-  await fetchUserInfo();
-  fetchAllModels(); 
+function doInit() {
+  fetchUserInfo();
+  fetchAllModels();
   fetchAllSkills();
-  // 初始化环境检测并缓存结果
   runAllChecks();
   gatewayStore.setEnvCheckResults(JSON.parse(JSON.stringify(checkItems.value)));
+}
+
+onMounted(() => {
+  window.addEventListener('main-init', doInit);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('main-init', doInit);
 }); 
 // 监听 已选列表 变化，写入 openclaw 配置
 watch(() => modelsStore.selectedModels,(models) => { 

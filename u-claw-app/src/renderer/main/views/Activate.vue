@@ -31,7 +31,7 @@
 
       <div v-else-if="status === 'needActivate'" class="activate-form-container">
         <h1><span>U盘便携版Claw</span></h1>
-        <ActivateForm />
+        <ActivateForm :serial="currentSerial" @activation-success="onActivationSuccess" @activation-error="onActivationError" />
       </div>
     </div>
   </div>
@@ -65,6 +65,13 @@ function updateProgress(index) {
 
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function onActivationSuccess(result) {
+  if (result.data?.session_cookie) {
+    sessionStore.setSessionCookie(result.data.session_cookie);
+  }
+  window.dispatchEvent(new CustomEvent('main-init'));
 }
 
 async function startCheck() {
@@ -142,6 +149,7 @@ async function startCheck() {
     }
 
     status.value = 'ready';
+    window.dispatchEvent(new CustomEvent('main-init'));
     await window.uclaw.ipcCheckPassed();
   } catch (e) {
     errorMessage.value = e.message || '检查失败';

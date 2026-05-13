@@ -18,6 +18,16 @@
 
 <script setup>
 import { ref } from 'vue';
+import { apiRequest } from '@renderer/js/api.js';
+
+const props = defineProps({
+  serial: {
+    type: String,
+    required: true
+  }
+});
+
+const emit = defineEmits(['activation-success', 'activation-error']);
 
 const activationCode = ref('');
 const loading = ref(false);
@@ -30,18 +40,23 @@ async function handleActivate() {
   }
 
   loading.value = true;
-  try { 
-    // 调用激活接口
-    const result = await window.uclaw.ipcDoBindActivation(code);
+  try {
+    const result = await apiRequest('/api/usb_key/activate', {
+      method: 'POST',
+      body: { activation_code: code, usb_serial: props.serial }
+    });
+
     if (result.success) {
-      window.uclaw.ipcActivationSuccess();
+      emit('activation-success', result);
     } else {
       await window.uclaw.ipcShowErrorDialog('激活失败', result.message || result.error || '激活失败');
       activationCode.value = '';
-      loading.value = false;
+      emit('activation-error', result);
     }
   } catch (e) {
     await window.uclaw.ipcShowErrorDialog('验证失败', 'Verification failed');
+    emit('activation-error', e);
+  } finally {
     loading.value = false;
   }
 }
