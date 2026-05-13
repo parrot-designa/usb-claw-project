@@ -290,7 +290,7 @@ async function disconnectWeChat() {
 .chat-wechat-card {
   @extend %card-base;
   padding: 20px;
-  max-width: 432px;
+  max-width: 600px;
   text-align: center;
 }
 
@@ -409,7 +409,7 @@ async function disconnectWeChat() {
 .chat-tip-card { 
   padding: 12px;
   margin-top: 12px;
-  max-width: 432px;
+  max-width: 600px;
   display: flex;
   align-items: flex-start;
   gap: 8px;
