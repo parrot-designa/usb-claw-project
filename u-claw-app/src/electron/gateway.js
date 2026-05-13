@@ -224,7 +224,7 @@ function createGatewayManager() {
     sendBootPhase('start-command', '启动 Gateway', '正在启动 Gateway 进程...', 30);
 
     // Generate new for this gateway session
-    generateAndStoreGatewayToken();
+   // generateAndStoreGatewayToken();
 
     sendBootPhase('generate-new-token', '生成 Token', '生成新token...', 30);
 

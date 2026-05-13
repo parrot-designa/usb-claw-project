@@ -113,7 +113,7 @@ function registerIPCHandlers({ gateway }) {
   ipcMain.handle('open-dashboard', () => {
     if (gateway.isGatewayReady()) {
       const token = runtimeStore.gatewayToken || 'uclawKey'; 
-      shell.openExternal(`http://127.0.0.1:${GATEWAY_DEFAULT_PORT}/#token=${token}`);
+      shell.openExternal(`http://127.0.0.1:${GATEWAY_DEFAULT_PORT}/?token=newToken`);
     }
   });
 
@@ -527,7 +527,7 @@ function registerIPCHandlers({ gateway }) {
       setTimeout(() => {
         if (gateway.isGatewayReady()) {
           const token = runtimeStore.gatewayToken || 'uclawKey';
-          shell.openExternal(`http://127.0.0.1:${GATEWAY_DEFAULT_PORT}/#token=${token}`);
+          shell.openExternal(`http://127.0.0.1:${GATEWAY_DEFAULT_PORT}/?token=newToken`);
         }
       }, 100); 
       return { ok: true, port: GATEWAY_DEFAULT_PORT };
