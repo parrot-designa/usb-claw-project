@@ -41,7 +41,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import ActivateForm from '../components/ActivateForm.vue';
 
-const STEP_DELAY = 100;
+const STEP_DELAY = 10;
 
 const status = ref('checking');
 const errorMessage = ref('');
