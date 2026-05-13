@@ -139,7 +139,15 @@ function registerIPCHandlers({ gateway }) {
   setupActivationIPC(ipcMain, app);
 
   ipcMain.handle('check-passed', async () => {
+    const { loadConfigPage } = await import('./window-manager.js');
+    loadConfigPage(); // 激活成功，加载主界面
     resumeStartup();
+    return { ok: true };
+  });
+
+  ipcMain.handle('navigate-to', async (_, route) => {
+    const { navigateTo } = await import('./window-manager.js');
+    navigateTo(route);
     return { ok: true };
   });
 
