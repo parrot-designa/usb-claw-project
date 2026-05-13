@@ -15,7 +15,7 @@ import { getGatewayEnv, getNodeBin, getNpmBin, getOpenClawPath, getPaths, readLi
 import skillNameMap from './skill-name-map.js';
 import net from 'net';
 import { GATEWAY_DEFAULT_PORT } from './utils/env.js';
-import { createWindow, getMainWindow,isWin } from './window-manager.js';
+import { createWindow, getMainWindow, isWin, loadConfigPage } from './window-manager.js';
 import { apiRequest } from './api-node.js';
 import { runtimeStore } from './utils/runtime-store.js';
 import { initWechat,getWechatManagerInstance } from "./plugin/wechat-init.js";
@@ -139,7 +139,6 @@ function registerIPCHandlers({ gateway }) {
   setupActivationIPC(ipcMain, app);
 
   ipcMain.handle('check-passed', async () => {
-    const { loadConfigPage } = await import('./window-manager.js');
     loadConfigPage(); // 激活成功，加载主界面
     resumeStartup();
     return { ok: true };
@@ -151,16 +150,11 @@ function registerIPCHandlers({ gateway }) {
     return { ok: true };
   });
 
-  // Session invalid - show activation window
+  // Session invalid - 在单窗口模式下重新加载激活页面
   ipcMain.handle('show-activation', async () => {
-    console.log('[Session] 显示激活窗口');
-    // 等待2秒后关闭主窗口并显示激活窗口
-    await new Promise(r => setTimeout(r, 2000));
-    const mainWin = getMainWindow();
-    if (mainWin && !mainWin.isDestroyed()) {
-      mainWin.close();
-    }
-    showActivateDialog();
+    console.log('[Session] 重新加载激活页面');
+    const { navigateTo } = await import('./window-manager.js');
+    navigateTo('/activate');
     return { ok: true };
   });
 

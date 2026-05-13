@@ -56,8 +56,14 @@ app.whenReady().then(async () => {
   // 第2步：加载激活页面
   loadActivationPage();
 
-  // 第3步：等待激活完成
-  await waitForActivation();
+  // 第3步：等待激活完成（带60秒超时保护）
+  await Promise.race([
+    waitForActivation(),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('激活超时（60秒）')), 60000))
+  ]).catch((err) => {
+    console.error('[启动] 激活失败:', err.message);
+    app.exit(1);
+  });
 
   createSplash();
 
