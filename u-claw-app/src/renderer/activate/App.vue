@@ -47,7 +47,7 @@ import { ref, reactive, onMounted } from 'vue';
 import ActivateForm from './components/ActivateForm.vue';
 import MenuBar from '../main/components/MenuBar.vue';
 import { apiRequest } from '@renderer/js/api.js';
-import { useSessionStore } from '@main/stores/session.js';
+import { useSessionStore } from '@/stores/session.js';
 
 const STEP_DELAY = 100; // 每步至少停留 200ms
 const sessionStore = useSessionStore();

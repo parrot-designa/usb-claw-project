@@ -41,7 +41,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import ActivateForm from '../components/ActivateForm.vue';
 import { apiRequest } from '@renderer/js/api.js';
-import { useSessionStore } from '@main/stores/session.js';
+import { useSessionStore } from '@/stores/session.js';
 
 const STEP_DELAY = 10;
 const sessionStore = useSessionStore();

@@ -19,7 +19,7 @@
 <script setup>
 import { ref } from 'vue';
 import { apiRequest } from '@renderer/js/api.js';
-import { useSessionStore } from '@main/stores/session.js';
+import { useSessionStore } from '@/stores/session.js';
 
 const activationCode = ref('');
 const loading = ref(false);

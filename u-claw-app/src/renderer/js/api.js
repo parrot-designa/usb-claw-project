@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useSessionStore } from '@/main/stores/session.js';
+import { useSessionStore } from '@/stores/session.js';
 
 const apiClient = axios.create({
   withCredentials: true // 支持 Cookie 认证
