@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('uclaw', {
+  ipcSend: (channel, ...args) => ipcRenderer.send(channel, ...args),
   ipcOpenDashboard: () => ipcRenderer.invoke('open-dashboard'), 
   ipcActivationSuccess: () => ipcRenderer.invoke('activation-success'),  
   ipcDoBindActivation: (code) => ipcRenderer.invoke('do-bind-activation', code),

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import path from 'path';
 import { APP_NAME, IS_DEV,RENDER_PORT,GATEWAY_DEFAULT_PORT } from './utils/env.js';
 
@@ -153,7 +153,12 @@ export function createWindow() {
   });
 
   mainWindow.webContents.on('did-finish-load', () => {
-    console.log(`Page finished loading, showing window`);
+    console.log(`Page finished loading`);
+  });
+
+  // 渲染进程通知窗口可以显示了（Vue 挂载完成）
+  ipcMain.on('window-ready', () => {
+    console.log(`Window ready from renderer, closing splash and showing`);
     closeSplash();
     mainWindow.show();
   });
