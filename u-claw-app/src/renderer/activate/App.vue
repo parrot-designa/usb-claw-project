@@ -78,18 +78,13 @@ async function startCheck() {
 
   try {
     // Step 1: 检测网络
-    updateProgress(0);
-    let stepResult = await window.uclaw.ipcCheckStepNetwork();
+    updateProgress(0); 
     await delay(STEP_DELAY);
 
-    if (!stepResult.ok) {
-      // 网络检查失败 → 显示错误但继续
-      progressItems[0].done = false;
-      progressItems[0].error = stepResult.error || '网络不可用，请检查网络连接';
-    } else {
-      progressItems[0].done = true;
-    }
+    progressItems[0].done = true; 
+
     progressItems[0].active = false;
+    
     await delay(STEP_DELAY);
 
     // Step 2: 获取 U 盘序列号

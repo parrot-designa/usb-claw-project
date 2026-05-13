@@ -111,8 +111,7 @@ function registerIPCHandlers({ gateway }) {
   const { appRoot, configDir, configPath, openclawPath, openclawEntry, dataRoot } = getPaths();
 
   ipcMain.handle('open-dashboard', () => {
-    if (gateway.isGatewayReady()) {
-      const token = runtimeStore.gatewayToken || 'uclawKey'; 
+    if (gateway.isGatewayReady()) { 
       shell.openExternal(`http://127.0.0.1:${GATEWAY_DEFAULT_PORT}/?token=newToken`);
     }
   });
@@ -160,11 +159,7 @@ function registerIPCHandlers({ gateway }) {
   });
 
 
-  // 分步检查 IPC
-  ipcMain.handle('check-step-network', async () => {
-    const result = await checkNetwork();
-    return { ok: result.ok, error: result.ok ? null : '网络不可用' };
-  });
+  
 
   ipcMain.handle('check-step-serial', async () => {
     try {

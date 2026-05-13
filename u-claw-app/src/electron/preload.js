@@ -42,9 +42,7 @@ contextBridge.exposeInMainWorld('uclaw', {
   // Startup check
   ipcCheckPassed: () => ipcRenderer.invoke('check-passed'),
   // 路由导航（单窗口模式）
-  ipcNavigateTo: (route) => ipcRenderer.invoke('navigate-to', route),
-  // Step-by-step startup check
-  ipcCheckStepNetwork: () => ipcRenderer.invoke('check-step-network'),
+  ipcNavigateTo: (route) => ipcRenderer.invoke('navigate-to', route), 
   ipcCheckStepSerial: () => ipcRenderer.invoke('check-step-serial'),
   ipcCheckStepLicense: (serial) => ipcRenderer.invoke('check-step-license', serial),
   // Step 3.5: 登录接口校验
