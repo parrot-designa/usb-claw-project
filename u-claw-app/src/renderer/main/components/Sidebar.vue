@@ -41,14 +41,14 @@
         <span class="iconfont icon-clawliaotiangongju-qun"></span>
         <span>聊天工具</span>
       </router-link>
-      <router-link
+      <!-- <router-link
         to="/image-gen"
         class="sidebar-nav-item"
         :class="{ active: $route.path === '/image-gen' }"
       >
         <span class="iconfont icon-clawtupianshengcheng"></span>
         <span>AI图片工具</span>
-      </router-link>
+      </router-link> -->
       <router-link
         to="/contact"
         class="sidebar-nav-item"
