@@ -1,5 +1,11 @@
 <template>
-  <div class="main-app-layout">
+  <div v-if="isActivatePage" class="activate-layout">
+    <MenuBar />
+    <div class="activate-page-content">
+      <router-view />
+    </div>
+  </div>
+  <div v-else class="main-app-layout">
     <Sidebar />
     <MenuBar />
     <div class="main-app-main-wrapper">
@@ -14,7 +20,8 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, watch } from 'vue';
+import { computed, onMounted, onUnmounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import Sidebar from './components/Sidebar.vue';
 import Header from './components/Header.vue';
 import MenuBar from './components/MenuBar.vue';
@@ -27,6 +34,9 @@ import { useGatewayStore } from './stores/gateway';
 import { useEnvCheck } from './composables/useEnvCheck';
 import './assets/fonts/fonts-iconfont.scss';
 import './assets/styles/main.scss';
+
+const route = useRoute();
+const isActivatePage = computed(() => route.path === '/activate');
 
 const modelsStore = useModelsStore();
 const userStore = useUserStore();
@@ -64,6 +74,18 @@ watch(() => modelsStore.selectedModels,(models) => {
   min-height: 100vh;
   background: var(--background);
   color: var(--text-primary);
+}
+
+.activate-layout {
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--text-primary);
+  padding-top: 38px;
+}
+
+.activate-page-content {
+  height: calc(100vh - 38px);
+  overflow: hidden;
 }
 
 .main-app-main-wrapper {
