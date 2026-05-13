@@ -41,6 +41,8 @@ contextBridge.exposeInMainWorld('uclaw', {
   ipcShowErrorDialog: (title, message) => ipcRenderer.invoke('show-error-dialog', { title, message }),
   // Startup check
   ipcCheckPassed: () => ipcRenderer.invoke('check-passed'),
+  // 路由导航（单窗口模式）
+  ipcNavigateTo: (route) => ipcRenderer.invoke('navigate-to', route),
   // Step-by-step startup check
   ipcCheckStepNetwork: () => ipcRenderer.invoke('check-step-network'),
   ipcCheckStepSerial: () => ipcRenderer.invoke('check-step-serial'),
