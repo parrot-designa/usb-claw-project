@@ -105,7 +105,7 @@
 import { ref, nextTick, onMounted, toRaw } from 'vue';
 import { useToast } from '../composables/useToast';
 import { useModelsStore } from '../stores/models';
-import { apiRequest } from '../js/api';
+import { apiRequest } from '@renderer/js/api';
 
 const { showToast } = useToast();
 const modelsStore = useModelsStore();
@@ -195,7 +195,7 @@ async function sendMessage() {
     const modelName = currentModel?.model || selectedModel.value;
 
     // 调用图片生成接口
-    const result = await apiRequest('/v1/images/generations', {
+    const result = await apiRequest('/api/v1/images/generations', {
       method: 'POST',
       body: {
         model: 'gpt-image-2',

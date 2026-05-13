@@ -45,7 +45,7 @@ export const useModelsStore = defineStore('models', () => {
 
 export async function fetchAllModels() {
   try {
-    const res = await apiRequest('/api/models/all', { method: 'POST' });
+    const res = await ('/api/models/all', { method: 'POST' });
     if (!res.success) {
       console.log('[models] 获取模型列表失败:', res.message);
       return;
