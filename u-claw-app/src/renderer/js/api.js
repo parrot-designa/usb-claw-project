@@ -67,6 +67,7 @@ export async function apiRequest(path, options = {}) {
   let method = options.method || 'GET';
   let data = options.body || null;
   let params = options.params || null;
+  let headers = options.headers || null;
 
   const sessionCookie = await window.uclaw.ipcGetSessionCookie();
   if (sessionCookie) {
@@ -84,6 +85,7 @@ export async function apiRequest(path, options = {}) {
       url: `${import.meta.env.VITE_API_BASE_URL}${path}`,
       data,
       params,
+      headers,
       withCredentials: true
     });
     return { ok: true, ...res.data };

@@ -105,10 +105,12 @@
 import { ref, nextTick, onMounted, toRaw } from 'vue';
 import { useToast } from '../composables/useToast';
 import { useModelsStore } from '../stores/models';
+import { useUserStore } from '../stores/user';
 import { apiRequest } from '@renderer/js/api';
 
 const { showToast } = useToast();
 const modelsStore = useModelsStore();
+const userStore = useUserStore();
 
 const inputText = ref('');
 const selectedModel = ref('dall-e-3');
@@ -194,6 +196,10 @@ async function sendMessage() {
     const currentModel = modelsStore.currentModel;
     const modelName = currentModel?.model || selectedModel.value;
 
+    // 获取用户 token
+    const token = userStore.userInfo?.token;
+    const authHeader = token ? { Authorization: `Bearer ${token.key}` } : {};
+
     // 调用图片生成接口
     const result = await apiRequest('/v1/images/generations', {
       method: 'POST',
@@ -203,7 +209,8 @@ async function sendMessage() {
         size: imageSize.value,
         quality: imageQuality.value,
         n: 1
-      }
+      },
+      headers: authHeader
     });
 
     aiMsg.loading = false;

@@ -92,6 +92,10 @@ export default defineConfig({
           target: env.VITE_UCLAW_API_BASE,
           changeOrigin: true,
         },
+        '/v1': {
+          target: env.VITE_UCLAW_API_BASE,
+          changeOrigin: true,
+        },
       },
     },
     css: {
