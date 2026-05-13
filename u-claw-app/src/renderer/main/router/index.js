@@ -8,10 +8,12 @@ import Settings from '../views/Settings.vue';
 import EnvCheck from '../views/EnvCheck.vue';
 import Recharge from '../views/Recharge.vue';
 import ImageGen from '../views/ImageGen.vue';
+import Activate from '../views/Activate.vue';
 
 const routes = [
   { path: '/', redirect: '/home' },
   { path: '/home', name: 'home', component: Home },
+  { path: '/activate', name: 'activate', component: Activate },
   { path: '/model', name: 'model', component: Model },
   { path: '/skill', name: 'skill', component: Skill },
   { path: '/chat', name: 'chat', component: Chat },

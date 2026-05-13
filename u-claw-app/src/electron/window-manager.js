@@ -66,13 +66,14 @@ export function loadActivationPage() {
   if (!mainWindow) {
     console.warn('[loadActivationPage] mainWindow is null');
     return;
-  } 
+  }
+  // 单窗口模式：加载主应用，通过路由切换到激活页面
   if (IS_DEV) {
-    mainWindow.loadURL(`http://localhost:${RENDER_PORT}/activate/index.html`);
+    mainWindow.loadURL(`http://localhost:${RENDER_PORT}/main/index.html#/activate`);
   } else {
-    const activatePath = path.join(import.meta.dirname, '..', 'assets', 'activate', 'index.html');
-    console.log('[loadActivationPage] PROD: loading', activatePath);
-    mainWindow.loadFile(activatePath);
+    const indexPath = path.join(import.meta.dirname, '..', 'assets', 'main', 'index.html');
+    console.log('[loadActivationPage] PROD: loading', indexPath);
+    mainWindow.loadFile(indexPath, { hash: '/activate' });
   }
 }
 

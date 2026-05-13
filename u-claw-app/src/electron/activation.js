@@ -229,11 +229,12 @@ function setupActivationIPC(ipcMain) {
     }
   });
 
-  ipcMain.handle('activation-success', () => {
+  ipcMain.handle('activation-success', async () => {
   // 设置标志：激活成功
   app.activationSucceeded = true;
-  // 单窗口模式下不关闭独立窗口，窗口会通过 check-passed 中的 loadConfigPage() 切换到主界面
-  resumeStartup();
+  // 单窗口模式下通过路由切换到主界面
+  const { navigateTo } = await import('./window-manager.js');
+  navigateTo('/home');
 });
 }
 
