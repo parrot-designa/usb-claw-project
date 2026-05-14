@@ -12,12 +12,6 @@ import { initWechat } from "./plugin/wechat-init.js";
 // ============================================================
 // Electron 主进程启动入口
 // ============================================================
-// 打包后开启 DevTools（方便调试）
-app.commandLine.appendSwitch('enable-devtools');
-
-// 检查是否在打包环境中开启了调试模式
-const DEBUG_BUILD = process.env.ELECTRON_ENABLE_DEVTOOLS === 'true' || process.argv.includes('--devtools');
-console.log('[DEBUG] DEBUG_BUILD:', DEBUG_BUILD, 'argv:', process.argv);
 
 app.whenReady().then(async () => {
   console.log('[DEBUG] App ready, creating window...');
@@ -80,17 +74,6 @@ app.whenReady().then(async () => {
 
    // 第1步：创建主窗口
   createWindow();
-
-  // 调试模式：自动打开 DevTools
-  if (DEBUG_BUILD) {
-    const win = getMainWindow();
-    if (win) {
-      win.webContents.once('did-finish-load', () => {
-        console.log('[DEBUG] Opening DevTools...');
-        win.webContents.openDevTools({ mode: 'detach' });
-      });
-    }
-  }
 
   // 第2步：加载激活页面
   loadActivationPage(); 
