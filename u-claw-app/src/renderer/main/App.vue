@@ -99,7 +99,7 @@ watch(() => modelsStore.selectedModels,(models) => {
 
 .main-app-page-content {
   flex: 1; 
-  padding-top: 72px;
+  padding-top: 42px;
   overflow: hidden;
   display: flex;
   flex-direction: column;

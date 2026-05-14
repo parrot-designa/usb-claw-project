@@ -1,15 +1,15 @@
 <template>
   <div class="imagegen-view">
     <!-- Tab header -->
-    <div class="tab-header">
-      <button :class="{ active: activeTab === 'free' }" @click="activeTab = 'free'">
-        自由创作
-        <small>文生图/图生图/多会话</small>
-      </button>
-      <button :class="{ active: activeTab === 'history' }" @click="activeTab = 'history'">
-        历史作品
-        <small>我的作品</small>
-      </button>
+    <div class="tab-card">
+      <div class="tab-header">
+        <button :class="{ active: activeTab === 'free' }" @click="activeTab = 'free'">
+          自由创作
+        </button>
+        <button :class="{ active: activeTab === 'history' }" @click="activeTab = 'history'">
+          历史作品
+        </button>
+      </div>
     </div>
 
     <!-- 自由创作 Tab -->
@@ -253,46 +253,50 @@ function formatTime() {
 <style scoped lang="scss">
 @use '@renderer/public/assets/styles/mixins';
 
-.tab-header {
-  display: flex;
-  gap: 4px;
-  padding: 4px;
+.tab-card {
   background: var(--surface);
-  border-radius: 8px;
+  border-radius: 12px;
+  padding: 4px;
   width: fit-content;
   margin-bottom: 12px;
+}
+
+.tab-header {
+  display: flex;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
 
   button {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    gap: 6px;
     padding: 8px 16px;
-    border-radius: 6px;
     border: none;
     background: none;
     cursor: pointer;
     transition: all 0.2s;
+    font-size: 14px;
 
-    small {
-      font-size: 11px;
-      color: var(--text-secondary);
+    &:not(:last-child) {
+      border-right: 1px solid var(--border);
     }
 
     &.active {
       background: var(--secondary);
       color: white;
-
-      small {
-        color: rgba(255, 255, 255, 0.8);
-      }
     }
   }
+}
+
+.imagegen-view {
+  padding: 16px;
 }
 
 .free-create-tab {
   display: flex;
   gap: 16px;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 100px - 32px);
 }
 
 .left-panel {
@@ -412,6 +416,6 @@ function formatTime() {
 }
 
 .history-works-tab {
-  height: calc(100vh - 100px);
+  height: calc(100vh - 100px - 32px);
 }
 </style>

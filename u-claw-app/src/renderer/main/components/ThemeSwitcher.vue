@@ -32,13 +32,7 @@ import { useThemeStore } from '../stores/theme';
 const themeStore = useThemeStore();
 const showPanel = ref(false);
 
-const themes = [
-  { id: 'fintech', name: '深色金融科技', bg: '#0B0F1A', primary: '#3B82F6', accent: '#00D1FF' },
-  { id: 'cyberpunk', name: '赛博朋克 Neon', bg: '#0a0a0f', primary: '#bf00ff', accent: '#00ffff' },
-  { id: 'lcars', name: '星际指令台 LCARS', bg: '#000022', primary: '#0055aa', accent: '#ff9900' },
-  { id: 'space', name: '极简太空站', bg: '#050810', primary: '#4fc3f7', accent: '#81d4fa' },
-  { id: 'minimal', name: '极简商业', bg: '#000000', primary: '#22C55E', accent: '#22C55E' },
-];
+const themes = [];
 
 function togglePanel() {
   showPanel.value = !showPanel.value;
