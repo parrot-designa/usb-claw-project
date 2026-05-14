@@ -242,9 +242,7 @@ function updatePluginsField(config, plugins) {
 
 // 更新 models 字段
 function updateModelsField(config, modelsData) {
-  const { models } = modelsData;
-
-  console.log("models==>", models);
+  const { models } = modelsData; 
 
   // Initialize models section
   if (!config.models) config.models = { mode: 'replace', providers: {} };

@@ -9,8 +9,6 @@ import { exec } from 'child_process';
 import { apiRequest } from './api-node.js';
 import { getAppDriveInfo } from './utils/usbSerial.js'; 
 import { 
-  getLicensePath,
-  writeLicenseFile,
   getAppRoot
 } from './paths.js';
 import { runtimeStore } from './utils/runtime-store.js';
@@ -94,17 +92,7 @@ function getMacOSUSBDrive() {
   }
   return null;
 }
-
-function getUSBDriveRoot() {
-  if (process.platform === 'win32') {
-    // 同样改用 process.execPath，避免 cwd 不稳定
-    const drive = getDriveLetterFromPath(process.execPath);
-    return drive ? drive + '\\' : null;
-  }
-  const macDrive = getMacOSUSBDrive();
-  return macDrive ? macDrive + '/' : null;
-}
-
+ 
 // ── Windows 获取序列号 ──
 
 function getUSBSerialNumberWindows() {
@@ -144,116 +132,17 @@ function getUSBSerialNumberWindows() {
 }
 
  
-
-// ── Legacy 激活（本地安装场景） ──
-
-function isActivated(configDir) {
-  const activationFilePath = path.join(configDir, 'activation.json');
-  try {
-    const data = fs.readFileSync(activationFilePath, 'utf8');
-    return JSON.parse(data).activated === true;
-  } catch {
-    return false;
-  }
-}
-
-// ── 激活窗口 ──
-
-// ── 激活窗口（单窗口模式：已禁用独立窗口） ──
-
-/**
- * 显示激活对话框（单窗口模式下禁用）
- * @deprecated 单窗口模式下使用主窗口的激活界面
- */
-function showActivateDialog() {
-  console.log('[激活] showActivateDialog 调用已禁用（单窗口模式）');
-}
-
-/**
- * 关闭激活窗口（单窗口模式下禁用）
- * @deprecated 单窗口模式下不关闭独立窗口
- */
-function closeActivateWindow() {
-  console.log('[激活] closeActivateWindow 调用已禁用（单窗口模式）');
-}
-
-// ── 阻塞式等待激活 ──
-
-function waitForActivation() {
-  return new Promise((resolve) => {
-    startupResolver = resolve;
-  });
-}
-
-function resumeStartup() {
-  if (startupResolver) {
-    startupResolver();
-    startupResolver = null;
-  }
-}
-
-
-// ── IPC Handlers ──
-
-function setupActivationIPC(ipcMain) { 
-
-  ipcMain.handle('do-bind-activation', async (_, activationCode) => {
-    try {
-      const result = await apiRequest('/api/usb_key/activate', {
-        activation_code: activationCode,
-        usb_serial: runtimeStore.serial
-      });
-
-      if (result.success && result.data) {
-        // 存储 session_cookie 到运行时
-        if (result.data.session_cookie) {
-          runtimeStore.session_cookie = result.data.session_cookie;
-        }
-        try {
-          // 加密存储激活码
-          if (runtimeStore.serial && activationCode) {
-            writeLicenseFile(runtimeStore.serial, activationCode);
-          }
-        } catch (writeErr) {
-          console.warn('  writeActivatinFile failed:', writeErr.message);
-        }
-      } else {
-        console.log('  激活失败:', result.message || '未知错误');
-      }
-      console.log('═══════════════════════════════════════');
-      return result;
-    } catch (e) {
-      console.error('  激活异常:', e.message);
-      console.log('═══════════════════════════════════════');
-      return { success: false, message: e.message };
-    }
-  });
-
-  ipcMain.handle('activation-success', async () => {
-  // 设置标志：激活成功
-  app.activationSucceeded = true;
-  // 单窗口模式下通过路由切换到主界面
-  const { navigateTo } = await import('./window-manager.js');
-  navigateTo('/home');
-});
-}
-
+ 
+  
+ 
 
 /**
  * 检测网络连通性
  * @returns {Promise<{ ok: boolean }>}
  */
 async function checkNetwork() {
-  return new Promise((resolve) => {
-    // const dns = require('dns');
-    // const options = { timeout: 2000 };
-    // dns.lookup('www.baidu.com', options, (err) => {
-    //   if (err) {
-    //     resolve({ ok: false, error: err.message });
-    //   } else {
-        resolve({ ok: true });
-      // }
-    // });
+  return new Promise((resolve) => { 
+    resolve({ ok: true }); 
   });
 }
 
@@ -261,17 +150,8 @@ async function checkNetwork() {
 
 // ── 模块导出 ──
 
-export {
-  setupActivationIPC,
-  showActivateDialog,
-  closeActivateWindow,
-  waitForActivation,
-  resumeStartup,
-  isActivated,
-  getLicensePath,
-  getUSBDriveRoot,
+export {  
   getAppDriveInfo,
-  detectUSBStatus, 
-  writeLicenseFile,
+  detectUSBStatus,  
   checkNetwork,
 };

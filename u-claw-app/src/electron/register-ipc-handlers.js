@@ -4,12 +4,9 @@ import os from 'os';
 import { ipcMain, dialog, app, shell } from 'electron';
 import { RUNTIME_DIR, getAppRoot } from './paths.js';
 import { exec,spawn } from 'child_process';
-import {
-  setupActivationIPC,
+import { 
   checkNetwork,
-  detectUSBStatus,
-  resumeStartup,
-  showActivateDialog,
+  detectUSBStatus, 
 } from './activation.js';
 import { getGatewayEnv, getNodeBin, getNpmBin, getOpenClawPath, getPaths, readLicenseFile, writeLicenseFile, writeOpenClawConfig} from './paths.js';
 import skillNameMap from './skill-name-map.js';
@@ -144,8 +141,6 @@ function registerIPCHandlers({ gateway }) {
   ipcMain.handle('get-data-dir', () => dataRoot);
 
   ipcMain.handle('get-default-port', () => GATEWAY_DEFAULT_PORT);
-
-  setupActivationIPC(ipcMain, app);
 
   ipcMain.handle('navigate-to', async (_, route) => {
     const { navigateTo } = await import('./window-manager.js');

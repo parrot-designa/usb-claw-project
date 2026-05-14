@@ -170,6 +170,8 @@ export function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+    // 这条语句会确保程序彻底退出，清除所有后台进程
+    app.quit();
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
