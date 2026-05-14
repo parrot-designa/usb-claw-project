@@ -452,8 +452,8 @@ async function ensureOpenClawDirectories() {
               "http://localhost",
               "http://localhost:5173",
               "http://127.0.0.1:5173",
-              "http://localhost:18790",
-              "http://127.0.0.1:18790",
+              "http://localhost:18789",
+              "http://127.0.0.1:18789",
               "app://",
               "null"
             ]

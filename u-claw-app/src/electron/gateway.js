@@ -70,7 +70,8 @@ function createGatewayManager() {
   function pollGatewayHealth(port, onFirstResult) {
     stopHealthPoll();
     let attempts = 0;
-    const maxAttempts = 50; // First boot can take 30-60s
+    // 有些客户电脑报价格请求超时
+    const maxAttempts = 200; // First boot can take 30-60s
     let resolved = false;
 
     sendBootPhase('waiting-ready', '等待就绪', '正在等待 Gateway 响应...', 40);
