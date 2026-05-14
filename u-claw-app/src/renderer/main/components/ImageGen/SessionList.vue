@@ -88,20 +88,21 @@ function getSessionStatus(session) {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
+    padding: 2px 12px;
     cursor: pointer;
     user-select: none;
-    background: #000;
+    background: linear-gradient(90deg, #2a2a2a 0%, #1a1a1a 100%);
     color: inherit;
 
     .icon-clawa-huihua2 {
-      font-size: 14px;
+      font-size: 12px;
       color: #999;
     }
   }
 
   .session-title {
     font-weight: 500;
+    font-size: 13px;
   }
 
   .header-right {
@@ -112,7 +113,7 @@ function getSessionStatus(session) {
   }
 
   .header-hint {
-    font-size: 11px;
+    font-size: 10px;
     opacity: 0.6;
   }
 

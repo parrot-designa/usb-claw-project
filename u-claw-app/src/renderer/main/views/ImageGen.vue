@@ -33,6 +33,8 @@
             @select="handleSessionSelect"
           />
         </div>
+        <!-- API Key 提示 -->
+        <div class="api-key-hint">已自动使用【模型配置】的API Key</div>
 
         <!-- 参考图上传 -->
         <div class="reference-images-placeholder">
@@ -346,8 +348,7 @@ function formatTime() {
 .left-panel {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex-direction: column; 
   overflow-y: auto;
 }
 
@@ -454,6 +455,13 @@ function formatTime() {
 
 .session-list-placeholder {
   flex-shrink: 0;
+}
+
+.api-key-hint {
+  font-size: 11px;
+  color: #22c55e;
+  padding: 4px 12px;
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%);
 }
 
 .reference-images-placeholder {

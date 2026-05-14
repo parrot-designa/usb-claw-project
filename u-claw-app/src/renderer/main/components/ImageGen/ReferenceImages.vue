@@ -6,10 +6,7 @@
     @dragleave.prevent="onDragLeave"
     @drop.prevent="onDrop"
     @paste="onPaste"
-  >
-    <!-- 参考图提示 -->
-    <div class="ref-hint">已自动使用【模型配置】的API Key</div>
-
+  > 
     <!-- 参考图列表 -->
     <div class="ref-images">
       <div v-for="(img, index) in images" :key="index" class="ref-image-item">
