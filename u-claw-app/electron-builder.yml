@@ -32,3 +32,4 @@ win:
 
 portable:
   artifactName: OpenClawPro-${version}-portable.exe
+  requestExecutionLevel: asInvoker
