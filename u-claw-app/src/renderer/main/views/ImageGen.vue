@@ -4,10 +4,12 @@
     <div class="tab-card">
       <div class="tab-header">
         <button :class="{ active: activeTab === 'free' }" @click="activeTab = 'free'">
-          自由创作
+          <span class="iconfont icon-clawziyouchuangzuo"></span>  自由创作
+        <span class="tab-indicator"></span>
         </button>
         <button :class="{ active: activeTab === 'history' }" @click="activeTab = 'history'">
-          历史作品
+          <span class="iconfont icon-clawlishizuopin"></span>历史作品
+          <span class="tab-indicator"></span>
         </button>
       </div>
     </div>
@@ -257,34 +259,49 @@ function formatTime() {
   background: var(--surface);
   border-radius: 12px;
   padding: 4px;
-  width: fit-content;
   margin-bottom: 12px;
+  width: 100%;
 }
 
 .tab-header {
   display: flex;
-  gap: 0;
   border-radius: 8px;
   overflow: hidden;
+  background-color: var(--card2);
 
   button {
+    position: relative; 
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    padding: 8px 16px;
+    padding: 10px 16px;
     border: none;
     background: none;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: color 0.2s;
     font-size: 14px;
-
-    &:not(:last-child) {
-      border-right: 1px solid var(--border);
-    }
+    color: var(--text-secondary);
 
     &.active {
-      background: var(--secondary);
-      color: white;
+      color: rgb(175, 153, 215);
+      font-weight: 500;
+    }
+
+    .tab-indicator {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: rgb(175, 153, 215);
+      border-radius: 1px;
+      transition: width 0.2s;
+    }
+
+    &.active .tab-indicator {
+      width: 100%;
     }
   }
 }

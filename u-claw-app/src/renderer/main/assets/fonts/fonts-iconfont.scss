@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 5166553 */
-  src: url('https://at.alicdn.com/t/c/font_5166553_8ccdl51hre7.woff2?t=1778572998496') format('woff2'),
-       url('https://at.alicdn.com/t/c/font_5166553_8ccdl51hre7.woff?t=1778572998496') format('woff'),
-       url('https://at.alicdn.com/t/c/font_5166553_8ccdl51hre7.ttf?t=1778572998496') format('truetype');
+  src: url('https://at.alicdn.com/t/c/font_5166553_1vq4k7pjeq6.woff2?t=1778736872757') format('woff2'),
+       url('https://at.alicdn.com/t/c/font_5166553_1vq4k7pjeq6.woff?t=1778736872757') format('woff'),
+       url('https://at.alicdn.com/t/c/font_5166553_1vq4k7pjeq6.ttf?t=1778736872757') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,22 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-clawzhedie:before {
+  content: "\e647";
+}
+
+.icon-clawa-huihua2:before {
+  content: "\e609";
+}
+
+.icon-clawziyouchuangzuo:before {
+  content: "\e742";
+}
+
+.icon-clawlishizuopin:before {
+  content: "\e636";
 }
 
 .icon-clawicon_shipinshengcheng:before {
