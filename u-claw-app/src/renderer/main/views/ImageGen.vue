@@ -36,39 +36,39 @@
         <!-- API Key 提示 -->
         <div class="api-key-hint">已自动使用【模型配置】的API Key</div>
 
-        <!-- 参考图上传 -->
-        <div class="reference-images-placeholder">
+        <!-- 参考图 & 表单区域 -->
+        <div class="form-area">
           <ReferenceImages v-model:images="referenceImages" />
-        </div>
 
-        <!-- 描述 textarea -->
-        <div class="prompt-area">
-          <textarea
-            v-model="inputText"
-            class="prompt-textarea"
-            placeholder="描述你想要生成的图片..."
-            :rows="4"
-          ></textarea>
-        </div>
+          <!-- 描述 textarea -->
+          <div class="prompt-area">
+            <textarea
+              v-model="inputText"
+              class="prompt-textarea"
+              placeholder="描述你想要生成的图片..."
+              :rows="4"
+            ></textarea>
+          </div>
 
-        <!-- 模型、尺寸、数量选择 -->
-        <div class="generate-options">
-          <select v-model="selectedModel" class="option-select">
-            <option value="gpt-image-2">GPT Image 2</option>
-            <option value="dall-e-3">DALL-E 3</option>
-            <option value="dall-e-2">DALL-E 2</option>
-          </select>
-          <select v-model="imageSize" class="option-select">
-            <option value="auto">自动</option>
-            <option value="1024x1024">1024x1024</option>
-            <option value="1024x1792">1024x1792 (竖图)</option>
-            <option value="1792x1024">1792x1024 (横图)</option>
-          </select>
-          <select v-model="imageCount" class="option-select">
-            <option :value="1">1 张</option>
-            <option :value="2">2 张</option>
-            <option :value="4">4 张</option>
-          </select>
+          <!-- 模型、尺寸、数量选择 -->
+          <div class="generate-options">
+            <select v-model="selectedModel" class="option-select">
+              <option value="gpt-image-2">GPT Image 2</option>
+              <option value="dall-e-3">DALL-E 3</option>
+              <option value="dall-e-2">DALL-E 2</option>
+            </select>
+            <select v-model="imageSize" class="option-select">
+              <option value="auto">自动</option>
+              <option value="1024x1024">1024x1024</option>
+              <option value="1024x1792">1024x1792 (竖图)</option>
+              <option value="1792x1024">1792x1024 (横图)</option>
+            </select>
+            <select v-model="imageCount" class="option-select">
+              <option :value="1">1 张</option>
+              <option :value="2">2 张</option>
+              <option :value="4">4 张</option>
+            </select>
+          </div>
         </div>
 
         <!-- 生成按钮 -->
@@ -348,8 +348,9 @@ function formatTime() {
 .left-panel {
   flex: 1;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   overflow-y: auto;
+  min-height: 0;
 }
 
 .right-panel {
@@ -405,6 +406,14 @@ function formatTime() {
   color: var(--text-secondary);
 }
 
+.form-area {
+  background: var(--surface);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .prompt-area {
   width: 100%;
 }
@@ -441,9 +450,10 @@ function formatTime() {
 .generate-btn {
   width: 100%;
   padding: 12px;
+  margin-top: auto;
   border-radius: 12px;
   border: none;
-  background: var(--secondary);
+  background: linear-gradient(135deg, rgb(201, 157, 245) 0%, rgb(160, 120, 220) 100%);
   color: white;
   font-weight: 500;
 
@@ -455,6 +465,8 @@ function formatTime() {
 
 .session-list-placeholder {
   flex-shrink: 0;
+  overflow-y: auto;
+  max-height: 200px;
 }
 
 .api-key-hint {
@@ -462,10 +474,6 @@ function formatTime() {
   color: #22c55e;
   padding: 4px 12px;
   background: linear-gradient(90deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%);
-}
-
-.reference-images-placeholder {
-  flex-shrink: 0;
 }
 
 .history-works-tab {
