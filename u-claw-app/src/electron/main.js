@@ -4,31 +4,35 @@ import { ensureOpenClawDirectories,getLocalBase,extractRuntime } from './paths.j
 import { APP_NAME, GATEWAY_DEFAULT_PORT, IS_DEV } from './utils/env.js';
 import { createGatewayManager } from './gateway.js';
 import { setupLifecycle } from './lifecycle.js';
-import { createWindow, getMainWindow, createSplash,updateSplash, loadActivationPage } from './window-manager.js';
+import { createWindow, getMainWindow, createSplash,updateSplash, loadActivationPage, isWin } from './window-manager.js';
 import { ensurePlugins } from './js/plugin.js'; 
 import { registerIPCHandlers,registerWechatIPCHandler } from './register-ipc-handlers.js';
 import { initWechat } from "./plugin/wechat-init.js";
-
 
 // ============================================================
 // Electron 主进程启动入口
 // ============================================================
 app.whenReady().then(async () => {  
 
-  if (process.platform === 'win32') {
+  if (isWin()) {
     try {
+      console.log("finding OpenClawPro start")
       // Find and kill any node.exe running openclaw gateway on our port
-      execSync('taskkill /f /im node.exe /fi "WINDOWTITLE eq OpenClawPro*" 2>nul', { stdio: 'ignore' });
-    } catch { /* no orphans, that's fine */ }
+      const result1 = execSync('taskkill /f /im node.exe /fi "WINDOWTITLE eq OpenClawPro*" 2>nul', { stdio: 'ignore' });
+      console.log("finding OpenClawPro end",result1)
+    } catch(e) { /* no orphans, that's fine */ console.log("finding OpenClawPro error",e)}
     try {
+      console.log("finding port start")
       // Also try killing by port
-      const netstat = execSync(`netstat -ano | findstr :${GATEWAY_DEFAULT_PORT} | findstr LISTENING`, { encoding: 'utf-8' });
+      const netstat = execSync(`netstat -ano | findstr "${GATEWAY_DEFAULT_PORT}" | findstr LISTENING`, { encoding: 'utf-8' });
+      console.log("finding port result",netstat)
       const pid = netstat.trim().split(/\s+/).pop();
       if (pid && pid !== '0') {
         execSync(`taskkill /f /pid ${pid} 2>nul`, { stdio: 'ignore' });
         console.log(`[startup] killed orphaned process on port ${GATEWAY_DEFAULT_PORT} (pid ${pid})`);
       }
-    } catch { /* port not in use, good */ }
+      console.log("finding port end")
+    } catch(e) { /* port not in use, good */ console.log("finding port error",e) }
   }
 
   createSplash();
