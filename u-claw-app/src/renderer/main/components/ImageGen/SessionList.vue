@@ -135,7 +135,6 @@ function getSessionStatus(session) {
   }
 
   .session-empty {
-    padding: 12px;
     text-align: center;
     color: inherit;
     font-size: 12px;
