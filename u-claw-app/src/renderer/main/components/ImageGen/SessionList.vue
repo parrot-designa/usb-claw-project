@@ -88,8 +88,7 @@ function getSessionStatus(session) {
     padding: 8px 12px;
     cursor: pointer;
     user-select: none;
-    background: #000;
-    border-radius: 4px;
+    background: #000; 
     color: inherit;
 
     &:hover {
