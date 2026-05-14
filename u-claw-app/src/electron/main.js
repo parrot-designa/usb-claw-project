@@ -1,6 +1,5 @@
 import { app, Menu } from 'electron';
-import { execSync } from 'child_process';
-import { waitForActivation } from './activation.js';
+import { execSync } from 'child_process'; 
 import { ensureOpenClawDirectories,getLocalBase,extractRuntime } from './paths.js';
 import { APP_NAME, GATEWAY_DEFAULT_PORT, IS_DEV } from './utils/env.js';
 import { createGatewayManager } from './gateway.js';

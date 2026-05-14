@@ -3,8 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 contextBridge.exposeInMainWorld('uclaw', {
   ipcSend: (channel, ...args) => ipcRenderer.send(channel, ...args),
   ipcOpenDashboard: () => ipcRenderer.invoke('open-dashboard'), 
-  ipcActivationSuccess: () => ipcRenderer.invoke('activation-success'),  
-  ipcDoBindActivation: (code) => ipcRenderer.invoke('do-bind-activation', code),
+  ipcActivationSuccess: () => ipcRenderer.invoke('activation-success'),   
   ipcWriteOpenClawConfig: ({ models }, type) => ipcRenderer.invoke('write-openclaw-config', { models }, type),
   ipcWriteLicenseFile: (serial, activationCode) => ipcRenderer.invoke('write-license-file', { serial, activationCode }),
   // Gateway control
