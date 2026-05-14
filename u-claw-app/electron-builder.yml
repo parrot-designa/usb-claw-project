@@ -27,6 +27,7 @@ win:
     - target: portable
       arch:
         - x64
+        - ia32
   icon: src/assets/icon.ico
 
 portable:
