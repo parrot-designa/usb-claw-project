@@ -181,5 +181,167 @@ function formatTime() {
 </script>
 
 <style scoped lang="scss">
-// 样式将在 Task 7 中添加
+@use '@renderer/public/assets/styles/mixins';
+
+.tab-header {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface);
+  border-radius: 8px;
+  width: fit-content;
+  margin-bottom: 12px;
+
+  button {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    small {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    &.active {
+      background: var(--secondary);
+      color: white;
+
+      small {
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+  }
+}
+
+.free-create-tab {
+  display: flex;
+  gap: 16px;
+  height: calc(100vh - 100px);
+}
+
+.left-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.right-panel {
+  flex: 1;
+  position: relative;
+  border-radius: 12px;
+  background: var(--surface);
+  transition: all 0.3s ease;
+  overflow: hidden;
+
+  &.collapsed {
+    flex: 0;
+    width: 0;
+    padding: 0;
+    opacity: 0;
+  }
+}
+
+.collapse-icon {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-variant);
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+
+  .right-panel:hover & {
+    opacity: 1;
+  }
+}
+
+.bubbles-area {
+  padding: 16px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.empty-bubbles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+}
+
+.prompt-area {
+  width: 100%;
+}
+
+.prompt-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-variant);
+  resize: none;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+}
+
+.generate-options {
+  display: flex;
+  gap: 8px;
+
+  .option-select {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+}
+
+.generate-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: var(--secondary);
+  color: white;
+  font-weight: 500;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.session-list-placeholder {
+  flex-shrink: 0;
+}
+
+.reference-images-placeholder {
+  flex-shrink: 0;
+}
+
+.history-works-tab {
+  height: calc(100vh - 100px);
+}
 </style>
