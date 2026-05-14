@@ -97,6 +97,10 @@ import { useToast } from '../composables/useToast';
 import { useModelsStore } from '../stores/models';
 import { useUserStore } from '../stores/user';
 import { apiRequest } from '@renderer/js/api';
+import SessionList from '../components/ImageGen/SessionList.vue';
+import ReferenceImages from '../components/ImageGen/ReferenceImages.vue';
+import ChatBubble from '../components/ImageGen/ChatBubble.vue';
+import ImageGrid from '../components/ImageGen/ImageGrid.vue';
 
 const { showToast } = useToast();
 const modelsStore = useModelsStore();
