@@ -1,9 +1,12 @@
 <template>
   <div class="session-list">
     <div class="session-header" @click="toggleExpand">
-      <span v-if="!expanded">+</span>
-      <span v-else>-</span>
+      <span class="iconfont icon-clawa-huihua2"></span>
       <span class="session-title">会话列表</span>
+      <span class="header-right">
+        <span class="header-hint">点击生成图片，即可会话</span>
+        <span class="iconfont arrow" :class="{ expanded }"></span>
+      </span>
     </div>
     <div v-show="expanded" class="session-items">
       <div v-if="sessions.length === 0" class="session-empty">
@@ -88,16 +91,42 @@ function getSessionStatus(session) {
     padding: 8px 12px;
     cursor: pointer;
     user-select: none;
-    background: #000; 
+    background: #000;
     color: inherit;
 
-    &:hover {
-      background: #1a1a1a;
+    .icon-clawa-huihua2 {
+      font-size: 14px;
+      color: #999;
     }
   }
 
   .session-title {
     font-weight: 500;
+  }
+
+  .header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-hint {
+    font-size: 11px;
+    opacity: 0.6;
+  }
+
+  .arrow {
+    font-size: 12px;
+    transition: transform 0.2s;
+
+    &.expanded {
+      transform: rotate(180deg);
+    }
+
+    &::before {
+      content: "\e649";
+    }
   }
 
   .session-items {
@@ -120,10 +149,6 @@ function getSessionStatus(session) {
     border-radius: 4px;
     margin-bottom: 4px;
     color: inherit;
-
-    &:hover {
-      background: #1a1a1a;
-    }
 
     &.active {
       background: #1a1a1a;
