@@ -72,6 +72,9 @@ contextBridge.exposeInMainWorld('uclaw', {
   // ImageGen chat history
   ipcSaveImageGenHistory: (messages) => ipcRenderer.invoke('save-image-gen-history', messages),
   ipcLoadImageGenHistory: () => ipcRenderer.invoke('load-image-gen-history'),
+  // Image sessions
+  ipcSaveImageSessions: (data) => ipcRenderer.invoke('save-image-sessions', data),
+  ipcLoadImageSessions: () => ipcRenderer.invoke('load-image-sessions'),
   // Image generation
   generateImage: (params) => ipcRenderer.invoke('generate-image', params),
 });

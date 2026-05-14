@@ -434,6 +434,36 @@ function registerIPCHandlers({ gateway }) {
     }
   });
 
+  // Image sessions persistence
+  const IMAGE_SESSIONS_FILE = path.join(CHAT_HISTORY_DIR, 'image-sessions.json');
+
+  ipcMain.handle('save-image-sessions', async (_, data) => {
+    try {
+      if (!fs.existsSync(CHAT_HISTORY_DIR)) {
+        fs.mkdirSync(CHAT_HISTORY_DIR, { recursive: true });
+      }
+      fs.writeFileSync(IMAGE_SESSIONS_FILE, JSON.stringify(data, null, 2), 'utf-8');
+      return { ok: true };
+    } catch (err) {
+      console.error('[save-image-sessions] failed:', err);
+      return { ok: false, error: err.message };
+    }
+  });
+
+  ipcMain.handle('load-image-sessions', async () => {
+    try {
+      if (!fs.existsSync(IMAGE_SESSIONS_FILE)) {
+        return { ok: true, data: { sessions: [], currentSessionId: null } };
+      }
+      const content = fs.readFileSync(IMAGE_SESSIONS_FILE, 'utf-8');
+      const data = JSON.parse(content);
+      return { ok: true, data };
+    } catch (err) {
+      console.error('[load-image-sessions] failed:', err);
+      return { ok: true, data: { sessions: [], currentSessionId: null } };
+    }
+  });
+
   // Image generation via gateway
   ipcMain.handle('generate-image', async (_, { prompt, model, size, quality }) => {
     try {
