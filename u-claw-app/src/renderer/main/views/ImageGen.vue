@@ -339,8 +339,7 @@ function formatTime() {
 }
 
 .free-create-tab {
-  display: flex;
-  gap: 16px;
+  display: flex; 
   height: calc(100vh - 100px - 32px);
 }
 

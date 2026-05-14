@@ -88,11 +88,12 @@ function getSessionStatus(session) {
     padding: 8px 12px;
     cursor: pointer;
     user-select: none;
-    background: #f5f5f5;
+    background: #000;
     border-radius: 4px;
+    color: inherit;
 
     &:hover {
-      background: #e8e8e8;
+      background: #1a1a1a;
     }
   }
 
@@ -107,7 +108,7 @@ function getSessionStatus(session) {
   .session-empty {
     padding: 12px;
     text-align: center;
-    color: #999;
+    color: inherit;
     font-size: 12px;
   }
 
@@ -119,14 +120,14 @@ function getSessionStatus(session) {
     cursor: pointer;
     border-radius: 4px;
     margin-bottom: 4px;
+    color: inherit;
 
     &:hover {
-      background: #f0f0f0;
+      background: #1a1a1a;
     }
 
     &.active {
-      background: #e6f0ff;
-      color: #1890ff;
+      background: #1a1a1a;
     }
   }
 
@@ -140,13 +141,14 @@ function getSessionStatus(session) {
 
   .session-status {
     font-size: 11px;
-    color: #999;
+    color: inherit;
     margin-left: 8px;
     flex-shrink: 0;
+    opacity: 0.7;
   }
 
   .session-item.active .session-status {
-    color: #1890ff;
+    opacity: 1;
   }
 }
 </style>
