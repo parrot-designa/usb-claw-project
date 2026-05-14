@@ -17,12 +17,16 @@
       <div class="left-panel">
         <!-- 会话列表 -->
         <div class="session-list-placeholder">
-          <SessionList />
+          <SessionList
+            :sessions="sessions"
+            :currentSessionId="currentSessionId"
+            @select="handleSessionSelect"
+          />
         </div>
 
         <!-- 参考图上传 -->
         <div class="reference-images-placeholder">
-          <ReferenceImages />
+          <ReferenceImages v-model:images="referenceImages" />
         </div>
 
         <!-- 描述 textarea -->
@@ -124,12 +128,73 @@ function toggleRightPanel() {
 }
 
 onMounted(async () => {
-  // 初始化逻辑
+  await loadSessions();
 });
+
+async function loadSessions() {
+  try {
+    const result = await window.uclaw.ipcLoadImageSessions();
+    if (result?.ok && result.data) {
+      sessions.value = result.data.sessions || [];
+      currentSessionId.value = result.data.currentSessionId;
+    }
+  } catch (e) {
+    console.error('[ImageGen] Load sessions failed:', e);
+  }
+}
+
+async function saveSessions() {
+  try {
+    await window.uclaw.ipcSaveImageSessions({
+      sessions: toRaw(sessions.value),
+      currentSessionId: currentSessionId.value
+    });
+  } catch (e) {
+    console.error('[ImageGen] Save sessions failed:', e);
+  }
+}
+
+function createNewSession() {
+  const newSession = {
+    id: Date.now().toString(),
+    createdAt: new Date().toISOString(),
+    messages: [],
+    status: 'empty'
+  };
+  sessions.value.unshift(newSession);
+  currentSessionId.value = newSession.id;
+  saveSessions();
+  return newSession;
+}
+
+function selectSession(sessionId) {
+  currentSessionId.value = sessionId;
+  saveSessions();
+}
+
+function handleSessionSelect(sessionId) {
+  selectSession(sessionId);
+}
 
 async function generateImage() {
   const text = inputText.value.trim();
   if (!text || generating.value) return;
+
+  // 如果没有当前会话，创建新会话
+  if (!currentSessionId.value) {
+    createNewSession();
+  }
+
+  // 添加用户气泡
+  const userMsg = {
+    role: 'user',
+    text,
+    time: formatTime(),
+    images: referenceImages.value.slice() // 复制参考图
+  };
+  currentSession.value.messages.push(userMsg);
+  inputText.value = '';
+  saveSessions();
 
   generating.value = true;
 
@@ -164,6 +229,7 @@ async function generateImage() {
           time: formatTime()
         });
       }
+      saveSessions();
     } else {
       showToast('未返回图片', true);
     }
