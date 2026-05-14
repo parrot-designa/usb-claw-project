@@ -21,7 +21,7 @@ const menuItems = [
 defineProps({
   title: {
     type: String,
-    default: 'OpenClawPro U盘便携版 v1.8.1'
+    default: 'OpenClawPro U盘便携版'
   }
 });
 </script>

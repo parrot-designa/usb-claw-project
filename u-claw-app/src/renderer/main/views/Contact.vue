@@ -8,7 +8,7 @@
         <img src="@assets/wechat-contact.jpg" alt="微信二维码" />
       </div>
       <div class="contact-contact-wechat">
-        微信号: <span class="contact-highlight">LunoAi789</span>
+        微信号: <span class="contact-highlight">xingnanhhh</span>
       </div>
     </div>
   </div>

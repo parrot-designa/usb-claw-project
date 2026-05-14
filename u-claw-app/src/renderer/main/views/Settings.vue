@@ -68,7 +68,7 @@ onMounted(async () => {
 
 async function loadSettings() {
   try { 
-    version.value = `OpenClawPro U盘便携版 v1.8.1`;
+    version.value = `OpenClawPro U盘便携版`;
     let rootPath = await window.uclaw.ipcGetRuntimeStore('rootPath');
     usbPath.value = rootPath || "F:\\";
     let usbSerialFromRuntime = await window.uclaw.ipcGetRuntimeStore('serial');

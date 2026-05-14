@@ -155,9 +155,7 @@ function registerIPCHandlers({ gateway }) {
     navigateTo('/activate');
     return { ok: true };
   });
-
-
-  
+ 
 
   ipcMain.handle('check-step-serial', async () => {
     try {

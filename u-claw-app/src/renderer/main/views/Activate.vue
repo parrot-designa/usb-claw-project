@@ -96,7 +96,7 @@ async function startCheck() {
     const isDev = import.meta.env.VITE_IS_DEV === 'true';
     stepResult = await window.uclaw.ipcCheckStepSerial();
 
-    if (isDev) {
+    if (isDev && !stepResult.ok) {
       stepResult = { ok: true, serial: 'FOCF56A83156249B' }; 
     }
     await delay(STEP_DELAY);

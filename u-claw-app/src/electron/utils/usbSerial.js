@@ -82,6 +82,43 @@ function isRunningFromUSB(appPath) {
   }
 }
 
+// ── 获取 MAC 地址 ──
+function getMacAddress() {
+  try {
+    if (process.platform === 'win32') {
+      // Windows: 使用 getmac 获取第一个可用 MAC 地址
+      const output = execSync('getmac /fo csv /nh', { encoding: 'utf8', timeout: 5000 });
+      const lines = output.trim().split('\n');
+      for (const line of lines) {
+        const match = line.match(/"([0-9A-F]{2}(-[0-9A-F]{2}){5})"/i);
+        if (match) {
+          return match[1].replace(/-/g, ':').toUpperCase();
+        }
+      }
+      // Fallback: 通过 PowerShell 获取
+      const psScript = `Get-NetAdapter | Where-Object { $_.Status -eq "Up" -and $_.MacAddress -ne $null } | Select-Object -First 1 -ExpandProperty MacAddress`;
+      const macOutput = execSync(`powershell -Command "${psScript}"`, { encoding: 'utf8', timeout: 5000 });
+      const mac = macOutput.trim().replace(/-/g, ':');
+      if (mac && mac.length === 17) {
+        return mac.toUpperCase();
+      }
+      return null;
+    } else if (process.platform === 'darwin') {
+      // macOS: 使用 ifconfig 获取第一个活跃网卡的 MAC 地址
+      const output = execSync('ifconfig | grep -E "^[a-z]+[0-9]*:" -A 1 | grep "ether" | head -1', { encoding: 'utf8', timeout: 5000 });
+      const match = output.match(/ether\s+([0-9a-f:]+)/i);
+      if (match) {
+        return match[1].toUpperCase();
+      }
+      return null;
+    }
+    return null;
+  } catch (error) {
+    console.error('[usbSerial] getMacAddress failed:', error.message);
+    return null;
+  }
+}
+
 /**
  * 获取所有外部 USB 设备的序列号信息
  * @returns {Array<{name: string, serialNumber: string, bsdName: string}>}
@@ -205,7 +242,7 @@ async function getAppDriveInfo() {
   }
 
   const isUSB = isRunningFromUSB(targetPath);
-  const serial = isUSB ? await getCurrentDiskSerial(targetPath) : null;
+  const serial = isUSB ? await getCurrentDiskSerial(targetPath) : getMacAddress();
 
   let driveLetter = null;
   let rootPath = null;
@@ -240,4 +277,5 @@ export {
   getCurrentDiskSerial,
   isRunningFromUSB,
   getAppDriveInfo,
+  getMacAddress,
 };
