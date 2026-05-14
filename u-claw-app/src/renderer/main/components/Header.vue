@@ -51,7 +51,7 @@ const pageTitle = computed(() => {
 @use '@renderer/public/assets/styles/mixins';
 
 .header-header {
-  height: 56px;
+  height: 40px;
   @extend %flex-between;
   padding: 0 16px;
   background: var(--background);
