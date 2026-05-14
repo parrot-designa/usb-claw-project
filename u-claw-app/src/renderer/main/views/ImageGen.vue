@@ -4,11 +4,19 @@
     <div class="tab-card">
       <div class="tab-header">
         <button :class="{ active: activeTab === 'free' }" @click="activeTab = 'free'">
-          <span class="iconfont icon-clawziyouchuangzuo"></span>  自由创作
+          <span class="tab-content">
+            <span class="iconfont icon-clawziyouchuangzuo"></span>
+            <span class="tab-text">自由创作</span>
+          </span>
+          <span class="tab-desc">文生图/图生图 · 多会话</span>
         <span class="tab-indicator"></span>
         </button>
         <button :class="{ active: activeTab === 'history' }" @click="activeTab = 'history'">
-          <span class="iconfont icon-clawlishizuopin"></span>历史作品
+          <span class="tab-content">
+            <span class="iconfont icon-clawlishizuopin"></span>
+            <span class="tab-text">历史作品</span>
+          </span>
+          <span class="tab-desc">我的作品</span>
           <span class="tab-indicator"></span>
         </button>
       </div>
@@ -257,20 +265,18 @@ function formatTime() {
 
 .tab-card {
   background: var(--surface);
-  border-radius: 12px;
-  padding: 4px;
-  margin-bottom: 12px;
+  border-radius: 0; 
+  margin-bottom: 0;
   width: 100%;
 }
 
 .tab-header {
-  display: flex;
-  border-radius: 8px;
+  display: flex; 
   overflow: hidden;
   background-color: var(--card2);
 
   button {
-    position: relative; 
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -286,6 +292,28 @@ function formatTime() {
     &.active {
       color: rgb(175, 153, 215);
       font-weight: 500;
+    }
+
+    .tab-content {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-text {
+      font-weight: 500;
+    }
+
+    .tab-desc {
+      margin-left: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      transition: color 0.2s;
+    }
+
+    &.active .tab-desc {
+      color: rgb(175, 153, 215);
+      opacity: 0.7;
     }
 
     .tab-indicator {
@@ -307,7 +335,7 @@ function formatTime() {
 }
 
 .imagegen-view {
-  padding: 16px;
+  padding: 0;
 }
 
 .free-create-tab {
@@ -327,10 +355,11 @@ function formatTime() {
 .right-panel {
   flex: 1;
   position: relative;
-  border-radius: 12px;
+  border-radius: 0;
   background: var(--surface);
   transition: all 0.3s ease;
   overflow: hidden;
+  border-left: 1px solid var(--border);
 
   &.collapsed {
     flex: 0;
