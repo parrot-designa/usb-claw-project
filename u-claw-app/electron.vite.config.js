@@ -29,18 +29,12 @@ function obfuscatorPlugin() {
           } else if (file.endsWith('.js')) {
             const code = fs.readFileSync(fullPath, 'utf-8');
             const obfuscated = JavaScriptObfuscator.obfuscate(code, {
-              rotateStringArray: true,
-              selfDefending: true,
+              compact: true,
               stringArray: true,
-              stringArrayThreshold: 0.85,
-              splitStrings: true,
+              stringArrayThreshold: 0.75,
               obfuscateId: true,
-              deadCodeInjection: true,
-              controlFlowFlattening: true,
-              controlFlowFlatteningThreshold: 0.75,
-              numbersToExpressions: true,
+              splitStrings: true,
               shuffleStringArray: true,
-              simplify: true,
             }).getObfuscatedCode();
             fs.writeFileSync(fullPath, obfuscated);
           }
@@ -53,7 +47,7 @@ function obfuscatorPlugin() {
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()],
+    plugins: [externalizeDepsPlugin(),obfuscatorPlugin()],
     define: {
       'process.env.VITE_RENDERER_PORT': JSON.stringify(env.VITE_RENDERER_PORT),
       'process.env.VITE_UCLAW_API_HOST': JSON.stringify(env.VITE_UCLAW_API_HOST),
@@ -73,7 +67,7 @@ export default defineConfig({
     },
   },
   preload: {
-    plugins: [externalizeDepsPlugin()],
+    plugins: [externalizeDepsPlugin(),obfuscatorPlugin()],
     build: {
       outDir: 'dist/preload',
       rollupOptions: {
@@ -121,7 +115,7 @@ export default defineConfig({
         },
       },
     },
-    plugins: [vue()],
+    plugins: [vue(),obfuscatorPlugin()],
     resolve: {
       alias: {
         '@': resolve(__dirname, 'src/renderer/main'),
