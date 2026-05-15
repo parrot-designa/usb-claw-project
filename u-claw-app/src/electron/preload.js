@@ -40,6 +40,8 @@ contextBridge.exposeInMainWorld('uclaw', {
   ipcDisconnectWeChat: () => ipcRenderer.invoke('openclaw-wechat-disconnect'),
   // Desktop error dialog
   ipcShowErrorDialog: (title, message) => ipcRenderer.invoke('show-error-dialog', { title, message }),
+  // Desktop confirm dialog
+  ipcShowConfirmDialog: (title, message) => ipcRenderer.invoke('show-confirm-dialog', { title, message }),
   // 路由导航（单窗口模式）
   ipcNavigateTo: (route) => ipcRenderer.invoke('navigate-to', route), 
   ipcCheckStepSerial: () => ipcRenderer.invoke('check-step-serial'),

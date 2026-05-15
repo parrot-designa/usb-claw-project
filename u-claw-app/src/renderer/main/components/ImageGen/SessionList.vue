@@ -19,7 +19,7 @@
         @click="selectSession(session.id)"
       >
         <span class="session-text">{{ getSessionPreview(session) }}</span>
-        <span class="session-status">{{ getSessionStatus(session) }}</span>
+        <span class="session-delete iconfont icon-clawshanchu" @click.stop="deleteSession(session.id)"></span>
       </div>
     </div>
   </div>
@@ -39,7 +39,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['select', 'create']);
+const emit = defineEmits(['select', 'create', 'delete']);
 
 const expanded = ref(true);
 
@@ -49,6 +49,12 @@ function toggleExpand() {
 
 function selectSession(id) {
   emit('select', id);
+}
+
+async function deleteSession(id) {
+  const result = await window.uclaw.ipcShowConfirmDialog('确认删除', '确定要删除该会话吗？');
+  if (!result?.confirmed) return;
+  emit('delete', id);
 }
 
 function getSessionPreview(session) {
@@ -63,21 +69,6 @@ function getSessionPreview(session) {
   }
   return text.substring(0, 20) + '...';
 }
-
-function getSessionStatus(session) {
-  const messages = session.messages || [];
-  if (messages.length === 0) {
-    return '新建';
-  }
-  const lastMessage = messages[messages.length - 1];
-  if (lastMessage.loading) {
-    return '生成中';
-  }
-  if (lastMessage.imageUrl || lastMessage.error) {
-    return '已完成';
-  }
-  return '新建';
-}
 </script>
 
 <style scoped lang="scss">
@@ -88,7 +79,7 @@ function getSessionStatus(session) {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 2px 12px;
+    padding: 10px 12px;
     cursor: pointer;
     user-select: none;
     background: linear-gradient(90deg, #2a2a2a 0%, #1a1a1a 100%);
@@ -144,12 +135,12 @@ function getSessionStatus(session) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 12px 6px 12px;
+    padding: 8px 12px 8px 12px; 
     cursor: pointer;
     border-radius: 4px;
     color: inherit;
     font-size: 13px;
-    background: linear-gradient(90deg, rgba(160, 120, 220, 0.3) 0%, rgba(160, 120, 220, 0.05) 100%); 
+    background: linear-gradient(90deg, rgba(160, 120, 220, 0.3) 0%, rgba(160, 120, 220, 0.05) 100%);
 
     &.active {
       background: linear-gradient(90deg, rgba(160, 120, 220, 0.6) 0%, rgba(160, 120, 220, 0.15) 100%);
@@ -180,17 +171,27 @@ function getSessionStatus(session) {
     line-height: 1;
   }
 
-  .session-status {
-    font-size: 11px;
+  .session-delete {
+    font-size: 12px;
     color: inherit;
+    opacity: 0;
     margin-left: 8px;
     flex-shrink: 0;
-    opacity: 0.7;
-    line-height: 1;
-  }
+    transition: opacity 0.2s;
+    padding: 4px;
+    border-radius: 4px;
 
-  .session-item.active .session-status {
-    opacity: 1;
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .session-item:hover & {
+      opacity: 0.7;
+    }
+
+    .session-item.active & {
+      opacity: 0.7;
+    }
   }
 }
 </style>

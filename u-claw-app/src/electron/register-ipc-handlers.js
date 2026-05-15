@@ -123,6 +123,18 @@ function registerIPCHandlers({ gateway }) {
     return { ok: true };
   });
 
+  ipcMain.handle('show-confirm-dialog', async (_, { title, message }) => {
+    const result = await dialog.showMessageBox({
+      type: 'question',
+      title: title || '确认',
+      message,
+      buttons: ['取消', '确认'],
+      defaultId: 1,
+      cancelId: 0,
+    });
+    return { ok: true, confirmed: result.response === 1 };
+  });
+
   ipcMain.handle('write-openclaw-config', async (_, { models }, type) => {
     await writeOpenClawConfig({ models }, type);
     return { ok: true };

@@ -33,6 +33,7 @@
             :sessions="sessions"
             :currentSessionId="currentSessionId"
             @select="handleSessionSelect"
+            @delete="handleSessionDelete"
           />
         </div>
         <!-- API Key 提示 -->
@@ -218,6 +219,17 @@ function selectSession(sessionId) {
 
 function handleSessionSelect(sessionId) {
   selectSession(sessionId);
+}
+
+function handleSessionDelete(sessionId) {
+  const index = sessions.value.findIndex(s => s.id === sessionId);
+  if (index !== -1) {
+    sessions.value.splice(index, 1);
+    if (currentSessionId.value === sessionId) {
+      currentSessionId.value = sessions.value.length > 0 ? sessions.value[0].id : null;
+    }
+    saveSessions();
+  }
 }
 
 async function generateImage() {
@@ -606,7 +618,7 @@ function formatTime() {
 .session-list-placeholder {
   flex-shrink: 0;
   overflow-y: auto;
-  max-height: 200px;
+  max-height: 400px;
 }
 
 .api-key-hint {
