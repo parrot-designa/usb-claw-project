@@ -95,11 +95,12 @@ export async function apiRequest(path, options = {}) {
     sessionCookie = await window.uclaw.ipcGetSessionCookie();
   }
 
+  // GET 请求只通过 params 传递 session_cookie，不放入 body
   if (sessionCookie) {
-    // 将 cookie 放入 data 中
-    data = { ...data, session_cookie: sessionCookie };
-    if(params){
-      params = { ...params,session_cookie: sessionCookie };
+    if (method === 'GET') {
+      params = { ...params, session_cookie: sessionCookie };
+    } else {
+      data = { ...data, session_cookie: sessionCookie };
     }
   }
   console.log("测试",data,`${import.meta.env.VITE_API_BASE_URL}${path}`)
