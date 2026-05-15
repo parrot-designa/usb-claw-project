@@ -423,7 +423,7 @@ function formatTime() {
   padding: 12px 16px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: var(--surface-variant);
+  background: var(--surface);
   resize: none;
   font-family: 'Manrope', sans-serif;
   font-size: 14px;
