@@ -265,13 +265,13 @@ async function generateImage() {
     let imageUrl = null;
     let status = 'queued';
 
-    if (taskResult.data && taskResult.data[0]?.url) {
+    if (taskResult.result?.data && taskResult.result?.data[0]?.url) {
       // 同步模式：直接返回图片
-      imageUrl = taskResult.data[0].url;
+      imageUrl = taskResult.result?.data[0].url;
       status = 'completed';
-    } else if (taskResult.data && taskResult.data[0]?.b64_json) {
+    } else if (taskResult.result?.data && taskResult.result?.data[0]?.b64_json) {
       // Base64 模式
-      imageUrl = `data:image/png;base64,${taskResult.data[0].b64_json}`;
+      imageUrl = `data:image/png;base64,${taskResult.result?.data[0].b64_json}`;
       status = 'completed';
     }
 
@@ -284,7 +284,7 @@ async function generateImage() {
         status: status,
         progress: 0,
         imageUrl: imageUrl,
-        revisedPrompt: taskResult.data?.[0]?.revised_prompt || '',
+        revisedPrompt: taskResult.result?.data?.[0]?.revised_prompt || '',
         time: formatTime(),
         startTime: Date.now()
       });
@@ -310,7 +310,7 @@ async function generateImage() {
 }
 
 async function pollTaskStatus(taskId, msgIndex, model) {
-  const maxPolls = 120;
+  const maxPolls = 220;
   let pollCount = 0;
 
   const timer = setInterval(async () => {
@@ -334,15 +334,15 @@ async function pollTaskStatus(taskId, msgIndex, model) {
       const msg = session.messages[msgIndex];
       const newStatus = result.status;
       const newProgress = result.progress || 0;
-
+      console.log("newStatus",newStatus,newProgress)
       if (msg.status !== newStatus || msg.progress !== newProgress) {
         msg.status = newStatus;
         msg.progress = newProgress;
-        msg.revisedPrompt = result.revised_prompt || msg.revisedPrompt;
+        msg.revisedPrompt = result.result?.data?.[0]?.revised_prompt || msg.revisedPrompt;
         msg.error = result.error || null;
+        if (newStatus === 'completed' && result.result?.data?.[0]?.url) {
 
-        if (newStatus === 'completed' && result.data?.[0]?.url) {
-          msg.imageUrl = result.data[0].url;
+          msg.imageUrl = result.result?.data[0].url;
           clearInterval(timer);
           showToast('图片生成成功');
           generating.value = false;
