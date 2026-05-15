@@ -66,8 +66,6 @@ contextBridge.exposeInMainWorld('uclaw', {
     }
     return ipcRenderer.invoke('check-port', port);
   },
-  // Session invalid - show activation window
-  ipcShowActivation: () => ipcRenderer.invoke('show-activation'),
   // ImageGen chat history
   ipcSaveImageGenHistory: (messages) => ipcRenderer.invoke('save-image-gen-history', messages),
   ipcLoadImageGenHistory: () => ipcRenderer.invoke('load-image-gen-history'),
