@@ -27,7 +27,9 @@ win:
     - target: portable
       arch:
         - x64
+        - ia32
   icon: src/assets/icon.ico
 
 portable:
   artifactName: OpenClawPro-${version}-portable.exe
+  requestExecutionLevel: asInvoker

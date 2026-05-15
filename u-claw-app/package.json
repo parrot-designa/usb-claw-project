@@ -12,6 +12,7 @@
     "start": "electron .",
     "build:mac": "NODE_ENV=production electron-vite build && electron-builder --mac",
     "build:win": "cross-env NODE_ENV=production electron-vite build && electron-builder --win",
+    "build:win32": "cross-env NODE_ENV=production electron-vite build && electron-builder --win --ia32",
     "build:all": "electron-vite build && electron-builder --mac --win",
     "build:mac-arm64": "NODE_ENV=production electron-vite build && electron-builder --mac --arm64",
     "build:mac-x64": "electron-vite build && electron-builder --mac --x64",
