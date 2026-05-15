@@ -1,6 +1,6 @@
 appId: org.open-claw-pro.desktop
-productName: OpenClawPro
-copyright: Copyright © 2026 OpenClawPro
+productName: OpenClawMax
+copyright: Copyright © 2026 OpenClawMax
 
 directories:
   output: release
