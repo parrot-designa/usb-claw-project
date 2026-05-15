@@ -116,9 +116,8 @@ func SetRelayRouter(router *gin.Engine) {
 			controller.Relay(c, types.RelayFormatOpenAIImage)
 		})
 
-		// image query routes (GET /images/generations/:task_id) - no Distribute needed
-		// these are just proxy queries to already-stored tasks, not new relay requests
-		relayV1Router.GET("/images/generations/:task_id", controller.ImageProxy)
+		// image fetch routes (POST /images/generations/:task_id) - uses Distribute for channel selection
+		httpRouter.POST("/images/generations/:task_id", controller.ImageProxy)
 
 		// embedding related routes
 		httpRouter.POST("/embeddings", func(c *gin.Context) {

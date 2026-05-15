@@ -26,7 +26,8 @@ func imageProxyError(c *gin.Context, status int, errType, message string) {
 }
 
 // ImageProxy 图片任务状态/内容透传接口
-// GET /v1/images/generations/:task_id
+// POST /v1/images/fetch/:task_id
+// 渠道由 Distribute 中间件根据请求体中的 model 参数选择
 func ImageProxy(c *gin.Context) {
 	taskID := c.Param("task_id")
 	if taskID == "" {
@@ -44,7 +45,7 @@ func ImageProxy(c *gin.Context) {
 		return
 	}
 
-	// 设置 channel meta 信息（从 context 中获取，TokenAuth 中间件已设置）
+	// 设置 channel meta 信息（从 context 中获取，Distribute 中间件已设置）
 	relayInfo.InitChannelMeta(c)
 
 	// 设置为图片 fetch 模式
@@ -74,7 +75,7 @@ func ImageProxy(c *gin.Context) {
 
 	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[ImageProxy] 透传 URL: %s", fullURL))
 
-	// 创建 GET 请求
+	// 创建 GET 请求（上游 API 是 GET）
 	req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodGet, fullURL, nil)
 	if err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("[ImageProxy] NewRequest failed: %s", err.Error()))
@@ -115,4 +116,3 @@ func ImageProxy(c *gin.Context) {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("[ImageProxy] io.Copy failed: %s", err.Error()))
 	}
 }
-

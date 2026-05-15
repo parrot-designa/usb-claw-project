@@ -292,7 +292,7 @@ async function generateImage() {
 
       // 如果是异步任务（返回task_id），开始轮询
       if (taskId && status !== 'completed') {
-        pollTaskStatus(taskId, msgIndex);
+        pollTaskStatus(taskId, msgIndex, selectedModel.value);
       } else {
         generating.value = false;
         if (imageUrl) {
@@ -309,7 +309,7 @@ async function generateImage() {
   }
 }
 
-async function pollTaskStatus(taskId, msgIndex) {
+async function pollTaskStatus(taskId, msgIndex, model) {
   const maxPolls = 120;
   let pollCount = 0;
 
@@ -318,7 +318,10 @@ async function pollTaskStatus(taskId, msgIndex) {
 
     try {
       const result = await apiRequest(`/v1/images/generations/${taskId}`, {
-        method: 'GET'
+        method: 'POST',
+        body: {
+          model: model
+        }
       });
 
       const session = currentSession.value;
