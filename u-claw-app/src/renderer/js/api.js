@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useSessionStore } from '@/stores/session.js';
+import { useUserStore } from '@renderer/main/stores/user.js';
 import router from '@renderer/main/router/index.js';
 
 const apiClient = axios.create({
@@ -73,6 +74,15 @@ export async function apiRequest(path, options = {}) {
   let params = options.params || null;
   let headers = options.headers || null;
 
+  // 获取用户 token
+  let userToken = null;
+  try {
+    const userStore = useUserStore();
+    userToken = userStore.userInfo?.token?.key;
+  } catch {
+    // store 不可用时跳过
+  }
+
   // 优先从 Pinia store 获取 session_cookie，否则回退到 IPC
   let sessionCookie = null;
   try {
@@ -94,13 +104,21 @@ export async function apiRequest(path, options = {}) {
   }
   console.log("测试",data,`${import.meta.env.VITE_API_BASE_URL}${path}`)
 
+  // 构建请求头
+  const requestHeaders = { ...headers };
+
+  // 图片生成接口需要携带用户 token
+  if (userToken && path.startsWith('/v1/images')) {
+    requestHeaders['Authorization'] = `Bearer ${userToken}`;
+  }
+
   try {
     const res = await apiClient({
       method,
       url: `${import.meta.env.VITE_API_BASE_URL}${path}`,
       data,
       params,
-      headers,
+      headers: requestHeaders,
       withCredentials: true
     });
     return { ok: true, ...res.data };
