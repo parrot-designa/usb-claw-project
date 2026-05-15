@@ -365,7 +365,7 @@ async function pollTaskStatus(taskId, msgIndex, model) {
     } catch (e) {
       console.error('[ImageGen] Poll status failed:', e);
     }
-  }, 1000);
+  }, 2000);
 }
 
 function formatTime() {
