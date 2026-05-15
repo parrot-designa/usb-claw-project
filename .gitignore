@@ -8,9 +8,7 @@ u-claw-app/skills/
 u-claw-app/release/
 u-claw-app/.license
 u-claw-app/out
-u-claw-app/usb_info.txt
-
-new-api/linux-new-api8
+u-claw-app/usb_info.txt 
 
 
 # ── Non-dev assets (stored locally, not in repo) ──
@@ -22,8 +20,7 @@ marketing/
 social-assets/
 
 # ── Build cache & temp ──
-.download-cache/
-linux-new-api*/
+.download-cache/ 
 *.dmg
 *.exe
 !website/downloads/agent.exe
