@@ -201,23 +201,12 @@ async function generateImage() {
     createNewSession();
   }
 
-  // 添加用户气泡
-  const userMsg = {
-    role: 'user',
-    text,
-    time: formatTime(),
-    images: referenceImages.value.slice() // 复制参考图
-  };
-  currentSession.value.messages.push(userMsg);
-  inputText.value = '';
-  saveSessions();
-
   generating.value = true;
 
   try {
     // 获取用户 token
-    const token = userStore.userInfo?.token;
-    const authHeader = token ? { Authorization: `Bearer ${token.key}` } : {};
+    const token = "sk-8Ij4Fan8qXefCv2h9S6lgJiLczsTP9nuRgcKBIs5BAqOeKWg";
+    const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
 
     // 调用图片生成接口
     const result = await apiRequest('/v1/images/generations', {
@@ -235,16 +224,18 @@ async function generateImage() {
       showToast('生成失败: ' + result.error, true);
     } else if (result.url) {
       showToast('图片生成成功');
-      // 添加到当前会话的气泡
+      // 添加 AI 气泡（包含用户输入的文本和生成的图片）
       if (currentSession.value) {
         currentSession.value.messages.push({
           role: 'ai',
-          text: '',
+          text: text,
           imageUrl: result.url,
           revisedPrompt: result.revisedPrompt || '',
           time: formatTime()
         });
       }
+      inputText.value = '';
+      referenceImages.value = [];
       saveSessions();
     } else {
       showToast('未返回图片', true);

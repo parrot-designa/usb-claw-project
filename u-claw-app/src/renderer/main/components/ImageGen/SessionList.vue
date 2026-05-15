@@ -130,8 +130,7 @@ function getSessionStatus(session) {
     }
   }
 
-  .session-items {
-    padding: 8px 0;
+  .session-items { 
   }
 
   .session-empty {
@@ -141,17 +140,34 @@ function getSessionStatus(session) {
   }
 
   .session-item {
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px;
+    padding: 6px 12px 6px 12px;
     cursor: pointer;
     border-radius: 4px;
-    margin-bottom: 4px;
     color: inherit;
+    font-size: 13px;
+    background: linear-gradient(90deg, rgba(160, 120, 220, 0.3) 0%, rgba(160, 120, 220, 0.05) 100%); 
 
     &.active {
-      background: #1a1a1a;
+      background: linear-gradient(90deg, rgba(160, 120, 220, 0.6) 0%, rgba(160, 120, 220, 0.15) 100%);
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: rgb(160, 120, 220);
+        border-radius: 0 2px 2px 0;
+      }
+    }
+
+    &:hover:not(.active) {
+      background: linear-gradient(90deg, rgba(160, 120, 220, 0.4) 0%, rgba(160, 120, 220, 0.1) 100%);
     }
   }
 
@@ -161,6 +177,7 @@ function getSessionStatus(session) {
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 13px;
+    line-height: 1;
   }
 
   .session-status {
@@ -169,6 +186,7 @@ function getSessionStatus(session) {
     margin-left: 8px;
     flex-shrink: 0;
     opacity: 0.7;
+    line-height: 1;
   }
 
   .session-item.active .session-status {

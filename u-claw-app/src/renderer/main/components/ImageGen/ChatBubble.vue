@@ -1,5 +1,5 @@
 <template>
-  <div :class="['chat-bubble', { 'user': role === 'user', 'ai': role === 'ai' }]">
+  <div class="chat-bubble">
     <div class="bubble-header">
       <span class="bubble-name">{{ name }}</span>
       <span v-if="modelName" class="bubble-model">{{ modelName }}</span>
@@ -41,7 +41,7 @@ const text = computed(() => props.bubble.text);
 const imageUrl = computed(() => props.bubble.imageUrl);
 const loading = computed(() => props.bubble.loading);
 const error = computed(() => props.bubble.error);
-const name = computed(() => role.value === 'user' ? '我' : '文生图');
+const name = computed(() => '文生图');
 
 const elapsedSeconds = ref(0);
 let timer = null;
@@ -90,37 +90,14 @@ function downloadImage() {
 
 <style scoped lang="scss">
 .chat-bubble {
-  max-width: 80%;
+  width: 100%;
   padding: 12px 16px;
   border-radius: 12px;
   position: relative;
-
-  &.user {
-    align-self: flex-end;
-    background: linear-gradient(135deg, #4a9eff, #00d4ff);
-    color: #fff;
-    margin-left: auto;
-
-    .bubble-header {
-      justify-content: flex-end;
-    }
-
-    .bubble-footer {
-      justify-content: flex-end;
-    }
-  }
-
-  &.ai {
-    align-self: flex-start;
-    background: #f0f2f5;
-    color: #333;
-    margin-right: auto;
-
-    .bubble-model {
-      background: #e6e6e6;
-      color: #666;
-    }
-  }
+  background: #f0f2f5;
+  color: #333;
+  margin-bottom: 12px;
+  box-sizing: border-box;
 
   .bubble-header {
     display: flex;
