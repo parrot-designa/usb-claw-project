@@ -148,7 +148,7 @@ function createGatewayManager() {
       let command;
 
       if (platform === 'darwin') {
-        command = `lsof -ti:${port} | xargs -I {} sh -c 'ps -p {} -o comm= 2>/dev/null | grep -q "OpenClawPro" && kill -9 {}' 2>/dev/null || true`;
+        command = `lsof -ti:${port} | xargs -I {} sh -c 'ps -p {} -o comm= 2>/dev/null | grep -q "OpenClawMax" && kill -9 {}' 2>/dev/null || true`;
       } else if (isWin()) {
         try {
           const cliPath = getOpenClawPath();
@@ -175,7 +175,7 @@ function createGatewayManager() {
         } catch { /* port not in use, good */ }
         // Step 2: Also kill any stray node.exe from our runtime
         try {
-          execSync(`wmic process where "ExecutablePath like '%OpenClawPro%runtime%node.exe'" call terminate 2>nul`, { stdio: 'ignore', timeout: 5000 });
+          execSync(`wmic process where "ExecutablePath like '%OpenClawMax%runtime%node.exe'" call terminate 2>nul`, { stdio: 'ignore', timeout: 5000 });
           console.log('[gateway] cleaned up stray OpenClaw node processes');
         } catch { }
         // Step 3: Wait for port to be fully released

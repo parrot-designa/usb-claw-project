@@ -31,7 +31,7 @@ function getLocalBase() {
   // APPDATA → C:\Users\<用户名>\AppData\Roaming（漫游配置）
   const appData = process.env.LOCALAPPDATA || process.env.APPDATA;
   if (appData) {
-    const candidate = path.join(appData, 'OpenClawPro');
+    const candidate = path.join(appData, 'OpenClawMax');
     // If path contains non-ASCII chars (e.g. Chinese username), use drive root instead
     if (!/[^\x00-\x7F]/.test(candidate)) {
       return candidate;
@@ -39,7 +39,7 @@ function getLocalBase() {
     console.log(`[runtime] Non-ASCII path detected: ${candidate}, using fallback`);
   }
   const drive = process.env.SystemDrive || 'C:';
-  return path.join(drive, 'OpenClawPro');
+  return path.join(drive, 'OpenClawMax');
 }
 
 const localBase = getLocalBase();
@@ -261,7 +261,7 @@ function updateModelsField(config, modelsData) {
 
   for (const model of models) {
     // Official source uses 'claw-proxy', others use their own provider name
-    const providerName = model.source === 'official' ? 'OpenClawPro' : model.provider;
+    const providerName = model.source === 'official' ? 'OpenClawMax' : model.provider;
     const modelId = model.source === 'official' ? model.label : model.model || model.value;
 
     // Track current model

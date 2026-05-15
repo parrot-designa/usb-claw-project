@@ -11,7 +11,7 @@ const logoPath = IS_DEV
 
 const splashHTML = `<html><body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:rgba(15,23,42,0.95);border-radius:16px;font-family:system-ui;color:white;flex-direction:column;border:1px solid #2A3040;overflow:hidden;">
   <img src="file://${logoPath}" style="width:60px;height:60px;margin-bottom:12px;border-radius:8px" />
-  <div style="-webkit-text-fill-color: transparent;font-size:24px;font-weight:bold;margin-bottom:18px;background: linear-gradient(135deg, #ff6b35, #ff8f65);background-clip: text;">OpenClawPro</div>
+  <div style="-webkit-text-fill-color: transparent;font-size:24px;font-weight:bold;margin-bottom:18px;background: linear-gradient(135deg, #ff6b35, #ff8f65);background-clip: text;">OpenClawMax</div>
   <div id="status" style="font-size:22px;color:#94a3b8;text-align:center;padding:0 20px">Loading...</div>
   <div id="progress" style="width:200px;height:4px;background:#334155;border-radius:2px;margin-top:12px;overflow:hidden;display:none">
     <div id="bar" style="width:0%;height:100%;background:#3b82f6;border-radius:2px;transition:width 0.3s"></div>

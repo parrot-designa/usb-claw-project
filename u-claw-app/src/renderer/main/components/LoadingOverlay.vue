@@ -4,7 +4,7 @@
       <!-- Logo/Title -->
       <div class="loading-overlay-logo">
         <img src="@assets/logo.png" alt="min-claw" class="loading-overlay-logo-icon" />
-        <span class="loading-overlay-logo-text">OpenClawPro</span>
+        <span class="loading-overlay-logo-text">OpenClawMax</span>
       </div>
 
       <!-- Progress Bar -->

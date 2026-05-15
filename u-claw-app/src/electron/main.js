@@ -17,11 +17,11 @@ app.whenReady().then(async () => {
   console.log('[DEBUG] App ready, creating window...');
   if (isWin()) {
     try {
-      console.log("finding OpenClawPro start")
+      console.log("finding OpenClawMax start")
       // Find and kill any node.exe running openclaw gateway on our port
-      const result1 = execSync('taskkill /f /im node.exe /fi "WINDOWTITLE eq OpenClawPro*" 2>nul', { stdio: 'ignore' });
-      console.log("finding OpenClawPro end",result1)
-    } catch(e) { /* no orphans, that's fine */ console.log("finding OpenClawPro error",e)}
+      const result1 = execSync('taskkill /f /im node.exe /fi "WINDOWTITLE eq OpenClawMax*" 2>nul', { stdio: 'ignore' });
+      console.log("finding OpenClawMax end",result1)
+    } catch(e) { /* no orphans, that's fine */ console.log("finding OpenClawMax error",e)}
     try {
       console.log("finding port start")
       // Also try killing by port
