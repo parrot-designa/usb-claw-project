@@ -2,20 +2,22 @@
   <div class="chat-bubble">
     <div class="bubble-header">
       <span class="bubble-name">{{ name }}</span>
-      <span v-if="modelName" class="bubble-model">{{ modelName }}</span>
+      <span v-if="statusText" class="bubble-status">{{ statusText }}</span>
     </div>
     <div class="bubble-content">
       <p>{{ text }}</p>
       <img v-if="imageUrl" :src="imageUrl" @click="previewImage" class="bubble-image" />
+      <div v-if="isLoading && progress > 0" class="bubble-progress">
+        <div class="progress-bar" :style="{ width: progress + '%' }"></div>
+      </div>
     </div>
     <div class="bubble-footer">
-      <button v-if="role === 'user'" class="copy-btn" @click="copyText">📋</button>
-      <span v-if="loading" class="bubble-loading">
+      <span v-if="isLoading" class="bubble-loading">
         <span class="iconfont icon-clawshuaxin"></span>
-        生成中 已用{{ elapsedSeconds }}秒
+        生成中{{ progress > 0 ? ` ${progress}%` : '' }} 已用{{ elapsedSeconds }}秒
       </span>
       <span v-if="error" class="bubble-error">{{ error }}</span>
-      <button v-if="imageUrl && !loading" class="download-btn" @click="downloadImage">↓</button>
+      <button v-if="imageUrl" class="download-btn" @click="downloadImage">↓</button>
     </div>
   </div>
 </template>
@@ -39,9 +41,24 @@ const emit = defineEmits(['preview', 'copy', 'download']);
 const role = computed(() => props.bubble.role);
 const text = computed(() => props.bubble.text);
 const imageUrl = computed(() => props.bubble.imageUrl);
-const loading = computed(() => props.bubble.loading);
 const error = computed(() => props.bubble.error);
+const status = computed(() => props.bubble.status);
+const progress = computed(() => props.bubble.progress || 0);
 const name = computed(() => '文生图');
+
+const isLoading = computed(() => {
+  return status.value === 'queued' || status.value === 'in_progress';
+});
+
+const statusText = computed(() => {
+  switch (status.value) {
+    case 'queued': return '排队中';
+    case 'in_progress': return '生成中';
+    case 'completed': return '已完成';
+    case 'failed': return '失败';
+    default: return null;
+  }
+});
 
 const elapsedSeconds = ref(0);
 let timer = null;
@@ -54,7 +71,7 @@ function updateElapsedTime() {
 }
 
 onMounted(() => {
-  if (loading.value) {
+  if (isLoading.value) {
     updateElapsedTime();
     timer = setInterval(updateElapsedTime, 1000);
   }
@@ -111,12 +128,27 @@ function downloadImage() {
     font-weight: 600;
   }
 
-  .bubble-model {
+  .bubble-status {
     font-size: 11px;
     padding: 2px 6px;
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.2);
-    color: inherit;
+    background: rgba(160, 120, 220, 0.3);
+    color: #666;
+  }
+
+  .bubble-progress {
+    width: 100%;
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, rgb(160, 120, 220), rgb(201, 157, 245));
+      transition: width 0.3s;
+    }
   }
 
   .bubble-content {
