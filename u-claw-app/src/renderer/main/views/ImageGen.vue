@@ -55,9 +55,9 @@
           <!-- 模型、尺寸、数量选择 -->
           <div class="generate-options">
             <select v-model="selectedModel" class="option-select">
-              <option value="gpt-image-2">GPT Image 2</option>
-              <option value="dall-e-3">DALL-E 3</option>
-              <option value="dall-e-2">DALL-E 2</option>
+              <option v-for="model in imageModels" :key="model.model_name" :value="model.model_name">
+                {{ model.model_name }}
+              </option>
             </select>
             <select v-model="imageSize" class="option-select">
               <option value="auto">自动</option>
@@ -128,6 +128,7 @@ const leftPanelCollapsed = ref(false); // 左侧面板是否折叠
 const referenceImages = ref([]);    // 参考图列表
 
 const inputText = ref('');
+const imageModels = ref([]);
 const selectedModel = ref('gpt-image-2');
 const imageSize = ref('auto');
 const imageCount = ref(1);
@@ -151,7 +152,22 @@ function toggleLeftPanel() {
 
 onMounted(async () => {
   await loadSessions();
+  await loadImageModels();
 });
+
+async function loadImageModels() {
+  try {
+    const res = await apiRequest('/api/models/image', { method: 'POST' });
+    if (res.success && res.data?.length > 0) {
+      imageModels.value = res.data;
+      if (!selectedModel.value || !res.data.find(m => m.model_name === selectedModel.value)) {
+        selectedModel.value = res.data[0].model_name;
+      }
+    }
+  } catch (e) {
+    console.error('[ImageGen] loadImageModels failed:', e);
+  }
+}
 
 async function loadSessions() {
   try {
