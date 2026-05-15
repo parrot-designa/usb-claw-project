@@ -179,3 +179,19 @@ type ImageData struct {
 	B64Json       string `json:"b64_json"`
 	RevisedPrompt string `json:"revised_prompt"`
 }
+
+// ImageTaskResponse 图片任务查询响应
+type ImageTaskResponse struct {
+	Object    string      `json:"object"`
+	ID        string      `json:"id"`
+	Status    string      `json:"status"`
+	Data      []ImageData `json:"data,omitempty"`
+	Error     *ImageError `json:"error,omitempty"`
+	CreatedAt int64       `json:"created_at,omitempty"`
+}
+
+// ImageError 图片任务错误
+type ImageError struct {
+	Message string `json:"message"`
+	Code    string `json:"code"`
+}

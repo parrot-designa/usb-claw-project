@@ -279,9 +279,10 @@ func recalcQuotaFromRatios(info *relaycommon.RelayInfo, ratios map[string]float6
 }
 
 var fetchRespBuilders = map[int]func(c *gin.Context) (respBody []byte, taskResp *dto.TaskError){
-	relayconstant.RelayModeSunoFetchByID:  sunoFetchByIDRespBodyBuilder,
-	relayconstant.RelayModeSunoFetch:      sunoFetchRespBodyBuilder,
-	relayconstant.RelayModeVideoFetchByID: videoFetchByIDRespBodyBuilder,
+	relayconstant.RelayModeSunoFetchByID:    sunoFetchByIDRespBodyBuilder,
+	relayconstant.RelayModeSunoFetch:        sunoFetchRespBodyBuilder,
+	relayconstant.RelayModeVideoFetchByID:    videoFetchByIDRespBodyBuilder,
+	relayconstant.RelayModeImagesFetchByID:   imagesFetchByIDRespBodyBuilder,
 }
 
 func RelayTaskFetch(c *gin.Context, relayMode int) (taskResp *dto.TaskError) {
@@ -303,6 +304,79 @@ func RelayTaskFetch(c *gin.Context, relayMode int) (taskResp *dto.TaskError) {
 	if err != nil {
 		taskResp = service.TaskErrorWrapper(err, "copy_response_body_failed", http.StatusInternalServerError)
 		return
+	}
+	return
+}
+
+func RelayImageTaskFetch(c *gin.Context, relayMode int) (taskResp *dto.TaskError) {
+	respBuilder, ok := fetchRespBuilders[relayMode]
+	if !ok {
+		taskResp = service.TaskErrorWrapperLocal(errors.New("invalid_relay_mode"), "invalid_relay_mode", http.StatusBadRequest)
+		return
+	}
+
+	respBody, taskErr := respBuilder(c)
+	if taskErr != nil {
+		return taskErr
+	}
+	if len(respBody) == 0 {
+		respBody = []byte("{\"code\":\"success\",\"data\":null}")
+	}
+
+	c.Writer.Header().Set("Content-Type", "application/json")
+	_, err := io.Copy(c.Writer, bytes.NewBuffer(respBody))
+	if err != nil {
+		taskResp = service.TaskErrorWrapper(err, "copy_response_body_failed", http.StatusInternalServerError)
+		return
+	}
+	return
+}
+
+func imagesFetchByIDRespBodyBuilder(c *gin.Context) (respBody []byte, taskResp *dto.TaskError) {
+	taskId := c.Param("task_id")
+	userId := c.GetInt("id")
+
+	originTask, exist, err := model.GetByTaskId(userId, taskId)
+	if err != nil {
+		taskResp = service.TaskErrorWrapper(err, "get_task_failed", http.StatusInternalServerError)
+		return
+	}
+	if !exist {
+		taskResp = service.TaskErrorWrapperLocal(errors.New("task_not_exist"), "task_not_exist", http.StatusBadRequest)
+		return
+	}
+
+	// 构建图片任务响应
+	resp := dto.ImageTaskResponse{
+		Object: "image",
+		ID:     originTask.TaskID,
+		Status: string(originTask.Status),
+	}
+
+	// 设置结果 URL
+	if url := originTask.GetResultURL(); url != "" {
+		resp.Data = []dto.ImageData{{Url: url}}
+	}
+
+	// 设置创建时间
+	if originTask.CreatedAt > 0 {
+		resp.CreatedAt = originTask.CreatedAt
+	}
+
+	// 如果有错误信息
+	if originTask.FailReason != "" {
+		resp.Error = &dto.ImageError{
+			Message: originTask.FailReason,
+			Code:    "image_generation_failed",
+		}
+	}
+
+	respBody, err = common.Marshal(dto.TaskResponse[any]{
+		Code: "success",
+		Data: resp,
+	})
+	if err != nil {
+		taskResp = service.TaskErrorWrapper(err, "marshal_response_failed", http.StatusInternalServerError)
 	}
 	return
 }
