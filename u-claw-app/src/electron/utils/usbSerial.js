@@ -15,7 +15,7 @@ function getCurrentDiskSerial(appPath) {
   }
 
   if (process.platform === 'win32') {
-    // Windows: 用 Get-Partition + Get-Disk 获取磁盘序列号
+    // Windows: 多种方式获取磁盘序列号，逐个尝试
     const { execSync: execSyncWin } = require('child_process');
     const pathModule = require('path');
 
@@ -29,20 +29,8 @@ function getCurrentDiskSerial(appPath) {
     const dl = driveLetter[0] + ':';
     console.log('[usbSerial] 目标盘符:', dl);
 
-    // 使用 PowerShell 脚本获取序列号，并过滤控制字符（只保留可打印ASCII）
-    const drive = dl;
-    const psScript = `& { $d = '${drive}'; Get-WmiObject Win32_LogicalDisk -Filter ([string]::Format('DeviceID=''{0}''', $d)) | ForEach-Object { Get-WmiObject -Query ([string]::Format('ASSOCIATORS OF {{Win32_LogicalDisk.DeviceID=''{0}''}} WHERE AssocClass=Win32_LogicalDiskToPartition', $_.DeviceID)) | ForEach-Object { Get-WmiObject -Query ([string]::Format('ASSOCIATORS OF {{Win32_DiskPartition.DeviceID=''{0}''}} WHERE AssocClass=Win32_DiskDriveToDiskPartition', $_.DeviceID)) | Select-Object -ExpandProperty SerialNumber } } | Select-Object -First 1 } | ForEach-Object { if ($_) { $_.Replace('[^\x20-\x7E]', '').Trim() } }`;
-    console.log('[usbSerial] 执行 PowerShell 脚本:', psScript);
-
-    try {
-      const result = execSyncWin(`powershell -Command "${psScript}"`, { encoding: 'utf8', timeout: 8000 });
-      const serial = result.trim();
-      console.log('[usbSerial] 序列号:', serial || 'null');
-      return serial || null;
-    } catch (e) {
-      console.error('[usbSerial] PowerShell 执行失败:', e.message);
-      return null;
-    }
+    const serial = getWindowsDiskSerial(dl, execSyncWin);
+    return serial;
   }
 
   // 其他平台不支持
@@ -231,6 +219,63 @@ async function getAppDriveInfo() {
     platform: process.platform,
     _usingFallback: usingFallback,
   };
+}
+
+// 获取 Windows 磁盘序列号（兼容多种方法）
+function getWindowsDiskSerial(drive, execSyncWin) {
+  const methods = [
+    // 方法1: Win32_LogicalDisk + WMI 关联查询（经典方式）
+    () => {
+      const psScript = `& { $d = '${drive}'; Get-WmiObject Win32_LogicalDisk -Filter ([string]::Format('DeviceID=''{0}''', $d)) | ForEach-Object { Get-WmiObject -Query ([string]::Format('ASSOCIATORS OF {{Win32_LogicalDisk.DeviceID=''{0}''}} WHERE AssocClass=Win32_LogicalDiskToPartition', $_.DeviceID)) | ForEach-Object { Get-WmiObject -Query ([string]::Format('ASSOCIATORS OF {{Win32_DiskPartition.DeviceID=''{0}''}} WHERE AssocClass=Win32_DiskDriveToDiskPartition', $_.DeviceID)) | Select-Object -ExpandProperty SerialNumber } } | Select-Object -First 1 } | ForEach-Object { if ($_) { $_.Replace('[^\x20-\x7E]', '').Trim() } }`;
+      console.log('[usbSerial] 尝试方法1: WMI Win32_LogicalDisk');
+      const result = execSyncWin(`powershell -Command "${psScript}"`, { encoding: 'utf8', timeout: 8000 });
+      return result.trim() || null;
+    },
+    // 方法2: Get-CimInstance Win32_LogicalDisk（CIM 方式，替代 WMI）
+    () => {
+      const psScript = `& { $d = '${drive}'; Get-CimInstance Win32_LogicalDisk -Filter ([string]::Format('DeviceID=''{0}''', $d)) | ForEach-Object { Get-CimInstance -Query ([string]::Format('ASSOCIATORS OF {{Win32_LogicalDisk.DeviceID=''{0}''}} WHERE AssocClass=Win32_LogicalDiskToPartition', $_.DeviceID)) | ForEach-Object { Get-CimInstance -Query ([string]::Format('ASSOCIATORS OF {{Win32_DiskPartition.DeviceID=''{0}''}} WHERE AssocClass=Win32_DiskDriveToDiskPartition', $_.DeviceID)) | Select-Object -ExpandProperty SerialNumber } } | Select-Object -First 1 } | ForEach-Object { if ($_) { $_.Replace('[^\x20-\x7E]', '').Trim() } }`;
+      console.log('[usbSerial] 尝试方法2: CIM Win32_LogicalDisk');
+      const result = execSyncWin(`powershell -Command "${psScript}"`, { encoding: 'utf8', timeout: 8000 });
+      return result.trim() || null;
+    },
+    // 方法3: Win32_USBHub 获取设备序列号
+    () => {
+      console.log('[usbSerial] 尝试方法3: Win32_USBHub');
+      const psScript = `Get-CimInstance Win32_USBHub | Where-Object { $_.DeviceID -like '*${drive[0]}*' } | Select-Object -ExpandProperty SerialNumber | Select-Object -First 1`;
+      const result = execSyncWin(`powershell -Command "${psScript}"`, { encoding: 'utf8', timeout: 8000 });
+      return result.trim() || null;
+    },
+    // 方法4: 使用 VolumeSerialNumber（简单方式）
+    () => {
+      console.log('[usbSerial] 尝试方法4: VolumeSerialNumber');
+      const psScript = `(Get-CimInstance Win32_LogicalDisk -Filter "DeviceID='${drive}'").VolumeSerialNumber`;
+      const result = execSyncWin(`powershell -Command "${psScript}"`, { encoding: 'utf8', timeout: 8000 });
+      return result.trim() || null;
+    },
+    // 方法5: 通过 Get-Partition 获取 PhysicalDisk SerialNumber
+    () => {
+      console.log('[usbSerial] 尝试方法5: Get-Partition + Get-PhysicalDisk');
+      const psScript = `& { $d = '${drive}'; Get-Partition -DriveLetter $d[0] -ErrorAction SilentlyContinue | Get-PhysicalDisk | Select-Object -ExpandProperty SerialNumber }`;
+      const result = execSyncWin(`powershell -Command "${psScript}"`, { encoding: 'utf8', timeout: 8000 });
+      return result.trim() || null;
+    },
+  ];
+
+  for (let i = 0; i < methods.length; i++) {
+    try {
+      console.log(`[usbSerial] 执行方法 ${i + 1}...`);
+      const serial = methods[i]();
+      if (serial) {
+        console.log(`[usbSerial] 方法 ${i + 1} 成功，序列号: ${serial}`);
+        return serial;
+      }
+    } catch (e) {
+      console.log(`[usbSerial] 方法 ${i + 1} 失败: ${e.message}`);
+    }
+  }
+
+  console.log('[usbSerial] 所有方法都无法获取序列号');
+  return null;
 }
 
 export {
