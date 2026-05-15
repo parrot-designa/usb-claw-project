@@ -148,17 +148,6 @@ function registerIPCHandlers({ gateway }) {
     return { ok: true };
   });
 
-  // Session invalid - 在单窗口模式下重新加载激活页面
-  ipcMain.handle('show-activation', async () => {
-    console.log('[Session] 重新加载激活页面');
-    const { navigateTo } = await import('./window-manager.js');
-    navigateTo('/activate');
-    return { ok: true };
-  });
-
-
-  
-
   ipcMain.handle('check-step-serial', async () => {
     try {
       const info = await detectUSBStatus();

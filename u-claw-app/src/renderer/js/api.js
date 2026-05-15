@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useSessionStore } from '@/stores/session.js';
+import router from '@renderer/main/router/index.js';
 
 const apiClient = axios.create({
   withCredentials: true // 支持 Cookie 认证
@@ -40,10 +41,8 @@ async function handleSessionInvalid() {
   if (window.showToastVue) {
     window.showToastVue(SESSION_INVALID_MESSAGE, true);
   }
-  // 2秒后关闭主窗口并打开激活窗口
-  if (window.uclaw?.ipcShowActivation) {
-    await window.uclaw.ipcShowActivation();
-  }
+  // 直接使用 vue-router 跳转到激活页面
+  router.push('/activate');
 }
 
 // 响应拦截器 - 统一处理会话失效
