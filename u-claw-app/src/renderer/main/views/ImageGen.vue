@@ -60,16 +60,22 @@
               </option>
             </select>
             <select v-model="imageSize" class="option-select">
-              <option value="auto">自动</option>
-              <option value="1024x1024">1024x1024</option>
+              <option value="1024x1024">1024x1024 (正方形)</option>
               <option value="1024x1792">1024x1792 (竖图)</option>
               <option value="1792x1024">1792x1024 (横图)</option>
+              <option value="1536x1024">1536x1024 (横向)</option>
+              <option value="1024x1536">1024x1536 (纵向)</option>
+              <option value="1344x1024">1344x1024 (横向)</option>
+              <option value="1024x1344">1024x1344 (纵向)</option>
             </select>
-            <select v-model="imageCount" class="option-select">
-              <option :value="1">1 张</option>
-              <option :value="2">2 张</option>
-              <option :value="4">4 张</option>
-            </select>
+            <input
+              v-model.number="imageCount"
+              type="number"
+              min="1"
+              max="4"
+              class="option-input"
+              placeholder="1-4"
+            />
           </div>
         </div>
 
@@ -130,7 +136,7 @@ const referenceImages = ref([]);    // 参考图列表
 const inputText = ref('');
 const imageModels = ref([]);
 const selectedModel = ref('gpt-image-2');
-const imageSize = ref('auto');
+const imageSize = ref('1024x1024');
 const imageCount = ref(1);
 const generating = ref(false);
 
@@ -218,7 +224,6 @@ async function generateImage() {
   const text = inputText.value.trim();
   if (!text || generating.value) return;
 
-  // 如果没有当前会话，创建新会话
   if (!currentSessionId.value) {
     createNewSession();
   }
@@ -226,20 +231,15 @@ async function generateImage() {
   generating.value = true;
 
   try {
-    // 获取用户 token
-    const token = "sk-8Ij4Fan8qXefCv2h9S6lgJiLczsTP9nuRgcKBIs5BAqOeKWg";
-    const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
-
     // 调用图片生成接口，返回任务 ID
     const taskResult = await apiRequest('/v1/images/generations', {
       method: 'POST',
       body: {
         model: selectedModel.value,
         prompt: text,
-        size: imageSize.value === 'auto' ? '1024x1024' : imageSize.value,
+        size: imageSize.value,
         n: imageCount.value
-      },
-      headers: authHeader
+      }
     });
 
     if (taskResult.error) {
@@ -248,30 +248,45 @@ async function generateImage() {
       return;
     }
 
-    if (!taskResult.id) {
-      showToast('未返回任务ID', true);
-      generating.value = false;
-      return;
+    // 兼容处理：直接返回图片URL（同步模式）或返回task_id（异步模式）
+    let taskId = taskResult.id;
+    let imageUrl = null;
+    let status = 'queued';
+
+    if (taskResult.data && taskResult.data[0]?.url) {
+      // 同步模式：直接返回图片
+      imageUrl = taskResult.data[0].url;
+      status = 'completed';
+    } else if (taskResult.data && taskResult.data[0]?.b64_json) {
+      // Base64 模式
+      imageUrl = `data:image/png;base64,${taskResult.data[0].b64_json}`;
+      status = 'completed';
     }
 
-    // 添加 AI 气泡（包含用户输入的文本和任务信息）
     if (currentSession.value) {
       const msgIndex = currentSession.value.messages.length;
       currentSession.value.messages.push({
         role: 'ai',
         text: text,
-        taskId: taskResult.id,
-        status: taskResult.status || 'queued',
+        taskId: taskId,
+        status: status,
         progress: 0,
-        imageUrl: null,
-        revisedPrompt: '',
+        imageUrl: imageUrl,
+        revisedPrompt: taskResult.data?.[0]?.revised_prompt || '',
         time: formatTime(),
         startTime: Date.now()
       });
       saveSessions();
 
-      // 轮询任务状态
-      pollTaskStatus(taskResult.id, msgIndex);
+      // 如果是异步任务（返回task_id），开始轮询
+      if (taskId && status !== 'completed') {
+        pollTaskStatus(taskId, msgIndex);
+      } else {
+        generating.value = false;
+        if (imageUrl) {
+          showToast('图片生成成功');
+        }
+      }
     }
 
     inputText.value = '';
@@ -283,16 +298,15 @@ async function generateImage() {
 }
 
 async function pollTaskStatus(taskId, msgIndex) {
-  const maxPolls = 120; // 最多轮询 120 秒
+  const maxPolls = 120;
   let pollCount = 0;
 
   const timer = setInterval(async () => {
     pollCount++;
 
     try {
-      const token = "sk-8Ij4Fan8qXefCv2h9S6lgJiLczsTP9nuRgcKBIs5BAqOeKWg";
       const result = await apiRequest(`/v1/images/generations/${taskId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        method: 'GET'
       });
 
       const session = currentSession.value;
@@ -306,16 +320,14 @@ async function pollTaskStatus(taskId, msgIndex) {
       const newStatus = result.status;
       const newProgress = result.progress || 0;
 
-      // 状态变更时更新本地
       if (msg.status !== newStatus || msg.progress !== newProgress) {
         msg.status = newStatus;
         msg.progress = newProgress;
         msg.revisedPrompt = result.revised_prompt || msg.revisedPrompt;
         msg.error = result.error || null;
 
-        // 完成后保存结果
-        if (newStatus === 'completed' && result.url) {
-          msg.imageUrl = result.url;
+        if (newStatus === 'completed' && result.data?.[0]?.url) {
+          msg.imageUrl = result.data[0].url;
           clearInterval(timer);
           showToast('图片生成成功');
           generating.value = false;
@@ -329,7 +341,6 @@ async function pollTaskStatus(taskId, msgIndex) {
         saveSessions();
       }
 
-      // 超时停止轮询
       if (pollCount >= maxPolls) {
         clearInterval(timer);
         msg.error = '生成超时';
@@ -547,13 +558,32 @@ function formatTime() {
 .generate-options {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 
   .option-select {
     flex: 1;
+    min-width: 100px;
     padding: 8px 12px;
     border-radius: 8px;
     border: 1px solid var(--border);
     background: var(--surface);
+    font-size: 14px;
+  }
+
+  .option-input {
+    width: 70px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    text-align: center;
+    font-size: 14px;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
   }
 }
 
