@@ -24,7 +24,9 @@
 
     <!-- 自由创作 Tab -->
     <div v-show="activeTab === 'free'" class="free-create-tab">
-      <div class="left-panel">
+      <div class="left-panel" :class="{ collapsed: leftPanelCollapsed }">
+        <span v-if="!leftPanelCollapsed" class="collapse-icon left" @click="toggleLeftPanel">←</span>
+        <span v-else class="collapse-icon left" @click="toggleLeftPanel">→</span>
         <!-- 会话列表 -->
         <div class="session-list-placeholder">
           <SessionList
@@ -82,9 +84,9 @@
         </button>
       </div>
 
-      <div class="right-panel" :class="{ collapsed: rightPanelCollapsed }">
-        <span class="collapse-icon" @click="toggleRightPanel">
-          {{ rightPanelCollapsed ? '☰' : '×' }}
+      <div class="right-panel">
+        <span class="collapse-icon" @click="toggleLeftPanel">
+          <span class="iconfont icon-clawzhedie"></span>
         </span>
         <!-- 空白占位符或聊天气泡 -->
         <div class="bubbles-area">
@@ -122,7 +124,7 @@ const userStore = useUserStore();
 const sessions = ref([]);           // 会话列表
 const currentSessionId = ref(null); // 当前会话ID
 const activeTab = ref('free');      // 当前激活的 Tab
-const rightPanelCollapsed = ref(false); // 右侧面板是否折叠
+const leftPanelCollapsed = ref(false); // 左侧面板是否折叠
 const referenceImages = ref([]);    // 参考图列表
 
 const inputText = ref('');
@@ -141,6 +143,10 @@ const bubbles = computed(() => {
 
 function toggleRightPanel() {
   rightPanelCollapsed.value = !rightPanelCollapsed.value;
+}
+
+function toggleLeftPanel() {
+  leftPanelCollapsed.value = !leftPanelCollapsed.value;
 }
 
 onMounted(async () => {
@@ -415,6 +421,37 @@ function formatTime() {
   flex-direction: column;
   overflow-y: auto;
   min-height: 0;
+  position: relative;
+  transition: all 0.3s ease;
+
+  &.collapsed {
+    flex: 0;
+    width: 0;
+    padding: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+
+  .collapse-icon.left {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-variant);
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+
+    .left-panel:hover & {
+      opacity: 1;
+    }
+  }
 }
 
 .right-panel {
@@ -425,13 +462,6 @@ function formatTime() {
   transition: all 0.3s ease;
   overflow: hidden;
   border-left: 1px solid var(--border);
-
-  &.collapsed {
-    flex: 0;
-    width: 0;
-    padding: 0;
-    opacity: 0;
-  }
 }
 
 .collapse-icon {

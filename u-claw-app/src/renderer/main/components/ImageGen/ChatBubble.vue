@@ -111,10 +111,11 @@ function downloadImage() {
   padding: 12px 16px;
   border-radius: 12px;
   position: relative;
-  background: #f0f2f5;
-  color: #333;
+  background: var(--card);
+  color: var(--text);
   margin-bottom: 12px;
   box-sizing: border-box;
+  border: 1px solid var(--border);
 
   .bubble-header {
     display: flex;
@@ -132,14 +133,14 @@ function downloadImage() {
     font-size: 11px;
     padding: 2px 6px;
     border-radius: 4px;
-    background: rgba(160, 120, 220, 0.3);
-    color: #666;
+    background: rgba(160, 120, 220, 0.2);
+    color: var(--text-secondary);
   }
 
   .bubble-progress {
     width: 100%;
     height: 4px;
-    background: #e0e0e0;
+    background: var(--border);
     border-radius: 2px;
     margin-top: 8px;
     overflow: hidden;
@@ -180,7 +181,6 @@ function downloadImage() {
     font-size: 12px;
   }
 
-  .copy-btn,
   .download-btn {
     background: transparent;
     border: none;
@@ -193,7 +193,7 @@ function downloadImage() {
 
     &:hover {
       opacity: 1;
-      background: rgba(0, 0, 0, 0.1);
+      background: var(--surface-variant);
     }
   }
 
