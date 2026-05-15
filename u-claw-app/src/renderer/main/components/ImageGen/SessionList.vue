@@ -19,7 +19,7 @@
         @click="selectSession(session.id)"
       >
         <span class="session-text">{{ getSessionPreview(session) }}</span>
-        <span class="session-delete iconfont icon-clawshanchu" @click.stop="deleteSession(session.id)"></span>
+        <span class="session-delete iconfont icon-clawguanbi" @click.stop="deleteSession(session.id)"></span>
       </div>
     </div>
   </div>
@@ -173,13 +173,14 @@ function getSessionPreview(session) {
 
   .session-delete {
     font-size: 12px;
-    color: inherit;
-    opacity: 0;
+    color: inherit; 
     margin-left: 8px;
     flex-shrink: 0;
     transition: opacity 0.2s;
     padding: 4px;
     border-radius: 4px;
+    position: absolute;
+    right: 8px;
 
     &:hover {
       background: rgba(255, 255, 255, 0.1);
