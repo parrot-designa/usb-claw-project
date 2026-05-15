@@ -33,6 +33,23 @@ func filterPricingByUsableGroups(pricing []model.Pricing, usableGroup map[string
 	return filtered
 }
 
+func filterPricingByTags(pricing []model.Pricing, tags []string) []model.Pricing {
+	if len(pricing) == 0 {
+		return pricing
+	}
+	if len(tags) == 0 {
+		return pricing
+	}
+
+	filtered := make([]model.Pricing, 0, len(pricing))
+	for _, item := range pricing {
+		if common.StringsContains(tags, item.Tags) {
+			filtered = append(filtered, item)
+		}
+	}
+	return filtered
+}
+
 func GetPricing(c *gin.Context) {
 	pricing := model.GetPricing()
 	userId, exists := c.Get("id")

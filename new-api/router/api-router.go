@@ -297,6 +297,10 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.GET("/token/list", controller.GetAllTokensByKey)
 		// models/all 公开接口，供 U-Claw 主窗口获取用户所有可用模型（通过 session_cookie 认证）
 		apiRouter.POST("/models/all", controller.GetAllModelsBySession)
+		// models/video 公开接口，供 U-Claw 主窗口获取用户视频模型（通过 session_cookie 认证）
+		apiRouter.POST("/models/video", controller.GetVideoModelsBySession)
+		// models/image 公开接口，供 U-Claw 主窗口获取用户图片模型（通过 session_cookie 认证）
+		apiRouter.POST("/models/image", controller.GetImageModelsBySession)
 		// user/self 公开接口，供 U-Claw 主窗口获取用户信息（通过 session_cookie 认证）
 		apiRouter.POST("/user/self", controller.GetSelfBySession)
 		tokenRoute := apiRouter.Group("/token")

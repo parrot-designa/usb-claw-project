@@ -568,6 +568,136 @@ func GetAllModelsBySession(c *gin.Context) {
 	// 获取所有定价数据并按用户分组过滤
 	allPricing := model.GetPricing()
 	filteredPricing := filterPricingByUsableGroups(allPricing, usableGroups)
+	// 过滤 tags 为 "text" 或空
+	filteredPricing = filterPricingByTags(filteredPricing, []string{"", "text"})
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    filteredPricing,
+	})
+}
+
+// GetVideoModelsBySession 获取视频模型（通过 session_cookie 认证，供 U-Claw 主窗口使用）
+func GetVideoModelsBySession(c *gin.Context) {
+	// 从 JSON body 获取 session_cookie
+	var body struct {
+		SessionCookie string `json:"session_cookie"`
+	}
+	if err := c.ShouldBindJSON(&body); err != nil {
+		// 尝试从 form data 获取
+		body.SessionCookie = c.PostForm("session_cookie")
+	}
+	sessionCookie := body.SessionCookie
+	if sessionCookie == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "未登录或会话已过期",
+		})
+		return
+	}
+
+	// 解码 session cookie
+	sessionData, err := decodeSessionCookie(sessionCookie)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "会话无效",
+		})
+		return
+	}
+
+	// 从 session 数据中提取用户 ID（兼容 int、int64、float64 类型）
+	userId, err := extractUserIdFromSession(sessionData)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "用户 ID 解析失败",
+		})
+		return
+	}
+
+	// 获取用户信息以获取其所属分组
+	user, err := model.GetUserById(userId, false)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "获取用户信息失败",
+		})
+		return
+	}
+
+	// 获取该用户可用的分组
+	usableGroups := service.GetUserUsableGroups(user.Group)
+
+	// 获取所有定价数据并按用户分组过滤
+	allPricing := model.GetPricing()
+	filteredPricing := filterPricingByUsableGroups(allPricing, usableGroups)
+	// 过滤 tags 为 "video"
+	filteredPricing = filterPricingByTags(filteredPricing, []string{"video"})
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"data":    filteredPricing,
+	})
+}
+
+// GetImageModelsBySession 获取图片模型（通过 session_cookie 认证，供 U-Claw 主窗口使用）
+func GetImageModelsBySession(c *gin.Context) {
+	// 从 JSON body 获取 session_cookie
+	var body struct {
+		SessionCookie string `json:"session_cookie"`
+	}
+	if err := c.ShouldBindJSON(&body); err != nil {
+		// 尝试从 form data 获取
+		body.SessionCookie = c.PostForm("session_cookie")
+	}
+	sessionCookie := body.SessionCookie
+	if sessionCookie == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "未登录或会话已过期",
+		})
+		return
+	}
+
+	// 解码 session cookie
+	sessionData, err := decodeSessionCookie(sessionCookie)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "会话无效",
+		})
+		return
+	}
+
+	// 从 session 数据中提取用户 ID（兼容 int、int64、float64 类型）
+	userId, err := extractUserIdFromSession(sessionData)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "用户 ID 解析失败",
+		})
+		return
+	}
+
+	// 获取用户信息以获取其所属分组
+	user, err := model.GetUserById(userId, false)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": "获取用户信息失败",
+		})
+		return
+	}
+
+	// 获取该用户可用的分组
+	usableGroups := service.GetUserUsableGroups(user.Group)
+
+	// 获取所有定价数据并按用户分组过滤
+	allPricing := model.GetPricing()
+	filteredPricing := filterPricingByUsableGroups(allPricing, usableGroups)
+	// 过滤 tags 为 "image"
+	filteredPricing = filterPricingByTags(filteredPricing, []string{"image"})
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
