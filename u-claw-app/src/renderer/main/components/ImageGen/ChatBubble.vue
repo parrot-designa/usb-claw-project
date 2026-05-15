@@ -1,21 +1,23 @@
 <template>
-  <div :class="['chat-bubble', { 'user': role === 'user', 'ai': role === 'ai' }]">
+  <div class="chat-bubble">
     <div class="bubble-header">
       <span class="bubble-name">{{ name }}</span>
-      <span v-if="modelName" class="bubble-model">{{ modelName }}</span>
+      <span v-if="statusText" class="bubble-status">{{ statusText }}</span>
     </div>
     <div class="bubble-content">
       <p>{{ text }}</p>
       <img v-if="imageUrl" :src="imageUrl" @click="previewImage" class="bubble-image" />
+      <div v-if="isLoading && progress > 0" class="bubble-progress">
+        <div class="progress-bar" :style="{ width: progress + '%' }"></div>
+      </div>
     </div>
     <div class="bubble-footer">
-      <button v-if="role === 'user'" class="copy-btn" @click="copyText">📋</button>
-      <span v-if="loading" class="bubble-loading">
+      <span v-if="isLoading" class="bubble-loading">
         <span class="iconfont icon-clawshuaxin"></span>
-        生成中 已用{{ elapsedSeconds }}秒
+        生成中{{ progress > 0 ? ` ${progress}%` : '' }} 已用{{ elapsedSeconds }}秒
       </span>
       <span v-if="error" class="bubble-error">{{ error }}</span>
-      <button v-if="imageUrl && !loading" class="download-btn" @click="downloadImage">↓</button>
+      <button v-if="imageUrl" class="download-btn" @click="downloadImage">↓</button>
     </div>
   </div>
 </template>
@@ -39,9 +41,24 @@ const emit = defineEmits(['preview', 'copy', 'download']);
 const role = computed(() => props.bubble.role);
 const text = computed(() => props.bubble.text);
 const imageUrl = computed(() => props.bubble.imageUrl);
-const loading = computed(() => props.bubble.loading);
 const error = computed(() => props.bubble.error);
-const name = computed(() => role.value === 'user' ? '我' : '文生图');
+const status = computed(() => props.bubble.status);
+const progress = computed(() => props.bubble.progress || 0);
+const name = computed(() => '文生图');
+
+const isLoading = computed(() => {
+  return status.value === 'queued' || status.value === 'in_progress';
+});
+
+const statusText = computed(() => {
+  switch (status.value) {
+    case 'queued': return '排队中';
+    case 'in_progress': return '生成中';
+    case 'completed': return '已完成';
+    case 'failed': return '失败';
+    default: return null;
+  }
+});
 
 const elapsedSeconds = ref(0);
 let timer = null;
@@ -54,7 +71,7 @@ function updateElapsedTime() {
 }
 
 onMounted(() => {
-  if (loading.value) {
+  if (isLoading.value) {
     updateElapsedTime();
     timer = setInterval(updateElapsedTime, 1000);
   }
@@ -90,37 +107,15 @@ function downloadImage() {
 
 <style scoped lang="scss">
 .chat-bubble {
-  max-width: 80%;
+  width: 100%;
   padding: 12px 16px;
   border-radius: 12px;
   position: relative;
-
-  &.user {
-    align-self: flex-end;
-    background: linear-gradient(135deg, #4a9eff, #00d4ff);
-    color: #fff;
-    margin-left: auto;
-
-    .bubble-header {
-      justify-content: flex-end;
-    }
-
-    .bubble-footer {
-      justify-content: flex-end;
-    }
-  }
-
-  &.ai {
-    align-self: flex-start;
-    background: #f0f2f5;
-    color: #333;
-    margin-right: auto;
-
-    .bubble-model {
-      background: #e6e6e6;
-      color: #666;
-    }
-  }
+  background: var(--card);
+  color: var(--text);
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
 
   .bubble-header {
     display: flex;
@@ -134,12 +129,27 @@ function downloadImage() {
     font-weight: 600;
   }
 
-  .bubble-model {
+  .bubble-status {
     font-size: 11px;
     padding: 2px 6px;
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.2);
-    color: inherit;
+    background: rgba(160, 120, 220, 0.2);
+    color: var(--text-secondary);
+  }
+
+  .bubble-progress {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, rgb(160, 120, 220), rgb(201, 157, 245));
+      transition: width 0.3s;
+    }
   }
 
   .bubble-content {
@@ -171,7 +181,6 @@ function downloadImage() {
     font-size: 12px;
   }
 
-  .copy-btn,
   .download-btn {
     background: transparent;
     border: none;
@@ -184,7 +193,7 @@ function downloadImage() {
 
     &:hover {
       opacity: 1;
-      background: rgba(0, 0, 0, 0.1);
+      background: var(--surface-variant);
     }
   }
 

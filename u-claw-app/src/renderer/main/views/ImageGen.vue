@@ -24,7 +24,9 @@
 
     <!-- 自由创作 Tab -->
     <div v-show="activeTab === 'free'" class="free-create-tab">
-      <div class="left-panel">
+      <div class="left-panel" :class="{ collapsed: leftPanelCollapsed }">
+        <span v-if="!leftPanelCollapsed" class="collapse-icon left" @click="toggleLeftPanel">←</span>
+        <span v-else class="collapse-icon left" @click="toggleLeftPanel">→</span>
         <!-- 会话列表 -->
         <div class="session-list-placeholder">
           <SessionList
@@ -82,9 +84,9 @@
         </button>
       </div>
 
-      <div class="right-panel" :class="{ collapsed: rightPanelCollapsed }">
-        <span class="collapse-icon" @click="toggleRightPanel">
-          {{ rightPanelCollapsed ? '☰' : '×' }}
+      <div class="right-panel">
+        <span class="collapse-icon" @click="toggleLeftPanel">
+          <span class="iconfont icon-clawzhedie"></span>
         </span>
         <!-- 空白占位符或聊天气泡 -->
         <div class="bubbles-area">
@@ -122,7 +124,7 @@ const userStore = useUserStore();
 const sessions = ref([]);           // 会话列表
 const currentSessionId = ref(null); // 当前会话ID
 const activeTab = ref('free');      // 当前激活的 Tab
-const rightPanelCollapsed = ref(false); // 右侧面板是否折叠
+const leftPanelCollapsed = ref(false); // 左侧面板是否折叠
 const referenceImages = ref([]);    // 参考图列表
 
 const inputText = ref('');
@@ -141,6 +143,10 @@ const bubbles = computed(() => {
 
 function toggleRightPanel() {
   rightPanelCollapsed.value = !rightPanelCollapsed.value;
+}
+
+function toggleLeftPanel() {
+  leftPanelCollapsed.value = !leftPanelCollapsed.value;
 }
 
 onMounted(async () => {
@@ -201,26 +207,15 @@ async function generateImage() {
     createNewSession();
   }
 
-  // 添加用户气泡
-  const userMsg = {
-    role: 'user',
-    text,
-    time: formatTime(),
-    images: referenceImages.value.slice() // 复制参考图
-  };
-  currentSession.value.messages.push(userMsg);
-  inputText.value = '';
-  saveSessions();
-
   generating.value = true;
 
   try {
     // 获取用户 token
-    const token = userStore.userInfo?.token;
-    const authHeader = token ? { Authorization: `Bearer ${token.key}` } : {};
+    const token = "sk-8Ij4Fan8qXefCv2h9S6lgJiLczsTP9nuRgcKBIs5BAqOeKWg";
+    const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
 
-    // 调用图片生成接口
-    const result = await apiRequest('/v1/images/generations', {
+    // 调用图片生成接口，返回任务 ID
+    const taskResult = await apiRequest('/v1/images/generations', {
       method: 'POST',
       body: {
         model: selectedModel.value,
@@ -231,29 +226,104 @@ async function generateImage() {
       headers: authHeader
     });
 
-    if (result.error) {
-      showToast('生成失败: ' + result.error, true);
-    } else if (result.url) {
-      showToast('图片生成成功');
-      // 添加到当前会话的气泡
-      if (currentSession.value) {
-        currentSession.value.messages.push({
-          role: 'ai',
-          text: '',
-          imageUrl: result.url,
-          revisedPrompt: result.revisedPrompt || '',
-          time: formatTime()
-        });
-      }
-      saveSessions();
-    } else {
-      showToast('未返回图片', true);
+    if (taskResult.error) {
+      showToast('生成失败: ' + taskResult.error, true);
+      generating.value = false;
+      return;
     }
+
+    if (!taskResult.id) {
+      showToast('未返回任务ID', true);
+      generating.value = false;
+      return;
+    }
+
+    // 添加 AI 气泡（包含用户输入的文本和任务信息）
+    if (currentSession.value) {
+      const msgIndex = currentSession.value.messages.length;
+      currentSession.value.messages.push({
+        role: 'ai',
+        text: text,
+        taskId: taskResult.id,
+        status: taskResult.status || 'queued',
+        progress: 0,
+        imageUrl: null,
+        revisedPrompt: '',
+        time: formatTime(),
+        startTime: Date.now()
+      });
+      saveSessions();
+
+      // 轮询任务状态
+      pollTaskStatus(taskResult.id, msgIndex);
+    }
+
+    inputText.value = '';
+    referenceImages.value = [];
   } catch (e) {
     showToast('生成失败: ' + e.message, true);
-  } finally {
     generating.value = false;
   }
+}
+
+async function pollTaskStatus(taskId, msgIndex) {
+  const maxPolls = 120; // 最多轮询 120 秒
+  let pollCount = 0;
+
+  const timer = setInterval(async () => {
+    pollCount++;
+
+    try {
+      const token = "sk-8Ij4Fan8qXefCv2h9S6lgJiLczsTP9nuRgcKBIs5BAqOeKWg";
+      const result = await apiRequest(`/v1/images/generations/${taskId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const session = currentSession.value;
+      if (!session || !session.messages[msgIndex]) {
+        clearInterval(timer);
+        generating.value = false;
+        return;
+      }
+
+      const msg = session.messages[msgIndex];
+      const newStatus = result.status;
+      const newProgress = result.progress || 0;
+
+      // 状态变更时更新本地
+      if (msg.status !== newStatus || msg.progress !== newProgress) {
+        msg.status = newStatus;
+        msg.progress = newProgress;
+        msg.revisedPrompt = result.revised_prompt || msg.revisedPrompt;
+        msg.error = result.error || null;
+
+        // 完成后保存结果
+        if (newStatus === 'completed' && result.url) {
+          msg.imageUrl = result.url;
+          clearInterval(timer);
+          showToast('图片生成成功');
+          generating.value = false;
+        } else if (newStatus === 'failed') {
+          msg.error = result.error || '生成失败';
+          clearInterval(timer);
+          showToast('图片生成失败: ' + msg.error, true);
+          generating.value = false;
+        }
+
+        saveSessions();
+      }
+
+      // 超时停止轮询
+      if (pollCount >= maxPolls) {
+        clearInterval(timer);
+        msg.error = '生成超时';
+        generating.value = false;
+        saveSessions();
+      }
+    } catch (e) {
+      console.error('[ImageGen] Poll status failed:', e);
+    }
+  }, 1000);
 }
 
 function formatTime() {
@@ -351,6 +421,37 @@ function formatTime() {
   flex-direction: column;
   overflow-y: auto;
   min-height: 0;
+  position: relative;
+  transition: all 0.3s ease;
+
+  &.collapsed {
+    flex: 0;
+    width: 0;
+    padding: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+
+  .collapse-icon.left {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-variant);
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+
+    .left-panel:hover & {
+      opacity: 1;
+    }
+  }
 }
 
 .right-panel {
@@ -361,13 +462,6 @@ function formatTime() {
   transition: all 0.3s ease;
   overflow: hidden;
   border-left: 1px solid var(--border);
-
-  &.collapsed {
-    flex: 0;
-    width: 0;
-    padding: 0;
-    opacity: 0;
-  }
 }
 
 .collapse-icon {
@@ -423,7 +517,7 @@ function formatTime() {
   padding: 12px 16px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: var(--surface-variant);
+  background: var(--surface);
   resize: none;
   font-family: 'Manrope', sans-serif;
   font-size: 14px;
