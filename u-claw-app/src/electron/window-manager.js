@@ -7,7 +7,7 @@ let splashWindow = null;
 
 const logoPath = IS_DEV
   ? path.join(app.getAppPath(), 'src', 'assets', 'logo.png')
-  : path.join(import.meta.dirname, '..', 'assets', 'logo.png');
+  : path.join(import.meta.dirname, '..', 'assets', 'assets', 'logo.png');
 
 const splashHTML = `<html><body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:rgba(15,23,42,0.95);border-radius:16px;font-family:system-ui;color:white;flex-direction:column;border:1px solid #2A3040;overflow:hidden;">
   <img src="file://${logoPath}" style="width:60px;height:60px;margin-bottom:12px;border-radius:8px" />
