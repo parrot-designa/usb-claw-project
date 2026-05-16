@@ -53,7 +53,7 @@
           <span class="meta-status" :class="loadStatus">{{ loadStatusText }}</span>
         </div>
         <div v-for="(url, index) in imageUrls" :key="index" class="bubble-image-item">
-          <div class="image-placeholder" :class="{ loaded: imageLoaded[index] }">
+          <div class="image-placeholder" :class="{ loaded: imageLoaded[index], error: imageError[index] }">
             <img
               :src="url"
               @load="onImageLoad(index)"
@@ -61,18 +61,19 @@
               @click="previewImage(url)"
               class="bubble-image"
             />
+            <div class="image-actions">
+              <button class="image-action-btn" @click.stop="insertImage(url)" title="基于此图生成（插入左侧参考图）">
+                <span class="iconfont icon-clawtupian"></span>
+              </button>
+              <button class="image-action-btn" @click.stop="regenerateSingle(url)" title="根据相同参数重新生成">
+                <span class="iconfont icon-clawshuaxin"></span>
+              </button>
+              <button class="image-action-btn" @click.stop="downloadImage(url)" title="下载">
+                <span class="iconfont icon-clawxiazai"></span>
+              </button>
+            </div>
           </div>
-          <div class="image-actions">
-            <button class="image-action-btn" @click.stop="insertImage(url)" title="基于此图生成（插入左侧参考图）">
-              <span class="iconfont icon-clawtupian"></span>
-            </button>
-            <button class="image-action-btn" @click.stop="regenerateSingle(url)" title="根据相同参数重新生成">
-              <span class="iconfont icon-clawshuaxin"></span>
-            </button>
-            <button class="image-action-btn" @click.stop="downloadImage(url)" title="下载">
-              <span class="iconfont icon-clawxiazai"></span>
-            </button>
-          </div>
+          
         </div>
       </div>
     </div>
@@ -157,10 +158,12 @@ const imageError = ref({});
 
 function onImageLoad(index) {
   imageLoaded.value[index] = true;
+  imageError.value[index] = false;
 }
 
 function onImageError(index) {
-  imageError.value[index] = false;
+  imageError.value[index] = true;
+  imageLoaded.value[index] = false;
 }
 
 function updateElapsedTime() {
@@ -446,6 +449,36 @@ function regenerateSingle(url) {
       display: none;
     }
 
+    &.loaded {
+      background: transparent;
+      position: relative;
+
+      .bubble-image{
+        opacity: 1;
+      }
+
+      .image-actions {
+        position: absolute;
+        left: 4px;
+        top: 4px;
+        display: flex;
+        gap: 2px;
+        opacity: 0;
+        transition: opacity 0.2s;
+        z-index: 1;
+      }
+
+      &:hover {
+        .image-actions {
+          opacity: 1;
+        }
+      }
+    }
+
+    &.error::before {
+      display: none;
+    }
+
     .bubble-image {
       max-width: 100px;
       max-height: 100px;
@@ -456,30 +489,8 @@ function regenerateSingle(url) {
       transition: opacity 0.2s;
       position: relative;
       z-index: 1;
-      opacity: 0;
-
-      .image-placeholder.loaded & {
-        opacity: 1;
-      }
-
-      &:hover {
-        opacity: 0.9;
-      }
+      opacity: 0;  
     }
-  }
-
-  .image-actions {
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    display: flex;
-    gap: 2px;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  &:hover .image-actions {
-    opacity: 1;
   }
 
   .image-action-btn {
