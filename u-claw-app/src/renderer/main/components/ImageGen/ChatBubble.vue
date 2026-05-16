@@ -147,10 +147,10 @@ function startFakeProgress() {
   fakeProgress.value = 0;
   progressTimer = setInterval(() => {
     if (fakeProgress.value < 90) {
-      fakeProgress.value += Math.random() * 3 + 1; // 随机增加1-4%
+      fakeProgress.value += Math.random() * 0.6 + 0.2; // 随机增加0.2-0.8%，5倍慢
       if (fakeProgress.value > 90) fakeProgress.value = 90;
     }
-  }, 200);
+  }, 1000); // 1秒间隔，5倍慢
 }
 
 function stopFakeProgress() {
