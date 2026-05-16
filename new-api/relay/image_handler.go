@@ -79,6 +79,10 @@ func ImageHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *type
 			if common.DebugEnabled {
 				logger.LogDebug(c, fmt.Sprintf("image request body: %s", string(jsonData)))
 			}
+
+			// 打印透传给后端的完整参数（便于调试）
+			logger.LogInfo(c.Request.Context(), fmt.Sprintf("[ImageHelper] 透传图片生成请求到后端: %s", string(jsonData)))
+
 			requestBody = bytes.NewBuffer(jsonData)
 		}
 	}
