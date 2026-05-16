@@ -360,8 +360,8 @@ async function pollTaskStatus(taskId, msgIndex, model) {
         }
       });
 
-      const session = sessions.value.find(s => s.messages.some((_, idx) => idx === msgIndex));
-      if (!session || !session.messages[msgIndex]) {
+      const session = sessions.value.find(s => s.id === currentSessionId.value);
+      if (!session || msgIndex >= session.messages.length) {
         clearInterval(timer);
         pollingTimers.value.delete(taskId);
         generating.value = false;

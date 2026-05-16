@@ -18,8 +18,8 @@
           <p>{{ text }}</p>
         </div>
         <!-- 进度条 -->
-        <div v-if="isLoading && progress > 0" class="bubble-progress">
-          <div class="progress-bar" :style="{ width: progress + '%' }"></div>
+        <div v-if="isLoading && fakeProgress > 0" class="bubble-progress">
+          <div class="progress-bar" :style="{ width: fakeProgress + '%' }"></div>
         </div>
         <!-- 底部 -->
         <div class="bubble-footer">
@@ -33,7 +33,7 @@
           </div>
           <span v-if="isLoading" class="bubble-loading">
             <span class="iconfont icon-clawshuaxin"></span>
-            生成中{{ progress > 0 ? ` ${progress}%` : '' }} 已用{{ elapsedSeconds }}秒
+            生成中{{ fakeProgress > 0 ? ` ${Math.round(fakeProgress)}%` : '' }} 已用{{ formatDuration(elapsedSeconds) }}
           </span>
           <span v-if="error" class="bubble-error">{{ error }}</span>
         </div>
@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 
 const props = defineProps({
   bubble: {
@@ -84,7 +84,9 @@ const imageUrls = computed(() => {
 });
 const error = computed(() => props.bubble.error);
 const status = computed(() => props.bubble.status);
-const progress = computed(() => props.bubble.progress || 0);
+
+// 假的进度：从0慢慢增加到90%，成功时跳到100%
+const progress = computed(() => props.bubble.progress ?? 0);
 
 const bubbleType = computed(() => {
   const type = props.bubble.type || 'text-to-image';
@@ -107,6 +109,8 @@ const statusText = computed(() => {
 
 const elapsedSeconds = ref(0);
 let timer = null;
+let progressTimer = null;
+const fakeProgress = ref(0);
 
 function updateElapsedTime() {
   if (props.bubble.startTime) {
@@ -115,10 +119,37 @@ function updateElapsedTime() {
   }
 }
 
+function formatDuration(seconds) {
+  if (seconds >= 60) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}分${s}秒`;
+  }
+  return `${seconds}秒`;
+}
+
+function startFakeProgress() {
+  fakeProgress.value = 0;
+  progressTimer = setInterval(() => {
+    if (fakeProgress.value < 90) {
+      fakeProgress.value += Math.random() * 3 + 1; // 随机增加1-4%
+      if (fakeProgress.value > 90) fakeProgress.value = 90;
+    }
+  }, 200);
+}
+
+function stopFakeProgress() {
+  if (progressTimer) {
+    clearInterval(progressTimer);
+    progressTimer = null;
+  }
+}
+
 onMounted(() => {
   if (isLoading.value) {
     updateElapsedTime();
     timer = setInterval(updateElapsedTime, 1000);
+    startFakeProgress();
   }
 });
 
@@ -126,6 +157,14 @@ onUnmounted(() => {
   if (timer) {
     clearInterval(timer);
     timer = null;
+  }
+  stopFakeProgress();
+});
+
+watch(() => props.bubble.status, (newStatus) => {
+  if (newStatus === 'completed') {
+    fakeProgress.value = 100;
+    stopFakeProgress();
   }
 });
 
