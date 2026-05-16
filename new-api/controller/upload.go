@@ -81,9 +81,14 @@ func Upload(c *gin.Context) {
 
 	// 生成文件名
 	filename := fmt.Sprintf("images/%d_%s.png", time.Now().UnixMilli(), common.GetRandomString(8))
-	// 假 URL - 实际实现时替换为阿里云 OSS SDK
-	ossURL := fmt.Sprintf("https://%s.oss-cn-hangzhou.aliyuncs.com/%s",
+	// 使用环境变量配置 region，默认 oss-cn-hangzhou
+	region := os.Getenv("ALIYUN_OSS_REGION")
+	if region == "" {
+		region = "oss-cn-hangzhou"
+	}
+	ossURL := fmt.Sprintf("https://%s.%s.aliyuncs.com/%s",
 		os.Getenv("ALIYUN_OSS_BUCKET"),
+		region,
 		filename)
 
 	c.JSON(http.StatusOK, UploadResponse{
