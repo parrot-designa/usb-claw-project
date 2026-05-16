@@ -332,7 +332,8 @@ async function generateImage() {
       body: {
         model: selectedModel.value,
         prompt: text,
-        size: imageSize.value,
+        size: selectedSizeRatio.value,
+        resolution: selectedResolution.value,
         n: imageCount.value
       }
     });
