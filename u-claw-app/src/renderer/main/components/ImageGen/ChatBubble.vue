@@ -216,11 +216,31 @@ onUnmounted(() => {
 });
 
 watch(() => props.bubble.status, (newStatus) => {
-  if (newStatus === 'completed') {
+  if (newStatus === 'in_progress') {
+    fakeProgress.value = 0;
+    elapsedSeconds.value = 0;
+    stopFakeProgress();
+    startFakeProgress();
+    stopTimer();
+    startTimer();
+  } else if (newStatus === 'completed') {
     fakeProgress.value = 100;
     stopFakeProgress();
+    stopTimer();
   }
 });
+
+function startTimer() {
+  updateElapsedTime();
+  timer = setInterval(updateElapsedTime, 1000);
+}
+
+function stopTimer() {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+}
 
 function copyText() {
   if (text.value) {
