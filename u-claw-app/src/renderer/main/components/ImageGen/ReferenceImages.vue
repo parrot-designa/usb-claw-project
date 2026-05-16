@@ -124,8 +124,8 @@ async function handleFiles(files) {
       showToast('上传失败: ' + err.message, true);
       return;
     }
-    emit('update:images', newImages);
   }
+  emit('update:images', newImages);
 }
 
 function removeImage(index) {

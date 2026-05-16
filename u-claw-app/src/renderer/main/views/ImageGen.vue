@@ -350,7 +350,8 @@ async function generateImage() {
         size: selectedSizeRatio.value,
         resolution: selectedResolution.value,
         n: imageCount.value,
-        ...(referenceImages.value.length > 0 && { reference_images: referenceImages.value })
+        ...(
+referenceImages.value.length > 0 && { reference_images: referenceImages.value })
       }
     });
 
@@ -388,7 +389,8 @@ async function generateImage() {
         imageUrl: imageUrl,
         revisedPrompt: taskResult.result?.data?.[0]?.revised_prompt || '',
         time: formatTime(),
-        startTime: Date.now()
+        startTime: Date.now(),
+        referenceImages: referenceImages.value
       });
       saveSessions();
 
