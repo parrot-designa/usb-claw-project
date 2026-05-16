@@ -110,8 +110,8 @@ func Upload(c *gin.Context) {
 		return
 	}
 
-	// 上传到 OSS
-	err = bucket.PutObject(filename, bytes.NewReader(fileData))
+	// 上传到 OSS，设置文件为公共读权限
+	err = bucket.PutObject(filename, bytes.NewReader(fileData), oss.ObjectACL(oss.ACLPublicRead))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, UploadResponse{
 			Success: false,
