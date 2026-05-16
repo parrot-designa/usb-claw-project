@@ -111,6 +111,8 @@
             :modelName="selectedModel"
             @regenerate="handleRegenerate"
             @copySuccess="showToast"
+            @insert="handleInsertImage"
+            @download="handleDownloadImage"
           />
           <div v-if="!bubbles.length" class="empty-bubbles">
             <span>生成的图片将在这里显示</span>
@@ -483,6 +485,19 @@ async function handleRegenerate(bubble) {
   inputText.value = bubble.text;
   referenceImages.value = bubble.referenceImages || [];
   await generateImage();
+}
+
+function handleInsertImage(url) {
+  referenceImages.value = [...referenceImages.value, url];
+  showToast('已添加为参考图，可进行图生图');
+}
+
+function handleDownloadImage(url) {
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `image-${Date.now()}.png`;
+  link.click();
+  showToast('图片开始下载');
 }
 
 function formatTime() {

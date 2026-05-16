@@ -47,7 +47,17 @@
         </div>
         <div v-for="(url, index) in imageUrls" :key="index" class="bubble-image-item">
           <img :src="url" @click="previewImage(url)" class="bubble-image" />
-          <button class="download-btn" @click="downloadImage(url)">↓</button>
+          <div class="image-actions">
+            <button class="image-action-btn" @click.stop="insertImage(url)" title="基于此图生成（插入左侧参考图）">
+              <span class="iconfont icon-clawtupian"></span>
+            </button>
+            <button class="image-action-btn" @click.stop="regenerateSingle(url)" title="根据相同参数重新生成">
+              <span class="iconfont icon-clawshuaxin"></span>
+            </button>
+            <button class="image-action-btn" @click.stop="downloadImage(url)" title="下载">
+              <span class="iconfont icon-clawxiazai"></span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -68,7 +78,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['preview', 'copy', 'download', 'regenerate', 'copySuccess']);
+const emit = defineEmits(['preview', 'copy', 'download', 'regenerate', 'copySuccess', 'insert']);
 
 function handleCopy() {
   if (text.value) {
@@ -205,6 +215,16 @@ function downloadImage(url) {
   if (url) {
     emit('download', url);
   }
+}
+
+function insertImage(url) {
+  if (url) {
+    emit('insert', url);
+  }
+}
+
+function regenerateSingle(url) {
+  emit('regenerate', { ...props.bubble, regenerateImageUrl: url });
 }
 </script>
 
@@ -360,28 +380,40 @@ function downloadImage(url) {
     }
   }
 
-  .download-btn {
+  .image-actions {
     position: absolute;
     bottom: 4px;
     right: 4px;
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  &:hover .image-actions {
+    opacity: 1;
+  }
+
+  .image-action-btn {
     background: rgba(0, 0, 0, 0.5);
     border: none;
     cursor: pointer;
-    padding: 2px 6px;
+    padding: 4px 6px;
     border-radius: 4px;
     font-size: 12px;
-    opacity: 0;
     color: #fff;
-    transition: opacity 0.2s;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
-      opacity: 1;
       background: rgba(0, 0, 0, 0.7);
     }
-  }
 
-  &:hover .download-btn {
-    opacity: 1;
+    .iconfont {
+      font-size: 12px;
+    }
   }
 }
 
