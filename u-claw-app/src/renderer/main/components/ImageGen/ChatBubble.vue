@@ -17,17 +17,24 @@
         <div class="bubble-content">
           <p>{{ text }}</p>
         </div>
+
+        <!-- 参考图（如果有） -->
+        <div v-if="referenceImages.length > 0" class="bubble-reference-images">
+          <div v-for="(img, idx) in referenceImages" :key="idx" class="ref-image">
+            <img :src="img" />
+          </div>
+        </div>
         <!-- 进度条 -->
         <div v-if="isLoading && fakeProgress > 0" class="bubble-progress">
           <div class="progress-bar" :style="{ width: fakeProgress + '%' }"></div>
         </div>
         <!-- 底部 -->
         <div class="bubble-footer">
-          <div v-if="!isLoading && !error" class="bubble-actions">
+          <div v-if="!error" class="bubble-actions">
             <button class="action-btn" @click="handleCopy" title="复制">
               <span class="iconfont icon-clawfuzhi"></span> 复制文字
             </button>
-            <button class="action-btn" @click="regenerate" title="重新生成">
+            <button v-if="!isLoading" class="action-btn" @click="regenerate" title="重新生成">
               <span class="iconfont icon-clawshuaxin"></span> 重新生成
             </button>
           </div>
@@ -96,6 +103,7 @@ const imageUrls = computed(() => {
   if (Array.isArray(props.bubble.imageUrl)) return props.bubble.imageUrl;
   return [props.bubble.imageUrl];
 });
+const referenceImages = computed(() => props.bubble.referenceImages || []);
 const error = computed(() => props.bubble.error);
 const status = computed(() => props.bubble.status);
 
@@ -307,6 +315,26 @@ function regenerateSingle(url) {
     line-height: 1.5;
     word-break: break-word;
     font-size: 13px;
+  }
+}
+
+.bubble-reference-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+
+  .ref-image {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
 }
 

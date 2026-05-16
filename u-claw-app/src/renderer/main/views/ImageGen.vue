@@ -742,8 +742,8 @@ async function handleDeleteHistory(id) {
 
 .collapse-icon {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 0;
+  left: 0;
   width: 28px;
   height: 28px;
   display: flex;
