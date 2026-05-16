@@ -1,18 +1,19 @@
 <template>
   <div class="chat-bubble">
     <div class="bubble-main">
-      <!-- 左侧头像 -->
-      <div class="bubble-avatar">
-        <span class="iconfont icon-clawziyouchuangzuo"></span>
+      <!-- 头部：头像、类型、模型、横线 -->
+      <div class="bubble-header">
+        <div class="bubble-avatar">
+          <span class="iconfont icon-clawziyouchuangzuo"></span>
+        </div>
+        <span class="bubble-type">{{ bubbleType }}</span>
+        <span class="bubble-model">{{ modelName }}</span>
+        <div class="bubble-divider"></div>
       </div>
 
       <!-- 右侧内容区 -->
       <div class="bubble-body">
-        <div class="bubble-header">
-          <span class="bubble-type">{{ bubbleType }}</span>
-          <span class="bubble-model">{{ modelName }}</span>
-        </div>
-        <div class="bubble-divider"></div>
+        <!-- 内容 -->
         <div class="bubble-content">
           <p>{{ text }}</p>
           <img v-if="imageUrl" :src="imageUrl" @click="previewImage" class="bubble-image" />
@@ -20,6 +21,7 @@
             <div class="progress-bar" :style="{ width: progress + '%' }"></div>
           </div>
         </div>
+        <!-- 底部 -->
         <div class="bubble-footer">
           <span v-if="isLoading" class="bubble-loading">
             <span class="iconfont icon-clawshuaxin"></span>
@@ -129,8 +131,18 @@ function downloadImage() {
 
 .bubble-main {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 0;
   padding: 0;
+}
+
+.bubble-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  padding-left: 42px; /* 32px avatar + 10px gap */
+  margin-bottom: 16px;
 }
 
 .bubble-avatar {
@@ -142,6 +154,8 @@ function downloadImage() {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  position: absolute;
+  left: 16px;
 
   .iconfont {
     font-size: 14px;
@@ -149,40 +163,35 @@ function downloadImage() {
   }
 }
 
-.bubble-body {
-  flex: 1;
-  min-width: 0;
-  background: rgb(38, 49, 68);
-  border: 1px solid rgb(35, 44, 66);
-  border-radius: 8px 8px 12px 12px;
-  padding: 10px 12px;
-  position: relative;
-  color: #fff;
-}
-
-.bubble-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
-  font-size: 11px;
-}
-
 .bubble-type {
   font-weight: 600;
   opacity: 0.95;
+  color: #fff;
+  flex-shrink: 0;
 }
 
 .bubble-model {
   opacity: 0.75;
   font-size: 10px;
+  color: rgba(255, 255, 255, 0.75);
+  flex-shrink: 0;
 }
 
 .bubble-divider {
-  width: 100%;
+  flex: 1;
   height: 1px;
   background: rgba(255, 255, 255, 0.3);
-  margin-bottom: 8px;
+  min-width: 20px;
+}
+
+.bubble-body {
+  min-width: 0;
+  background: rgb(38, 49, 68);
+  border: 1px solid rgb(35, 44, 66);
+  border-radius: 4px 20px 20px 20px;
+  padding: 10px 12px;
+  position: relative;
+  color: #fff;
 }
 
 .bubble-content {
