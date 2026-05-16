@@ -538,22 +538,30 @@ let regenerateSessionId = null;
 
 async function handleRegenerate(bubble) {
   // 查找气泡所在的会话和索引
+  // 注意：regenerateSingle 可能创建了新对象，所以用遍历比较属性而不是 indexOf
   let targetSession = null;
   let targetIndex = -1;
 
   for (const session of sessions.value) {
-    const idx = session.messages.indexOf(bubble);
-    if (idx !== -1) {
-      targetSession = session;
-      targetIndex = idx;
-      break;
+    for (let i = 0; i < session.messages.length; i++) {
+      const msg = session.messages[i];
+      // 通过 taskId 或消息内容匹配（regenerateSingle 创建的新对象有相同的 taskId）
+      if (msg.taskId === bubble.taskId && msg.text === bubble.text) {
+        targetSession = session;
+        targetIndex = i;
+        break;
+      }
     }
+    if (targetSession) break;
   }
 
   if (!targetSession) {
-    // 找不到时降级为普通生成
+    // 找不到时降级为普通生成 - 必须清除重新生成状态
     inputText.value = bubble.text;
     referenceImages.value = bubble.referenceImages || [];
+    regenerateImageUrl = null;
+    regenerateIndex = -1;
+    regenerateSessionId = null;
     await generateImage();
     return;
   }
