@@ -192,6 +192,7 @@ function downloadImage() {
   padding: 10px 12px;
   position: relative;
   color: #fff;
+  margin-left:36px;
 }
 
 .bubble-content {
