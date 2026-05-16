@@ -334,13 +334,18 @@ async function generateImage() {
   const text = inputText.value.trim();
   if (!text) return;
 
-  // 每次点击都创建新会话
-  createNewSession();
+  // 重新生成模式：不创建新会话，更新现有消息
+  const isRegenerate = regenerateSessionId !== null;
+
+  // 每次点击都创建新会话（除非是重新生成）
+  if (!isRegenerate) {
+    createNewSession();
+  }
 
   generating.value = true;
-    pendingTasks.value = 0;
+  pendingTasks.value = 0;
 
-    try {
+  try {
     // 调用图片生成接口，返回任务 ID
     const taskResult = await apiRequest('/v1/images/generations', {
       method: 'POST',
@@ -349,7 +354,7 @@ async function generateImage() {
         prompt: text,
         size: selectedSizeRatio.value,
         resolution: selectedResolution.value,
-        n: imageCount.value,
+        n: isRegenerate ? 1 : imageCount.value,
         ...(
 referenceImages.value.length > 0 && { reference_images: referenceImages.value })
       }
@@ -377,25 +382,44 @@ referenceImages.value.length > 0 && { reference_images: referenceImages.value })
     }
 
     if (currentSession.value) {
-      const msgIndex = currentSession.value.messages.length;
       const msgType = referenceImages.value.length > 0 ? 'image-to-image' : 'text-to-image';
-      currentSession.value.messages.push({
-        role: 'ai',
-        type: msgType,
-        text: text,
-        taskId: taskId,
-        status: status,
-        progress: 0,
-        imageUrl: imageUrl,
-        revisedPrompt: taskResult.result?.data?.[0]?.revised_prompt || '',
-        time: formatTime(),
-        startTime: Date.now(),
-        referenceImages: referenceImages.value
-      });
+
+      if (isRegenerate && regenerateIndex >= 0 && regenerateIndex < currentSession.value.messages.length) {
+        // 重新生成：替换现有消息
+        currentSession.value.messages[regenerateIndex] = {
+          role: 'ai',
+          type: msgType,
+          text: text,
+          taskId: taskId,
+          status: status,
+          progress: 0,
+          imageUrl: imageUrl,
+          revisedPrompt: taskResult.result?.data?.[0]?.revised_prompt || '',
+          time: formatTime(),
+          startTime: Date.now(),
+          referenceImages: referenceImages.value
+        };
+      } else {
+        // 普通生成：添加新消息
+        currentSession.value.messages.push({
+          role: 'ai',
+          type: msgType,
+          text: text,
+          taskId: taskId,
+          status: status,
+          progress: 0,
+          imageUrl: imageUrl,
+          revisedPrompt: taskResult.result?.data?.[0]?.revised_prompt || '',
+          time: formatTime(),
+          startTime: Date.now(),
+          referenceImages: referenceImages.value
+        });
+      }
       saveSessions();
 
       // 如果是异步任务（返回task_id），开始轮询
       if (taskId && status !== 'completed') {
+        const msgIndex = isRegenerate ? regenerateIndex : currentSession.value.messages.length - 1;
         pendingTasks.value++;
         pollTaskStatus(taskId, msgIndex, currentSession.value.id, selectedModel.value);
       } else {
@@ -412,9 +436,18 @@ referenceImages.value.length > 0 && { reference_images: referenceImages.value })
 
     inputText.value = '';
     referenceImages.value = [];
+
+    // 清除重新生成状态
+    regenerateImageUrl = null;
+    regenerateIndex = -1;
+    regenerateSessionId = null;
   } catch (e) {
     showToast('生成失败: ' + e.message, true);
     generating.value = false;
+    // 清除重新生成状态
+    regenerateImageUrl = null;
+    regenerateIndex = -1;
+    regenerateSessionId = null;
   }
 }
 
@@ -498,9 +531,43 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
   pollingTimers.value.set(taskId, timer);
 }
 
+// 重新生成图片参数（从气泡中提取）
+let regenerateImageUrl = null;
+let regenerateIndex = -1;
+let regenerateSessionId = null;
+
 async function handleRegenerate(bubble) {
+  // 查找气泡所在的会话和索引
+  let targetSession = null;
+  let targetIndex = -1;
+
+  for (const session of sessions.value) {
+    const idx = session.messages.indexOf(bubble);
+    if (idx !== -1) {
+      targetSession = session;
+      targetIndex = idx;
+      break;
+    }
+  }
+
+  if (!targetSession) {
+    // 找不到时降级为普通生成
+    inputText.value = bubble.text;
+    referenceImages.value = bubble.referenceImages || [];
+    await generateImage();
+    return;
+  }
+
+  // 保存参数用于 generateImage 调用
   inputText.value = bubble.text;
   referenceImages.value = bubble.referenceImages || [];
+  regenerateImageUrl = bubble.regenerateImageUrl || null;
+  regenerateIndex = targetIndex;
+  regenerateSessionId = targetSession.id;
+
+  // 切换到目标会话，确保 generateImage 在正确的会话上操作
+  currentSessionId.value = targetSession.id;
+
   await generateImage();
 }
 
