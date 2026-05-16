@@ -35,6 +35,10 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useToast } from '../../composables/useToast';
+import { apiRequest } from '@renderer/js/api.js';
+
+const { showToast } = useToast();
 
 const props = defineProps({
   images: {
@@ -90,15 +94,36 @@ function onFileSelected(e) {
 }
 
 function handleFiles(files) {
+  const MAX_SIZE = 10 * 1024 * 1024;
   const newImages = [...props.images];
 
   for (const file of files) {
     if (!file.type.startsWith('image/')) continue;
 
+    // Check file size
+    if (file.size > MAX_SIZE) {
+      showToast('图片大小不能超过 10MB', true);
+      continue;
+    }
+
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const base64 = e.target.result;
-      newImages.push(base64);
+      try {
+        const res = await apiRequest('/api/upload', {
+          method: 'POST',
+          body: { image: base64 }
+        });
+        if (res.url) {
+          newImages.push(res.url);
+        } else {
+          showToast('上传失败', true);
+          return;
+        }
+      } catch (err) {
+        showToast('上传失败: ' + err.message, true);
+        return;
+      }
       emit('update:images', newImages);
     };
     reader.readAsDataURL(file);
