@@ -39,8 +39,12 @@
         </div>
       </div>
 
-      <!-- 图片单独显示在气泡下方 -->
+      <!-- 图片区域：气泡下方，图片上方显示时间和状态 -->
       <div v-if="imageUrls.length > 0" class="bubble-images-wrapper">
+        <div v-if="loadedTime || loadStatus" class="bubble-image-meta">
+          <span class="meta-time">{{ loadedTime || '' }}</span>
+          <span class="meta-status" :class="loadStatus">{{ loadStatusText }}</span>
+        </div>
         <div v-for="(url, index) in imageUrls" :key="index" class="bubble-image-item">
           <img :src="url" @click="previewImage(url)" class="bubble-image" />
           <button class="download-btn" @click="downloadImage(url)">↓</button>
@@ -104,6 +108,16 @@ const statusText = computed(() => {
     case 'completed': return '已完成';
     case 'failed': return '失败';
     default: return null;
+  }
+});
+
+const loadedTime = computed(() => props.bubble.loadedTime || '');
+const loadStatus = computed(() => props.bubble.loadStatus || '');
+const loadStatusText = computed(() => {
+  switch (loadStatus.value) {
+    case 'success': return '加载成功';
+    case 'failed': return '生成失败';
+    default: return '';
   }
 });
 
@@ -296,6 +310,35 @@ function downloadImage(url) {
   gap: 8px;
   margin-top: 8px;
   margin-left: 36px;
+}
+
+.bubble-image-meta {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 11px;
+
+  .meta-time {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .meta-status {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+
+    &.success {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+    }
+
+    &.failed {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+  }
 }
 
 .bubble-image-item {

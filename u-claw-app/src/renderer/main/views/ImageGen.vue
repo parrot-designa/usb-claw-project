@@ -325,7 +325,7 @@ async function generateImage() {
       // 如果是异步任务（返回task_id），开始轮询
       if (taskId && status !== 'completed') {
         pendingTasks.value++;
-        pollTaskStatus(taskId, msgIndex, selectedModel.value);
+        pollTaskStatus(taskId, msgIndex, currentSession.value.id, selectedModel.value);
       } else {
         if (imageUrl) {
           showToast('图片生成成功');
@@ -345,7 +345,7 @@ async function generateImage() {
   }
 }
 
-async function pollTaskStatus(taskId, msgIndex, model) {
+async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
   const maxPolls = 220;
   let pollCount = 0;
 
@@ -359,8 +359,8 @@ async function pollTaskStatus(taskId, msgIndex, model) {
           model: model
         }
       });
-
-      const session = sessions.value.find(s => s.id === currentSessionId.value);
+      // 使用创建消息时的会话ID，而不是当前的currentSessionId
+      const session = sessions.value.find(s => s.id === sessionId);
       if (!session || msgIndex >= session.messages.length) {
         clearInterval(timer);
         pollingTimers.value.delete(taskId);
@@ -380,6 +380,8 @@ async function pollTaskStatus(taskId, msgIndex, model) {
         if (newStatus === 'completed' && result.result?.data?.[0]?.url) {
 
           msg.imageUrl = result.result?.data[0].url;
+          msg.loadedTime = formatTime();
+          msg.loadStatus = 'success';
           clearInterval(timer);
           pollingTimers.value.delete(taskId);
           pendingTasks.value--;
@@ -388,7 +390,8 @@ async function pollTaskStatus(taskId, msgIndex, model) {
             generating.value = false;
           }
         } else if (newStatus === 'failed') {
-          msg.error = result.error || '生成失败';
+          msg.error = result.result?.error || result.error || '生成失败';
+          msg.loadStatus = 'failed';
           clearInterval(timer);
           pollingTimers.value.delete(taskId);
           pendingTasks.value--;
@@ -406,6 +409,7 @@ async function pollTaskStatus(taskId, msgIndex, model) {
         pollingTimers.value.delete(taskId);
         pendingTasks.value--;
         msg.error = '生成超时';
+        msg.loadStatus = 'failed';
         if (pendingTasks.value === 0) {
           generating.value = false;
         }
