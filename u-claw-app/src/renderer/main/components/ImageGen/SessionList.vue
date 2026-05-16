@@ -141,8 +141,7 @@ function getSessionPreview(session) {
     justify-content: space-between;
     align-items: center;
     padding: 8px 12px 8px 12px; 
-    cursor: pointer;
-    border-radius: 4px;
+    cursor: pointer; 
     color: inherit;
     font-size: 13px;
     background: linear-gradient(90deg, rgba(160, 120, 220, 0.3) 0%, rgba(160, 120, 220, 0.05) 100%);
