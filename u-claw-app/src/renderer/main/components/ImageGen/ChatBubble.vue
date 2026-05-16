@@ -56,13 +56,13 @@
           <div class="image-placeholder" :class="{ loaded: imageLoaded[index], error: imageError[index] }">
             <img
               :src="url"
-              @load="onImageLoad(index)"
+              @load="onImageLoad(index, $event)"
               @error="onImageError(index)"
               @click="previewImage(url)"
               class="bubble-image"
             />
             <div class="image-actions">
-              <button class="image-action-btn" @click.stop="insertImage(url)" title="基于此图生成（插入左侧参考图）">
+              <button class="image-action-btn generate-btn" @click.stop="insertImage(url)" title="基于此图生成（插入左侧参考图）">
                 <span class="iconfont icon-clawtupian"></span>
               </button>
               <button class="image-action-btn" @click.stop="regenerateSingle(url)" title="根据相同参数重新生成">
@@ -437,14 +437,15 @@ function regenerateSingle(url) {
 
   .image-placeholder {
     position: relative;
-    min-width: 100px;
-    min-height: 100px;
     background: linear-gradient(135deg, rgba(157, 67, 234, 0.2) 0%, rgba(221, 54, 130, 0.2) 100%);
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    width: 100px;
+    height: 100px;
+    transition: box-shadow 0.25s ease;
 
     &::before {
       content: '';
@@ -479,8 +480,9 @@ function regenerateSingle(url) {
 
       .image-actions {
         position: absolute;
-        left: 4px;
+        left: 50%;
         top: 4px;
+        transform: translateX(-50%);
         display: flex;
         gap: 2px;
         opacity: 0;
@@ -492,6 +494,7 @@ function regenerateSingle(url) {
         .image-actions {
           opacity: 1;
         }
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 0 0 5px rgba(0, 0, 0, 0.25);
       }
     }
 
@@ -500,16 +503,14 @@ function regenerateSingle(url) {
     }
 
     .bubble-image {
-      max-width: 100px;
-      max-height: 100px;
-      width: auto;
-      height: auto;
+      max-width: 100%;
+      max-height: 100%;
       border-radius: 6px;
       cursor: pointer;
       transition: opacity 0.2s;
       position: relative;
       z-index: 1;
-      opacity: 0;  
+      opacity: 0;
     }
   }
 
@@ -532,6 +533,15 @@ function regenerateSingle(url) {
 
     .iconfont {
       font-size: 12px;
+    }
+  }
+
+  .generate-btn {
+    background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
+
+    &:hover {
+      background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
+      filter: brightness(1.15);
     }
   }
 }
