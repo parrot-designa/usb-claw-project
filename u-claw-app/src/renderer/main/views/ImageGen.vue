@@ -263,9 +263,8 @@ async function generateImage() {
   const text = inputText.value.trim();
   if (!text || generating.value) return;
 
-  if (!currentSessionId.value) {
-    createNewSession();
-  }
+  // 每次点击都创建新会话
+  createNewSession();
 
   generating.value = true;
     pendingTasks.value = 0;
