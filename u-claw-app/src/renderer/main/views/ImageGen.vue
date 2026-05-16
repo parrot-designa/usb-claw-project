@@ -441,15 +441,17 @@ function formatTime() {
 
 .tab-card {
   background: var(--surface);
-  border-radius: 0; 
+  border-radius: 0;
   margin-bottom: 0;
   width: 100%;
 }
 
 .tab-header {
-  display: flex; 
+  display: flex;
   overflow: hidden;
-  background-color: var(--card2);
+  background-color: transparent;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1px;
 
   button {
     position: relative;
@@ -466,46 +468,73 @@ function formatTime() {
     color: var(--text-secondary);
 
     &.active {
-      color: rgb(175, 153, 215);
-      font-weight: 500;
+      .tab-text {
+        background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 600;
+      }
+
+      .iconfont {
+        background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
     }
 
     .tab-content {
       display: flex;
       align-items: center;
       gap: 6px;
+      position: relative;
+      z-index: 1;
     }
 
     .tab-text {
       font-weight: 500;
+      color: var(--text-secondary);
+      transition: color 0.2s;
+    }
+
+    .iconfont {
+      font-size: 16px;
+      color: var(--text-secondary);
+      transition: color 0.2s;
     }
 
     .tab-desc {
       margin-left: 8px;
       font-size: 12px;
       color: var(--text-secondary);
-      transition: color 0.2s;
+      transition: color 0.2s, background 0.2s;
+      position: relative;
+      z-index: 1;
     }
 
     &.active .tab-desc {
-      color: rgb(175, 153, 215);
-      opacity: 0.7;
+      background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0.8;
     }
 
     .tab-indicator {
       position: absolute;
       bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 2px;
-      background: rgb(175, 153, 215);
-      border-radius: 1px;
-      transition: width 0.2s;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
+      border-radius: 2px 2px 0 0;
+      opacity: 0;
+      transition: opacity 0.2s;
     }
 
     &.active .tab-indicator {
-      width: 100%;
+      opacity: 1;
     }
   }
 }
