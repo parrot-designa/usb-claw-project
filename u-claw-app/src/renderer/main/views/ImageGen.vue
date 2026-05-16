@@ -123,7 +123,7 @@
 
     <!-- 历史作品 Tab -->
     <div v-show="activeTab === 'history'" class="history-works-tab">
-      <ImageGrid />
+      <ImageGrid :images="historyImages" @delete="handleDeleteHistory" />
     </div>
   </div>
 </template>
@@ -149,6 +149,7 @@ const currentSessionId = ref(null); // 当前会话ID
 const activeTab = ref('free');      // 当前激活的 Tab
 const leftPanelCollapsed = ref(false); // 左侧面板是否折叠
 const referenceImages = ref([]);    // 参考图列表
+const historyImages = ref([]);      // 历史作品列表
 const pollingTimers = ref(new Map()); // 存储轮询定时器: taskId -> timer
 
 const inputText = ref('');
@@ -230,6 +231,7 @@ function toggleLeftPanel() {
 onMounted(async () => {
   await loadSessions();
   await loadImageModels();
+  await loadHistoryImages();
 });
 
 async function loadImageModels() {
@@ -255,6 +257,17 @@ async function loadSessions() {
     }
   } catch (e) {
     console.error('[ImageGen] Load sessions failed:', e);
+  }
+}
+
+async function loadHistoryImages() {
+  try {
+    const result = await window.uclaw.ipcLoadImageGenHistory();
+    if (result?.ok && result.messages) {
+      historyImages.value = result.messages;
+    }
+  } catch (e) {
+    console.error('[ImageGen] Load history failed:', e);
   }
 }
 
@@ -386,6 +399,7 @@ async function generateImage() {
       } else {
         if (imageUrl) {
           showToast('图片生成成功');
+          addToHistory(imageUrl, text);
         }
         // 检查是否还有其他进行中的任务
         if (pendingTasks.value === 0) {
@@ -444,6 +458,7 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
           pollingTimers.value.delete(taskId);
           pendingTasks.value--;
           showToast('图片生成成功');
+          addToHistory(result.result.data[0].url, msg.text);
           if (pendingTasks.value === 0) {
             generating.value = false;
           }
@@ -531,6 +546,22 @@ async function handleDownloadImage(url) {
 function formatTime() {
   const now = new Date();
   return now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+}
+
+function addToHistory(imageUrl, prompt) {
+  const newImage = {
+    id: Date.now().toString(),
+    url: imageUrl,
+    prompt: prompt || '',
+    time: formatTime()
+  };
+  historyImages.value.unshift(newImage);
+  window.uclaw.ipcSaveImageGenHistory(historyImages.value);
+}
+
+async function handleDeleteHistory(id) {
+  historyImages.value = historyImages.value.filter(img => img.id !== id);
+  await window.uclaw.ipcSaveImageGenHistory(historyImages.value);
 }
 </script>
 

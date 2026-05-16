@@ -137,7 +137,6 @@ function removeImage(index) {
 
 <style scoped lang="scss">
 .reference-images {
-  padding: 12px;
   border-radius: 8px; 
   transition: border-color 0.2s;
 
