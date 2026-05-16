@@ -334,7 +334,8 @@ async function generateImage() {
         prompt: text,
         size: selectedSizeRatio.value,
         resolution: selectedResolution.value,
-        n: imageCount.value
+        n: imageCount.value,
+        ...(referenceImages.value.length > 0 && { reference_images: referenceImages.value })
       }
     });
 
