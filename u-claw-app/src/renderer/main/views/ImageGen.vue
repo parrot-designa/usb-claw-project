@@ -381,6 +381,7 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
 
           msg.imageUrl = result.result?.data[0].url;
           msg.loadedTime = formatTime();
+          msg.loadDuration = Math.round((Date.now() - msg.startTime) / 1000);
           msg.loadStatus = 'success';
           clearInterval(timer);
           pollingTimers.value.delete(taskId);

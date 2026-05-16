@@ -41,8 +41,8 @@
 
       <!-- 图片区域：气泡下方，图片上方显示时间和状态 -->
       <div v-if="imageUrls.length > 0" class="bubble-images-wrapper">
-        <div v-if="loadedTime || loadStatus" class="bubble-image-meta">
-          <span class="meta-time">{{ loadedTime || '' }}</span>
+        <div v-if="loadDuration" class="bubble-image-meta">
+          <span class="meta-time">耗时 {{ formatDuration(loadDuration) }}</span>
           <span class="meta-status" :class="loadStatus">{{ loadStatusText }}</span>
         </div>
         <div v-for="(url, index) in imageUrls" :key="index" class="bubble-image-item">
@@ -112,6 +112,7 @@ const statusText = computed(() => {
 });
 
 const loadedTime = computed(() => props.bubble.loadedTime || '');
+const loadDuration = computed(() => props.bubble.loadDuration ?? null);
 const loadStatus = computed(() => props.bubble.loadStatus || '');
 const loadStatusText = computed(() => {
   switch (loadStatus.value) {
