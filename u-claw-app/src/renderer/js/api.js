@@ -96,7 +96,8 @@ export async function apiRequest(path, options = {}) {
   }
 
   // GET 请求只通过 params 传递 session_cookie，不放入 body
-  if (sessionCookie) {
+  // 注意：FormData 不能用 spread 展开，会丢失文件数据
+  if (sessionCookie && !(data instanceof FormData)) {
     if (method === 'GET') {
       params = { ...params, session_cookie: sessionCookie };
     } else {
@@ -108,9 +109,23 @@ export async function apiRequest(path, options = {}) {
   // 构建请求头
   const requestHeaders = { ...headers };
 
+  // FormData 不需要手动设置 Content-Type，让 axios 自动处理
+  if (!(data instanceof FormData)) {
+    requestHeaders['Content-Type'] = 'application/json';
+  }
+
   // 图片生成接口需要携带用户 token
   if (userToken && path.startsWith('/v1/images')) {
     requestHeaders['Authorization'] = `Bearer ${userToken}`;
+  }
+
+  // 上传接口需要携带 New-Api-User header
+  if (userToken && path.startsWith('/api/upload')) {
+    const userStore = useUserStore();
+    const userId = userStore.userInfo?.id;
+    if (userId) {
+      requestHeaders['New-Api-User'] = userId;
+    }
   }
 
   try {

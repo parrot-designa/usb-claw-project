@@ -26,10 +26,12 @@ export async function fetchUserInfo() {
     if (res.data) {
 
       const userInfo = {
+        id: res.data.id,
         token: tokens?.[0],
         used_balance: used_balance,
         remain_balance: remain_balance,
-        used_percent: used_balance / total_balance
+        total_balance: total_balance,
+        used_percent: total_balance > 0 ? used_balance / total_balance : 0
       }
       const store = useUserStore();
       store.setUserInfo(userInfo);

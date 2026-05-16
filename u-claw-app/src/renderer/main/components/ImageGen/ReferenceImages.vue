@@ -93,7 +93,7 @@ function onFileSelected(e) {
   e.target.value = '';
 }
 
-function handleFiles(files) {
+async function handleFiles(files) {
   const MAX_SIZE = 10 * 1024 * 1024;
   const newImages = [...props.images];
 
@@ -112,8 +112,7 @@ function handleFiles(files) {
 
       const res = await apiRequest('/api/upload', {
         method: 'POST',
-        body: formData,
-        headers: { 'Content-Type': 'multipart/form-data' }
+        body: formData
       });
       if (res.url) {
         newImages.push(res.url);
