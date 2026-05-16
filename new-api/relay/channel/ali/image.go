@@ -88,7 +88,10 @@ func oaiImage2AliImageRequest(info *relaycommon.RelayInfo, request dto.ImageRequ
 		if imageRequest.Input == nil {
 			imageRequest.Input = AliImageInput{}
 		}
-		imageRequest.Input.ImageUrls = request.ReferenceImages
+		if input, ok := imageRequest.Input.(AliImageInput); ok {
+			input.ImageUrls = request.ReferenceImages
+			imageRequest.Input = input
+		}
 	}
 
 	return &imageRequest, nil
