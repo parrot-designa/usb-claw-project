@@ -558,6 +558,13 @@ async function handleRegenerate(bubble) {
     return;
   }
 
+  // 立即更新目标消息的进度为0，确保UI立即响应
+  if (targetIndex >= 0) {
+    targetSession.messages[targetIndex].progress = 0;
+    targetSession.messages[targetIndex].status = 'in_progress';
+    targetSession.messages[targetIndex].error = null;
+  }
+
   // 保存参数用于 generateImage 调用
   inputText.value = bubble.text;
   referenceImages.value = bubble.referenceImages || [];
