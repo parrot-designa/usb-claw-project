@@ -61,14 +61,15 @@
                 {{ model.model_name }}
               </option>
             </select>
-            <select v-model="imageSize" class="option-select">
-              <option value="1024x1024">1024x1024 (正方形)</option>
-              <option value="1024x1792">1024x1792 (竖图)</option>
-              <option value="1792x1024">1792x1024 (横图)</option>
-              <option value="1536x1024">1536x1024 (横向)</option>
-              <option value="1024x1536">1024x1536 (纵向)</option>
-              <option value="1344x1024">1344x1024 (横向)</option>
-              <option value="1024x1344">1024x1344 (纵向)</option>
+            <select v-model="selectedResolution" class="option-select">
+              <option value="1K">1K</option>
+              <option value="2K">2K</option>
+              <option value="4K">4K</option>
+            </select>
+            <select v-model="selectedSizeRatio" class="option-select">
+              <option v-for="size in currentSizeOptions" :key="size.ratio" :value="size.ratio">
+                {{ size.ratio }} ({{ size.pixels }})
+              </option>
             </select>
             <input
               v-model.number="imageCount"
@@ -126,7 +127,7 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick, onMounted, toRaw } from 'vue';
+import { ref, computed, nextTick, onMounted, toRaw, watch } from 'vue';
 import { useToast } from '../composables/useToast';
 import { useModelsStore } from '../stores/models';
 import { useUserStore } from '../stores/user';
@@ -151,10 +152,62 @@ const pollingTimers = ref(new Map()); // 存储轮询定时器: taskId -> timer
 const inputText = ref('');
 const imageModels = ref([]);
 const selectedModel = ref('gpt-image-2');
-const imageSize = ref('1024x1024');
+const selectedResolution = ref('1K');
+const selectedSizeRatio = ref('1:1');
 const imageCount = ref(1);
 const generating = ref(false);
 const pendingTasks = ref(0); // 待完成的轮询任务数量
+
+// resolution 与 size 选项的映射
+const resolutionSizeMap = {
+  '1K': [
+    { ratio: '1:1', label: '1:1', pixels: '1024x1024' },
+    { ratio: '3:2', label: '3:2', pixels: '1536x1024' },
+    { ratio: '2:3', label: '2:3', pixels: '1024x1536' }
+  ],
+  '2K': [
+    { ratio: '1:1', label: '1:1', pixels: '2048x2048' },
+    { ratio: '3:2', label: '3:2', pixels: '2048x1360' },
+    { ratio: '2:3', label: '2:3', pixels: '1360x2048' },
+    { ratio: '4:3', label: '4:3', pixels: '2048x1536' },
+    { ratio: '3:4', label: '3:4', pixels: '1536x2048' },
+    { ratio: '5:4', label: '5:4', pixels: '2560x2048' },
+    { ratio: '4:5', label: '4:5', pixels: '2048x2560' },
+    { ratio: '16:9', label: '16:9', pixels: '2048x1152' },
+    { ratio: '9:16', label: '9:16', pixels: '1152x2048' },
+    { ratio: '2:1', label: '2:1', pixels: '2688x1344' },
+    { ratio: '1:2', label: '1:2', pixels: '1344x2688' },
+    { ratio: '21:9', label: '21:9', pixels: '2688x1152' },
+    { ratio: '9:21', label: '9:21', pixels: '1152x2688' }
+  ],
+  '4K': [
+    { ratio: '16:9', label: '16:9', pixels: '3840x2160' },
+    { ratio: '9:16', label: '9:16', pixels: '2160x3840' },
+    { ratio: '2:1', label: '2:1', pixels: '3840x1920' },
+    { ratio: '1:2', label: '1:2', pixels: '1920x3840' },
+    { ratio: '21:9', label: '21:9', pixels: '3840x1648' },
+    { ratio: '9:21', label: '9:21', pixels: '1648x3840' }
+  ]
+};
+
+// 根据当前 resolution 获取 size 选项
+const currentSizeOptions = computed(() => {
+  return resolutionSizeMap[selectedResolution.value] || resolutionSizeMap['1K'];
+});
+
+// 根据 ratio 和 resolution 计算实际像素尺寸
+const imageSize = computed(() => {
+  const sizeOption = currentSizeOptions.value.find(opt => opt.ratio === selectedSizeRatio.value);
+  return sizeOption?.pixels || '1024x1024';
+});
+
+// 监听 resolution 变化，确保 selectedSizeRatio 在合法范围内
+watch(selectedResolution, (newRes) => {
+  const validRatios = resolutionSizeMap[newRes]?.map(opt => opt.ratio) || [];
+  if (!validRatios.includes(selectedSizeRatio.value)) {
+    selectedSizeRatio.value = validRatios[0] || '1:1';
+  }
+});
 
 const currentSession = computed(() => {
   return sessions.value.find(s => s.id === currentSessionId.value && !s.deleted);
