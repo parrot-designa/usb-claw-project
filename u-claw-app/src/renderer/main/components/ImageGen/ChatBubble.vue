@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, inject } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
   bubble: {
@@ -62,16 +62,12 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['preview', 'copy', 'download', 'regenerate']);
-
-const { showToast } = inject('showToast') || {};
+const emit = defineEmits(['preview', 'copy', 'download', 'regenerate', 'copySuccess']);
 
 function handleCopy() {
   if (text.value) {
     navigator.clipboard.writeText(text.value).then(() => {
-      if (showToast) {
-        showToast('已复制到剪贴板');
-      }
+      emit('copySuccess', '已复制到剪贴板');
       emit('copy', text.value);
     });
   }
@@ -315,16 +311,14 @@ function downloadImage() {
 .bubble-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-left: auto;
+  gap: 8px;
 }
 
 .action-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
+  gap: 4px;
+  padding: 4px 8px;
   background: transparent;
   white-space: nowrap;
   border: none;
@@ -339,7 +333,7 @@ function downloadImage() {
     background: rgba(255, 255, 255, 0.15);
   }
 
-  .icon-clawshuaxin {
+  .iconfont {
     font-size: 12px;
   }
 }

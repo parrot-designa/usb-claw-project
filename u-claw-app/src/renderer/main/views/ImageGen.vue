@@ -103,6 +103,7 @@
             :bubble="bubble"
             :modelName="selectedModel"
             @regenerate="handleRegenerate"
+            @copySuccess="showToast"
           />
           <div v-if="!bubbles.length" class="empty-bubbles">
             <span>生成的图片将在这里显示</span>
