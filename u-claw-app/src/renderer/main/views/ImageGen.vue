@@ -590,6 +590,9 @@ async function handleRegenerate(bubble) {
   // 切换到目标会话，确保 generateImage 在正确的会话上操作
   currentSessionId.value = targetSession.id;
 
+  // 立即持久化状态变更，防止 generateImage 提前返回时丢失
+  saveSessions();
+
   await generateImage();
 }
 
