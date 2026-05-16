@@ -369,7 +369,6 @@ async function generateImage() {
   }
 
   generating.value = true;
-  pendingTasks.value = 0;
 
   try {
     // 调用图片生成接口，返回任务 ID
