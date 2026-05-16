@@ -82,6 +82,14 @@ func oaiImage2AliImageRequest(info *relaycommon.RelayInfo, request dto.ImageRequ
 		}
 	}
 
+	// 处理 reference_images（图生图参考图）
+	if len(request.ReferenceImages) > 0 && info.RelayMode == constant.RelayModeImagesEdits {
+		if imageRequest.Input == nil {
+			imageRequest.Input = AliImageInput{}
+		}
+		imageRequest.Input.ImageUrls = request.ReferenceImages
+	}
+
 	return &imageRequest, nil
 }
 func getImageBase64sFromForm(c *gin.Context, fieldName string) ([]string, error) {

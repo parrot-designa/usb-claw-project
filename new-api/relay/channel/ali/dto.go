@@ -195,6 +195,7 @@ type AliImageInput struct {
 	Prompt         string       `json:"prompt,omitempty"`
 	NegativePrompt string       `json:"negative_prompt,omitempty"`
 	Messages       []AliMessage `json:"messages,omitempty"`
+	ImageUrls      []string     `json:"image_urls,omitempty"`
 }
 
 type WanImageInput struct {
