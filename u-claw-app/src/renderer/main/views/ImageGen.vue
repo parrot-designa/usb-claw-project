@@ -692,7 +692,7 @@ function addToHistory(imageUrl, prompt) {
     time: formatTime()
   };
   historyImages.value.unshift(newImage);
-  window.uclaw.ipcSaveImageGenHistory(historyImages.value);
+  window.uclaw.ipcSaveImageGenHistory(JSON.parse(JSON.stringify(toRaw(historyImages.value))));
 }
 
 async function handleDeleteHistory(id) {
