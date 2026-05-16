@@ -53,7 +53,15 @@
           <span class="meta-status" :class="loadStatus">{{ loadStatusText }}</span>
         </div>
         <div v-for="(url, index) in imageUrls" :key="index" class="bubble-image-item">
-          <img :src="url" @click="previewImage(url)" class="bubble-image" />
+          <div class="image-placeholder" :class="{ loaded: imageLoaded[index] }">
+            <img
+              :src="url"
+              @load="onImageLoad(index)"
+              @error="onImageError(index)"
+              @click="previewImage(url)"
+              class="bubble-image"
+            />
+          </div>
           <div class="image-actions">
             <button class="image-action-btn" @click.stop="insertImage(url)" title="基于此图生成（插入左侧参考图）">
               <span class="iconfont icon-clawtupian"></span>
@@ -144,6 +152,16 @@ const elapsedSeconds = ref(0);
 let timer = null;
 let progressTimer = null;
 const fakeProgress = ref(0);
+const imageLoaded = ref({});
+const imageError = ref({});
+
+function onImageLoad(index) {
+  imageLoaded.value[index] = true;
+}
+
+function onImageError(index) {
+  imageError.value[index] = false;
+}
 
 function updateElapsedTime() {
   if (props.bubble.startTime) {
@@ -394,17 +412,59 @@ function regenerateSingle(url) {
   position: relative;
   display: inline-block;
 
-  .bubble-image {
-    max-width: 100px;
-    max-height: 100px;
-    width: auto;
-    height: auto;
+  .image-placeholder {
+    position: relative;
+    min-width: 100px;
+    min-height: 100px;
+    background: linear-gradient(135deg, rgba(157, 67, 234, 0.2) 0%, rgba(221, 54, 130, 0.2) 100%);
     border-radius: 6px;
-    cursor: pointer;
-    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 
-    &:hover {
-      opacity: 0.9;
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.15) 50%,
+        transparent 100%
+      );
+      animation: shimmer 1.5s infinite;
+    }
+
+    &:not(.loaded)::after {
+      content: '⏳';
+      font-size: 32px;
+      opacity: 0.6;
+    }
+
+    &.loaded::before {
+      display: none;
+    }
+
+    .bubble-image {
+      max-width: 100px;
+      max-height: 100px;
+      width: auto;
+      height: auto;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+
+      .image-placeholder.loaded & {
+        opacity: 1;
+      }
+
+      &:hover {
+        opacity: 0.9;
+      }
     }
   }
 
@@ -502,6 +562,15 @@ function regenerateSingle(url) {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
   }
 }
 </style>
