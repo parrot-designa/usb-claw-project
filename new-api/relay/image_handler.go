@@ -52,6 +52,14 @@ func ImageHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *type
 			return types.NewErrorWithStatusCode(err, types.ErrorCodeReadRequestBodyFailed, http.StatusBadRequest, types.ErrOptionWithSkipRetry())
 		}
 		requestBody = common.ReaderOnly(storage)
+
+		// 透传模式下打印原始请求体
+		if common.DebugEnabled {
+			storage.Reset()
+			bodyBytes, _ := io.ReadAll(storage)
+			logger.LogDebug(c, fmt.Sprintf("image request body (pass-through): %s", string(bodyBytes)))
+			storage.Reset()
+		}
 	} else {
 		convertedRequest, err := adaptor.ConvertImageRequest(c, info, *request)
 		if err != nil {

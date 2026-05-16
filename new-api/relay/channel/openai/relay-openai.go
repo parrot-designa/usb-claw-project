@@ -571,6 +571,11 @@ func OpenaiHandlerWithUsage(c *gin.Context, info *relaycommon.RelayInfo, resp *h
 		return nil, types.NewOpenAIError(err, types.ErrorCodeBadResponseBody, http.StatusInternalServerError)
 	}
 
+	// 打印图片生成透传响应数据（便于调试）
+	if common.DebugEnabled {
+		logger.LogDebug(c, fmt.Sprintf("image generation response body: %s", string(responseBody)))
+	}
+
 	// 写入新的 response body
 	service.IOCopyBytesGracefully(c, resp, responseBody)
 
