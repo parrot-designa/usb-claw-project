@@ -272,9 +272,16 @@ async function loadHistoryImages() {
 }
 
 async function saveSessions() {
+  console.log('saveSessions 被调用', {
+    sessionsCount: sessions.value.length,
+    currentSessionId: currentSessionId.value,
+    currentSessionIdInSession: sessions.value.find(s => s.id === currentSessionId.value)?.id
+  });
   try {
+    // 深度转换为原始对象，避免 Vue 响应式代理导致 IPC 克隆失败
+    const plainSessions = JSON.parse(JSON.stringify(toRaw(sessions.value)));
     await window.uclaw.ipcSaveImageSessions({
-      sessions: toRaw(sessions.value),
+      sessions: plainSessions,
       currentSessionId: currentSessionId.value
     });
   } catch (e) {
