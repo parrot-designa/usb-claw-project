@@ -13,7 +13,7 @@
         暂无会话
       </div>
       <div
-        v-for="session in sessions"
+        v-for="session in visibleSessions"
         :key="session.id"
         :class="['session-item', { active: session.id === currentSessionId }]"
         @click="selectSession(session.id)"
@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
   sessions: {
@@ -42,6 +42,10 @@ const props = defineProps({
 const emit = defineEmits(['select', 'create', 'delete']);
 
 const expanded = ref(true);
+
+const visibleSessions = computed(() => {
+  return props.sessions.filter(s => !s.deleted);
+});
 
 function toggleExpand() {
   expanded.value = !expanded.value;

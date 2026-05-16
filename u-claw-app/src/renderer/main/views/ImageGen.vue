@@ -87,7 +87,7 @@
             @click="generateImage"
             class="generate-btn"
             :class="{ active: inputText.trim() && !generating, generating: generating }"
-            :disabled="generating"
+            :disabled="!inputText.trim()"
           >
             <span v-if="generating" class="iconfont icon-clawshuaxin spinning"></span>
             <span v-else class="iconfont icon-clawtupianshengcheng"></span>
@@ -157,7 +157,7 @@ const generating = ref(false);
 const pendingTasks = ref(0); // 待完成的轮询任务数量
 
 const currentSession = computed(() => {
-  return sessions.value.find(s => s.id === currentSessionId.value);
+  return sessions.value.find(s => s.id === currentSessionId.value && !s.deleted);
 });
 
 const bubbles = computed(() => {
@@ -249,11 +249,14 @@ function handleSessionDelete(sessionId) {
     }
   });
 
-  const index = sessions.value.findIndex(s => s.id === sessionId);
-  if (index !== -1) {
-    sessions.value.splice(index, 1);
+  // 标记为已删除，而不是真正删除（保留历史数据）
+  const session = sessions.value.find(s => s.id === sessionId);
+  if (session) {
+    session.deleted = true;
     if (currentSessionId.value === sessionId) {
-      currentSessionId.value = sessions.value.length > 0 ? sessions.value[0].id : null;
+      // 切换到下一个未删除的会话
+      const nextSession = sessions.value.find(s => !s.deleted);
+      currentSessionId.value = nextSession?.id || null;
     }
     saveSessions();
   }
@@ -261,7 +264,7 @@ function handleSessionDelete(sessionId) {
 
 async function generateImage() {
   const text = inputText.value.trim();
-  if (!text || generating.value) return;
+  if (!text) return;
 
   // 每次点击都创建新会话
   createNewSession();
