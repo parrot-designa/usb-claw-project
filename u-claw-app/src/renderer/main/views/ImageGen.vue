@@ -492,12 +492,40 @@ function handleInsertImage(url) {
   showToast('已添加为参考图，可进行图生图');
 }
 
-function handleDownloadImage(url) {
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `image-${Date.now()}.png`;
-  link.click();
-  showToast('图片开始下载');
+async function handleDownloadImage(url) {
+  const dirResult = await window.uclaw.ipcSelectDownloadDir();
+  if (!dirResult.ok || dirResult.canceled) {
+    return;
+  }
+
+  const filepath = dirResult.path;
+
+  try {
+    let base64;
+    if (url.startsWith('data:')) {
+      // data URL 格式，直接提取 base64 部分
+      base64 = url.split(',')[1];
+    } else {
+      // 普通 URL，通过主进程下载（避免 CORS 问题）
+      const downloadResult = await window.uclaw.ipcDownloadImage({ url });
+      if (!downloadResult.ok) {
+        showToast('下载失败: ' + (downloadResult.error || '无法下载图片'), true);
+        return;
+      }
+      base64 = downloadResult.base64;
+    }
+
+    // 通过主进程保存文件
+    const saveResult = await window.uclaw.ipcSaveFile({ filepath, buffer: base64 });
+    if (saveResult.ok) {
+      showToast(`图片已保存至: ${filepath}`);
+    } else {
+      showToast('保存失败: ' + (saveResult.error || '未知错误'), true);
+    }
+  } catch (e) {
+    console.error('[ImageGen] download error:', e);
+    showToast('下载失败: ' + (e.message || '未知错误'), true);
+  }
 }
 
 function formatTime() {

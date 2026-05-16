@@ -42,6 +42,12 @@ contextBridge.exposeInMainWorld('uclaw', {
   ipcShowErrorDialog: (title, message) => ipcRenderer.invoke('show-error-dialog', { title, message }),
   // Desktop confirm dialog
   ipcShowConfirmDialog: (title, message) => ipcRenderer.invoke('show-confirm-dialog', { title, message }),
+  // Select download directory
+  ipcSelectDownloadDir: () => ipcRenderer.invoke('select-download-dir'),
+  // Save file to disk
+  ipcSaveFile: ({ filepath, buffer }) => ipcRenderer.invoke('save-file', { filepath, buffer }),
+  // Download image (to avoid CORS)
+  ipcDownloadImage: ({ url }) => ipcRenderer.invoke('download-image', { url }),
   // 路由导航（单窗口模式）
   ipcNavigateTo: (route) => ipcRenderer.invoke('navigate-to', route), 
   ipcCheckStepSerial: () => ipcRenderer.invoke('check-step-serial'),

@@ -135,6 +135,42 @@ function registerIPCHandlers({ gateway }) {
     return { ok: true, confirmed: result.response === 1 };
   });
 
+  ipcMain.handle('select-download-dir', async () => {
+    const result = await dialog.showSaveDialog({
+      title: '保存图片',
+      defaultPath: `image-${Date.now()}.png`,
+      filters: [
+        { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp'] }
+      ]
+    });
+    if (result.canceled) {
+      return { ok: false, canceled: true };
+    }
+    return { ok: true, path: result.filePath };
+  });
+
+  ipcMain.handle('save-file', async (_, { filepath, buffer }) => {
+    try {
+      fs.writeFileSync(filepath, Buffer.from(buffer, 'base64'));
+      return { ok: true };
+    } catch (e) {
+      console.error('save-file failed:', e.message);
+      return { ok: false, error: e.message };
+    }
+  });
+
+  ipcMain.handle('download-image', async (_, { url }) => {
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      const base64 = Buffer.from(arrayBuffer).toString('base64');
+      return { ok: true, base64 };
+    } catch (e) {
+      console.error('download-image failed:', e.message);
+      return { ok: false, error: e.message };
+    }
+  });
+
   ipcMain.handle('write-openclaw-config', async (_, { models }, type) => {
     await writeOpenClawConfig({ models }, type);
     return { ok: true };
