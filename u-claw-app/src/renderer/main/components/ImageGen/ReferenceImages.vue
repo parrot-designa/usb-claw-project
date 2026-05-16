@@ -10,8 +10,8 @@
     <!-- 参考图列表 -->
     <div class="ref-images">
       <div v-for="(img, index) in images" :key="index" class="ref-image-item">
-        <img :src="img" @click="removeImage(index)" />
-        <span class="remove-btn">×</span>
+        <img :src="img" />
+        <span class="remove-btn iconfont icon-clawshanchu" @click.stop="removeImage(index)"></span>
       </div>
 
       <!-- 添加按钮 -->
