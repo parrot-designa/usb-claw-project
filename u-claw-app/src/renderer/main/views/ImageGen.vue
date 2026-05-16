@@ -232,6 +232,7 @@ onMounted(async () => {
   await loadSessions();
   await loadImageModels();
   await loadHistoryImages();
+  resumePendingPolls();
 });
 
 async function loadImageModels() {
@@ -268,6 +269,24 @@ async function loadHistoryImages() {
     }
   } catch (e) {
     console.error('[ImageGen] Load history failed:', e);
+  }
+}
+
+function resumePendingPolls() {
+  for (const session of sessions.value) {
+    if (session.deleted) continue;
+    for (let i = 0; i < session.messages.length; i++) {
+      const msg = session.messages[i];
+      // 只恢复未完成的任务（in_progress 或 queued），且必须有 taskId
+      if (!msg.taskId) continue;
+      if (msg.status !== 'in_progress' && msg.status !== 'queued') continue;
+      // 已经存在轮询定时器则跳过
+      if (pollingTimers.value.has(msg.taskId)) continue;
+
+      pendingTasks.value++;
+      generating.value = true;
+      pollTaskStatus(msg.taskId, i, session.id, selectedModel.value);
+    }
   }
 }
 
