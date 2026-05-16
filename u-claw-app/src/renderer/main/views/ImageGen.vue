@@ -642,12 +642,14 @@ function formatTime() {
 
 .session-section {
   flex-shrink: 0;
-  max-height: 300px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
   .session-list-wrapper {
-    max-height: 260px;
+    flex: 1;
     overflow-y: auto;
+    min-height: 0;
   }
 }
 

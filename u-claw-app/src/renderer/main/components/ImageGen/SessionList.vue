@@ -78,12 +78,15 @@ function getSessionPreview(session) {
 <style scoped lang="scss">
 .session-list {
   font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
 
   .session-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 12px;
+    padding: 6px 12px;
     cursor: pointer;
     user-select: none;
     background: linear-gradient(90deg, #2a2a2a 0%, #1a1a1a 100%);
@@ -125,7 +128,11 @@ function getSessionPreview(session) {
     }
   }
 
-  .session-items { 
+  .session-items {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    max-height:260px;
   }
 
   .session-empty {
