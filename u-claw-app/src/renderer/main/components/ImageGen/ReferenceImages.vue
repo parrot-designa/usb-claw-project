@@ -106,27 +106,26 @@ function handleFiles(files) {
       continue;
     }
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64 = e.target.result;
-      try {
-        const res = await apiRequest('/api/upload', {
-          method: 'POST',
-          body: { image: base64 }
-        });
-        if (res.url) {
-          newImages.push(res.url);
-        } else {
-          showToast('上传失败', true);
-          return;
-        }
-      } catch (err) {
-        showToast('上传失败: ' + err.message, true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await apiRequest('/api/upload', {
+        method: 'POST',
+        body: formData,
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.url) {
+        newImages.push(res.url);
+      } else {
+        showToast('上传失败', true);
         return;
       }
-      emit('update:images', newImages);
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      showToast('上传失败: ' + err.message, true);
+      return;
+    }
+    emit('update:images', newImages);
   }
 }
 

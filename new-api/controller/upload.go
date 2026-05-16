@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"encoding/base64"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"time"
@@ -10,11 +10,6 @@ import (
 	"github.com/QuantumNous/new-api/common"
 	"github.com/gin-gonic/gin"
 )
-
-// UploadRequest 上传请求结构
-type UploadRequest struct {
-	Image string `json:"image" binding:"required"`
-}
 
 // UploadResponse 上传响应结构
 type UploadResponse struct {
@@ -26,54 +21,31 @@ type UploadResponse struct {
 // Upload 处理图片上传
 // POST /api/upload
 func Upload(c *gin.Context) {
-	var req UploadRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
 		c.JSON(http.StatusBadRequest, UploadResponse{
 			Success: false,
 			Error:   "invalid request: " + err.Error(),
 		})
 		return
 	}
-
-	// 解析 base64 数据
-	imageData := req.Image
-	if len(imageData) == 0 {
-		c.JSON(http.StatusBadRequest, UploadResponse{
-			Success: false,
-			Error:   "image is required",
-		})
-		return
-	}
-
-	// 处理 data:image/...;base64,xxx 格式
-	if len(imageData) > 5 && imageData[:5] == "data:" {
-		commaIdx := -1
-		for i := 5; i < len(imageData); i++ {
-			if imageData[i] == ',' {
-				commaIdx = i
-				break
-			}
-		}
-		if commaIdx > 0 {
-			imageData = imageData[commaIdx+1:]
-		}
-	}
-
-	// 解码 base64
-	decoded, err := base64.StdEncoding.DecodeString(imageData)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, UploadResponse{
-			Success: false,
-			Error:   "invalid base64 data",
-		})
-		return
-	}
+	defer file.Close()
 
 	// 检查文件大小 (10MB)
-	if len(decoded) > 10*1024*1024 {
+	if header.Size > 10*1024*1024 {
 		c.JSON(http.StatusBadRequest, UploadResponse{
 			Success: false,
 			Error:   "file size exceeds 10MB limit",
+		})
+		return
+	}
+
+	// 读取文件内容
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, UploadResponse{
+			Success: false,
+			Error:   "failed to read file",
 		})
 		return
 	}
