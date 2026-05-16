@@ -40,9 +40,11 @@
       </div>
 
       <!-- 图片单独显示在气泡下方 -->
-      <div v-if="imageUrl" class="bubble-image-wrapper">
-        <img :src="imageUrl" @click="previewImage" class="bubble-image" />
-        <button class="download-btn" @click="downloadImage">↓</button>
+      <div v-if="imageUrls.length > 0" class="bubble-images-wrapper">
+        <div v-for="(url, index) in imageUrls" :key="index" class="bubble-image-item">
+          <img :src="url" @click="previewImage(url)" class="bubble-image" />
+          <button class="download-btn" @click="downloadImage(url)">↓</button>
+        </div>
       </div>
     </div>
   </div>
@@ -75,7 +77,11 @@ function handleCopy() {
 
 const role = computed(() => props.bubble.role);
 const text = computed(() => props.bubble.text);
-const imageUrl = computed(() => props.bubble.imageUrl);
+const imageUrls = computed(() => {
+  if (!props.bubble.imageUrl) return [];
+  if (Array.isArray(props.bubble.imageUrl)) return props.bubble.imageUrl;
+  return [props.bubble.imageUrl];
+});
 const error = computed(() => props.bubble.error);
 const status = computed(() => props.bubble.status);
 const progress = computed(() => props.bubble.progress || 0);
@@ -135,15 +141,15 @@ function regenerate() {
   emit('regenerate', props.bubble);
 }
 
-function previewImage() {
-  if (imageUrl.value) {
-    emit('preview', imageUrl.value);
+function previewImage(url) {
+  if (url) {
+    emit('preview', url);
   }
 }
 
-function downloadImage() {
-  if (imageUrl.value) {
-    emit('download', imageUrl.value);
+function downloadImage(url) {
+  if (url) {
+    emit('download', url);
   }
 }
 </script>
@@ -245,27 +251,23 @@ function downloadImage() {
   }
 }
 
-.bubble-image {
-  max-width: 100%;
-  max-height: 280px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.9;
-  }
-}
-
-.bubble-image-wrapper {
-  position: relative;
-  display: inline-block;
+.bubble-images-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-top: 8px;
   margin-left: 36px;
+}
+
+.bubble-image-item {
+  position: relative;
+  display: inline-block;
 
   .bubble-image {
-    max-width: 100%;
-    max-height: 280px;
+    max-width: 100px;
+    max-height: 100px;
+    width: auto;
+    height: auto;
     border-radius: 6px;
     cursor: pointer;
     transition: opacity 0.2s;
@@ -277,12 +279,12 @@ function downloadImage() {
 
   .download-btn {
     position: absolute;
-    bottom: 8px;
-    right: 8px;
+    bottom: 4px;
+    right: 4px;
     background: rgba(0, 0, 0, 0.5);
     border: none;
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 2px 6px;
     border-radius: 4px;
     font-size: 12px;
     opacity: 0;
