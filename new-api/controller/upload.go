@@ -49,7 +49,8 @@ func getOSSBucket() (*oss.Bucket, error) {
 	}
 
 	// 创建 OSS 客户端
-	endpoint := fmt.Sprintf("https://oss-%s.aliyuncs.com", region)
+	// region 格式为 oss-cn-hangzhou，直接拼接即可
+	endpoint := fmt.Sprintf("https://%s.aliyuncs.com", region)
 	client, err := oss.New(endpoint, accessKeyID, accessKeySecret)
 	if err != nil {
 		return nil, fmt.Errorf("创建 OSS 客户端失败: %w", err)
