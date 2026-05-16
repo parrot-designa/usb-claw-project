@@ -97,7 +97,7 @@
         </span>
         <!-- 空白占位符或聊天气泡 -->
         <div class="bubbles-area">
-          <ChatBubble v-for="(bubble, index) in bubbles" :key="index" :bubble="bubble" />
+          <ChatBubble v-for="(bubble, index) in bubbles" :key="index" :bubble="bubble" :modelName="selectedModel" />
           <div v-if="!bubbles.length" class="empty-bubbles">
             <span>生成的图片将在这里显示</span>
           </div>
@@ -277,8 +277,10 @@ async function generateImage() {
 
     if (currentSession.value) {
       const msgIndex = currentSession.value.messages.length;
+      const msgType = referenceImages.value.length > 0 ? 'image-to-image' : 'text-to-image';
       currentSession.value.messages.push({
         role: 'ai',
+        type: msgType,
         text: text,
         taskId: taskId,
         status: status,
@@ -608,7 +610,7 @@ function formatTime() {
   margin-top: auto;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, rgb(201, 157, 245) 0%, rgb(160, 120, 220) 100%);
+  background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
   color: white;
   font-weight: 500;
 
