@@ -16,27 +16,40 @@
         <!-- 内容 -->
         <div class="bubble-content">
           <p>{{ text }}</p>
-          <img v-if="imageUrl" :src="imageUrl" @click="previewImage" class="bubble-image" />
-          <div v-if="isLoading && progress > 0" class="bubble-progress">
-            <div class="progress-bar" :style="{ width: progress + '%' }"></div>
-          </div>
+        </div>
+        <!-- 进度条 -->
+        <div v-if="isLoading && progress > 0" class="bubble-progress">
+          <div class="progress-bar" :style="{ width: progress + '%' }"></div>
         </div>
         <!-- 底部 -->
         <div class="bubble-footer">
+          <div v-if="!isLoading && !error" class="bubble-actions">
+            <button class="action-btn" @click="handleCopy" title="复制">
+              <span class="iconfont icon-clawfuzhi"></span> 复制文字
+            </button>
+            <button class="action-btn" @click="regenerate" title="重新生成">
+              <span class="iconfont icon-clawshuaxin"></span> 重新生成
+            </button>
+          </div>
           <span v-if="isLoading" class="bubble-loading">
             <span class="iconfont icon-clawshuaxin"></span>
             生成中{{ progress > 0 ? ` ${progress}%` : '' }} 已用{{ elapsedSeconds }}秒
           </span>
           <span v-if="error" class="bubble-error">{{ error }}</span>
-          <button v-if="imageUrl" class="download-btn" @click="downloadImage">↓</button>
         </div>
+      </div>
+
+      <!-- 图片单独显示在气泡下方 -->
+      <div v-if="imageUrl" class="bubble-image-wrapper">
+        <img :src="imageUrl" @click="previewImage" class="bubble-image" />
+        <button class="download-btn" @click="downloadImage">↓</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, inject } from 'vue';
 
 const props = defineProps({
   bubble: {
@@ -49,7 +62,20 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['preview', 'copy', 'download']);
+const emit = defineEmits(['preview', 'copy', 'download', 'regenerate']);
+
+const { showToast } = inject('showToast') || {};
+
+function handleCopy() {
+  if (text.value) {
+    navigator.clipboard.writeText(text.value).then(() => {
+      if (showToast) {
+        showToast('已复制到剪贴板');
+      }
+      emit('copy', text.value);
+    });
+  }
+}
 
 const role = computed(() => props.bubble.role);
 const text = computed(() => props.bubble.text);
@@ -107,6 +133,10 @@ function copyText() {
       emit('copy', text.value);
     });
   }
+}
+
+function regenerate() {
+  emit('regenerate', props.bubble);
 }
 
 function previewImage() {
@@ -222,13 +252,55 @@ function downloadImage() {
 .bubble-image {
   max-width: 100%;
   max-height: 280px;
-  margin-top: 8px;
   border-radius: 6px;
   cursor: pointer;
   transition: opacity 0.2s;
 
   &:hover {
     opacity: 0.9;
+  }
+}
+
+.bubble-image-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-top: 8px;
+  margin-left: 36px;
+
+  .bubble-image {
+    max-width: 100%;
+    max-height: 280px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  .download-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    color: #fff;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 1;
+      background: rgba(0, 0, 0, 0.7);
+    }
+  }
+
+  &:hover .download-btn {
+    opacity: 1;
   }
 }
 
@@ -240,20 +312,35 @@ function downloadImage() {
   font-size: 11px;
 }
 
-.download-btn {
+.bubble-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   background: transparent;
+  white-space: nowrap;
   border: none;
   cursor: pointer;
-  padding: 2px 6px;
   border-radius: 4px;
   font-size: 12px;
-  opacity: 0.7;
-  color: #fff;
-  transition: opacity 0.2s, background 0.2s;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s, background 0.2s;
 
   &:hover {
-    opacity: 1;
-    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .icon-clawshuaxin {
+    font-size: 12px;
   }
 }
 

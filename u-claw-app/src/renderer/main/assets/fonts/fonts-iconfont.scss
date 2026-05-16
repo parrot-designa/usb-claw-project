@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 5166553 */
-  src: url('https://at.alicdn.com/t/c/font_5166553_za74tla8irr.woff2?t=1778756162371') format('woff2'),
-       url('https://at.alicdn.com/t/c/font_5166553_za74tla8irr.woff?t=1778756162371') format('woff'),
-       url('https://at.alicdn.com/t/c/font_5166553_za74tla8irr.ttf?t=1778756162371') format('truetype');
+  src: url('https://at.alicdn.com/t/c/font_5166553_fblqv6stip4.woff2?t=1778908964791') format('woff2'),
+       url('https://at.alicdn.com/t/c/font_5166553_fblqv6stip4.woff?t=1778908964791') format('woff'),
+       url('https://at.alicdn.com/t/c/font_5166553_fblqv6stip4.ttf?t=1778908964791') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,22 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-clawfuzhi:before {
+  content: "\eac1";
+}
+
+.icon-clawtupian:before {
+  content: "\e8ba";
+}
+
+.icon-clawxiazai:before {
+  content: "\e63e";
+}
+
+.icon-clawzhongxinshengcheng:before {
+  content: "\e6a0";
 }
 
 .icon-clawarrow-down:before {

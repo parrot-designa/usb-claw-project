@@ -97,7 +97,13 @@
         </span>
         <!-- 空白占位符或聊天气泡 -->
         <div class="bubbles-area">
-          <ChatBubble v-for="(bubble, index) in bubbles" :key="index" :bubble="bubble" :modelName="selectedModel" />
+          <ChatBubble
+            v-for="(bubble, index) in bubbles"
+            :key="index"
+            :bubble="bubble"
+            :modelName="selectedModel"
+            @regenerate="handleRegenerate"
+          />
           <div v-if="!bubbles.length" class="empty-bubbles">
             <span>生成的图片将在这里显示</span>
           </div>
@@ -368,6 +374,12 @@ async function pollTaskStatus(taskId, msgIndex, model) {
       console.error('[ImageGen] Poll status failed:', e);
     }
   }, 2000);
+}
+
+async function handleRegenerate(bubble) {
+  inputText.value = bubble.text;
+  referenceImages.value = bubble.referenceImages || [];
+  await generateImage();
 }
 
 function formatTime() {
