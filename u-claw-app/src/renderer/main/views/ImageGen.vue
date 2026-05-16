@@ -25,25 +25,27 @@
     <!-- 自由创作 Tab -->
     <div v-show="activeTab === 'free'" class="free-create-tab">
       <div class="left-panel" :class="{ collapsed: leftPanelCollapsed }">
+        <!-- 折叠图标 -->
         <span v-if="!leftPanelCollapsed" class="collapse-icon left" @click="toggleLeftPanel">←</span>
         <span v-else class="collapse-icon left" @click="toggleLeftPanel">→</span>
-        <!-- 会话列表 -->
-        <div class="session-list-placeholder">
-          <SessionList
-            :sessions="sessions"
-            :currentSessionId="currentSessionId"
-            @select="handleSessionSelect"
-            @delete="handleSessionDelete"
-          />
-        </div>
-        <!-- API Key 提示 -->
-        <div class="api-key-hint">已自动使用【模型配置】的API Key</div>
 
-        <!-- 参考图 & 表单区域 -->
+        <!-- 上部：会话列表区域 -->
+        <div class="session-section">
+          <div class="session-list-wrapper">
+            <SessionList
+              :sessions="sessions"
+              :currentSessionId="currentSessionId"
+              @select="handleSessionSelect"
+              @delete="handleSessionDelete"
+            />
+          </div>
+          <div class="api-key-hint">已自动使用【模型配置】的API Key</div>
+        </div>
+
+        <!-- 中部：表单区域 -->
         <div class="form-area">
           <ReferenceImages v-model:images="referenceImages" />
 
-          <!-- 描述 textarea -->
           <div class="prompt-area">
             <textarea
               v-model="inputText"
@@ -53,7 +55,6 @@
             ></textarea>
           </div>
 
-          <!-- 模型、尺寸、数量选择 -->
           <div class="generate-options">
             <select v-model="selectedModel" class="option-select">
               <option v-for="model in imageModels" :key="model.model_name" :value="model.model_name">
@@ -80,15 +81,20 @@
           </div>
         </div>
 
-        <!-- 生成按钮 -->
-        <button
-          @click="generateImage"
-          class="generate-btn"
-          :disabled="!inputText.trim() || generating"
-        >
-          <span v-if="generating" class="iconfont icon-clawshuaxin"></span>
-          <span v-else>生成图片</span>
-        </button>
+        <!-- 下部：生成按钮（固定在底部） -->
+        <div class="btn-area">
+          <button
+            @click="generateImage"
+            class="generate-btn"
+            :class="{ active: inputText.trim() && !generating, generating: generating }"
+            :disabled="generating"
+          >
+            <span v-if="generating" class="iconfont icon-clawshuaxin spinning"></span>
+            <span v-else class="iconfont icon-clawtupianshengcheng"></span>
+            <span v-if="generating">添加到队列中</span>
+            <span v-else>生成图片</span>
+          </button>
+        </div>
       </div>
 
       <div class="right-panel">
@@ -140,6 +146,7 @@ const currentSessionId = ref(null); // 当前会话ID
 const activeTab = ref('free');      // 当前激活的 Tab
 const leftPanelCollapsed = ref(false); // 左侧面板是否折叠
 const referenceImages = ref([]);    // 参考图列表
+const pollingTimers = ref(new Map()); // 存储轮询定时器: taskId -> timer
 
 const inputText = ref('');
 const imageModels = ref([]);
@@ -147,6 +154,7 @@ const selectedModel = ref('gpt-image-2');
 const imageSize = ref('1024x1024');
 const imageCount = ref(1);
 const generating = ref(false);
+const pendingTasks = ref(0); // 待完成的轮询任务数量
 
 const currentSession = computed(() => {
   return sessions.value.find(s => s.id === currentSessionId.value);
@@ -229,6 +237,18 @@ function handleSessionSelect(sessionId) {
 }
 
 function handleSessionDelete(sessionId) {
+  // 取消该会话下所有轮询定时器
+  sessions.value.forEach(session => {
+    if (session.id === sessionId) {
+      session.messages.forEach(msg => {
+        if (msg.taskId && pollingTimers.value.has(msg.taskId)) {
+          clearInterval(pollingTimers.value.get(msg.taskId));
+          pollingTimers.value.delete(msg.taskId);
+        }
+      });
+    }
+  });
+
   const index = sessions.value.findIndex(s => s.id === sessionId);
   if (index !== -1) {
     sessions.value.splice(index, 1);
@@ -248,8 +268,9 @@ async function generateImage() {
   }
 
   generating.value = true;
+    pendingTasks.value = 0;
 
-  try {
+    try {
     // 调用图片生成接口，返回任务 ID
     const taskResult = await apiRequest('/v1/images/generations', {
       method: 'POST',
@@ -301,11 +322,15 @@ async function generateImage() {
 
       // 如果是异步任务（返回task_id），开始轮询
       if (taskId && status !== 'completed') {
+        pendingTasks.value++;
         pollTaskStatus(taskId, msgIndex, selectedModel.value);
       } else {
-        generating.value = false;
         if (imageUrl) {
           showToast('图片生成成功');
+        }
+        // 检查是否还有其他进行中的任务
+        if (pendingTasks.value === 0) {
+          generating.value = false;
         }
       }
     }
@@ -333,9 +358,10 @@ async function pollTaskStatus(taskId, msgIndex, model) {
         }
       });
 
-      const session = currentSession.value;
+      const session = sessions.value.find(s => s.messages.some((_, idx) => idx === msgIndex));
       if (!session || !session.messages[msgIndex]) {
         clearInterval(timer);
+        pollingTimers.value.delete(taskId);
         generating.value = false;
         return;
       }
@@ -353,13 +379,21 @@ async function pollTaskStatus(taskId, msgIndex, model) {
 
           msg.imageUrl = result.result?.data[0].url;
           clearInterval(timer);
+          pollingTimers.value.delete(taskId);
+          pendingTasks.value--;
           showToast('图片生成成功');
-          generating.value = false;
+          if (pendingTasks.value === 0) {
+            generating.value = false;
+          }
         } else if (newStatus === 'failed') {
           msg.error = result.error || '生成失败';
           clearInterval(timer);
+          pollingTimers.value.delete(taskId);
+          pendingTasks.value--;
           showToast('图片生成失败: ' + msg.error, true);
-          generating.value = false;
+          if (pendingTasks.value === 0) {
+            generating.value = false;
+          }
         }
 
         saveSessions();
@@ -367,14 +401,20 @@ async function pollTaskStatus(taskId, msgIndex, model) {
 
       if (pollCount >= maxPolls) {
         clearInterval(timer);
+        pollingTimers.value.delete(taskId);
+        pendingTasks.value--;
         msg.error = '生成超时';
-        generating.value = false;
+        if (pendingTasks.value === 0) {
+          generating.value = false;
+        }
         saveSessions();
       }
     } catch (e) {
       console.error('[ImageGen] Poll status failed:', e);
     }
   }, 2000);
+
+  pollingTimers.value.set(taskId, timer);
 }
 
 async function handleRegenerate(bubble) {
@@ -476,8 +516,7 @@ function formatTime() {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  min-height: 0;
+  overflow: hidden;
   position: relative;
   transition: all 0.3s ease;
 
@@ -508,6 +547,17 @@ function formatTime() {
     .left-panel:hover & {
       opacity: 1;
     }
+  }
+}
+
+.session-section {
+  flex-shrink: 0;
+  max-height: 300px;
+  overflow-y: auto;
+
+  .session-list-wrapper {
+    max-height: 260px;
+    overflow-y: auto;
   }
 }
 
@@ -558,11 +608,14 @@ function formatTime() {
 }
 
 .form-area {
+  flex: 1;
+  overflow-y: auto;
   background: var(--surface);
   padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-height: 0;
 }
 
 .prompt-area {
@@ -617,26 +670,50 @@ function formatTime() {
   }
 }
 
+.btn-area {
+  flex-shrink: 0;
+  padding: 12px;
+}
+
 .generate-btn {
   width: 100%;
   padding: 12px;
-  margin-top: auto;
   border-radius: 12px;
   border: none;
   background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
   color: white;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
 
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.7;
     cursor: not-allowed;
+  }
+
+  &:not(:disabled) {
+    &.active, &:hover {
+      background: linear-gradient(90deg, rgb(175, 77, 255) 0%, rgb(240, 74, 160) 100%);
+      box-shadow: 0 4px 20px rgba(157, 67, 234, 0.4);
+      transform: translateY(-1px);
+    }
+  }
+
+  .iconfont {
+    font-size: 16px;
+  }
+
+  .spinning {
+    animation: spin 1s linear infinite;
   }
 }
 
-.session-list-placeholder {
-  flex-shrink: 0;
-  overflow-y: auto;
-  max-height: 400px;
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .api-key-hint {

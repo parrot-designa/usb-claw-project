@@ -128,6 +128,7 @@ function getSessionPreview(session) {
     text-align: center;
     color: inherit;
     font-size: 12px;
+    padding:10px;
   }
 
   .session-item {
