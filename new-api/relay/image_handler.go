@@ -55,10 +55,10 @@ func ImageHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *type
 
 		// 透传模式下打印原始请求体
 		if common.DebugEnabled {
-			storage.Reset()
+			storage.Seek(0, io.SeekStart)
 			bodyBytes, _ := io.ReadAll(storage)
 			logger.LogDebug(c, fmt.Sprintf("image request body (pass-through): %s", string(bodyBytes)))
-			storage.Reset()
+			storage.Seek(0, io.SeekStart)
 		}
 	} else {
 		convertedRequest, err := adaptor.ConvertImageRequest(c, info, *request)
