@@ -458,6 +458,9 @@ referenceImages.value.length > 0 && { reference_images: referenceImages.value })
           generating.value = false;
         }
       }
+    } else {
+      // currentSession 为空时重置状态
+      generating.value = false;
     }
 
     inputText.value = '';
@@ -480,6 +483,8 @@ referenceImages.value.length > 0 && { reference_images: referenceImages.value })
 async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
   const maxPolls = 220;
   let pollCount = 0;
+  let errorCount = 0;
+  const maxErrors = 5;
 
   const timer = setInterval(async () => {
     pollCount++;
@@ -491,6 +496,8 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
           model: model
         }
       });
+      errorCount = 0; // 成功后重置错误计数
+
       // 使用创建消息时的会话ID，而不是当前的currentSessionId
       const session = sessions.value.find(s => s.id === sessionId);
       if (!session || msgIndex >= session.messages.length) {
@@ -551,6 +558,23 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
       }
     } catch (e) {
       console.error('[ImageGen] Poll status failed:', e);
+      errorCount++;
+      if (errorCount >= maxErrors) {
+        clearInterval(timer);
+        pollingTimers.value.delete(taskId);
+        pendingTasks.value--;
+        const session = sessions.value.find(s => s.id === sessionId);
+        if (session && msgIndex < session.messages.length) {
+          session.messages[msgIndex].error = '轮询失败: 网络错误';
+          session.messages[msgIndex].status = 'failed';
+          session.messages[msgIndex].loadStatus = 'failed';
+        }
+        if (pendingTasks.value === 0) {
+          generating.value = false;
+        }
+        saveSessions();
+        showToast('图片生成失败: 网络连接异常', true);
+      }
     }
   }, 2000);
 
