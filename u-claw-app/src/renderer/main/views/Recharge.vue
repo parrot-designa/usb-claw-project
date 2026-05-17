@@ -41,7 +41,7 @@
 
       <!-- Amount Options -->
       <div class="recharge-amount-section">
-        <label class="recharge-section-label">选择充值金额</label>
+        <label class="recharge-section-label">选择充值积分</label>
         <div class="recharge-amount-options">
           <button
             v-for="amount in amountOptions"
@@ -60,17 +60,17 @@
 
       <!-- Custom Amount -->
       <div class="recharge-custom-amount-section">
-        <label class="recharge-section-label">自定义金额</label>
+        <label class="recharge-section-label">自定义积分</label>
         <div class="recharge-input-row">
           <input
             type="number"
             class="recharge-form-input"
             v-model="customAmount"
-            placeholder="输入金额"
+            placeholder="输入积分"
             min="1"
             @input="onCustomAmountInput"
           />
-          <span class="recharge-input-suffix">元</span>
+          <span class="recharge-input-suffix">积分</span>
         </div>
       </div>
 
@@ -108,7 +108,7 @@
           <span class="recharge-detail-value recharge-original-price">{{ displayAmount.toFixed(2) }}</span>
         </div>
         <div class="recharge-detail-row">
-          <span class="recharge-detail-label">{{ hasDiscount ? '折扣价' : '对应金额' }}</span>
+          <span class="recharge-detail-label">{{ hasDiscount ? '折扣价' : '对应积分' }}</span>
           <span class="recharge-detail-value" :class="{ 'recharge-discounted': hasDiscount }">
             {{ (displayAmount * currentDiscount).toFixed(2) }}
             <span v-if="hasDiscount" class="recharge-detail-discount">{{ currentDiscount * 10 }}折</span>
@@ -116,7 +116,7 @@
         </div>
         <div class="recharge-detail-row conversion">
           <span class="recharge-detail-label">换算比例</span>
-          <span class="recharge-detail-value">1 元 ≈ 500,000 Tokens</span>
+          <span class="recharge-detail-value">1 积分 ≈ 500,000 Tokens</span>
         </div>
       </div>
 
@@ -155,7 +155,7 @@
         <table class="recharge-records-table">
           <thead>
             <tr>
-              <th>支付金额</th>
+              <th>支付积分</th>
               <th>支付方式</th>
               <th>创建时间</th>
               <th>状态</th>
@@ -303,7 +303,7 @@ function onWechatClick() {
 // Handle recharge
 async function handleRecharge() {
   if (displayAmount.value <= 0) {
-    showToast('请选择或输入充值金额', true);
+    showToast('请选择或输入充值积分', true);
     return;
   }
 
