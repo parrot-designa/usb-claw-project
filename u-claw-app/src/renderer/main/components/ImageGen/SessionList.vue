@@ -155,10 +155,10 @@ function getSessionPreview(session) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 12px 8px 12px; 
-    cursor: pointer; 
+    padding: 4px 12px;
+    cursor: pointer;
     color: inherit;
-    font-size: 13px;
+    font-size: 12px;
     background: linear-gradient(90deg, rgba(160, 120, 220, 0.3) 0%, rgba(160, 120, 220, 0.05) 100%);
 
     &.active {
@@ -186,7 +186,7 @@ function getSessionPreview(session) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1;
   }
 
@@ -198,15 +198,16 @@ function getSessionPreview(session) {
     flex-shrink: 0;
     opacity: 0;
     transition: opacity 0.2s;
+  }
 
-    .session-item:hover & {
-      opacity: 1;
-    }
+  .session-item:hover .session-actions {
+    opacity: 1;
   }
 
   .session-edit {
+    font-size: 12px;
     cursor: pointer;
-    padding: 4px;
+    padding: 2px;
     border-radius: 4px;
     transition: background 0.2s;
 
@@ -216,8 +217,9 @@ function getSessionPreview(session) {
   }
 
   .session-delete {
+    font-size: 12px;
     cursor: pointer;
-    padding: 4px;
+    padding: 2px;
     border-radius: 4px;
     transition: background 0.2s;
 
