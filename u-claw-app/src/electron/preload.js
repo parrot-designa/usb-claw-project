@@ -75,8 +75,8 @@ contextBridge.exposeInMainWorld('uclaw', {
     return ipcRenderer.invoke('check-port', port);
   },
   // Image sessions
-  ipcSaveImageSessions: (model, sessions, currentSessionId) => ipcRenderer.invoke('save-image-sessions', { model, sessions, currentSessionId }),
-  ipcLoadImageSessions: (model) => ipcRenderer.invoke('load-image-sessions', { model }),
+  ipcSaveImageSessions: (sessions, currentSessionId) => ipcRenderer.invoke('save-image-sessions', { sessions, currentSessionId }),
+  ipcLoadImageSessions: () => ipcRenderer.invoke('load-image-sessions'),
   // Image generation
   generateImage: (params) => ipcRenderer.invoke('generate-image', params),
   // Save image to local media directory

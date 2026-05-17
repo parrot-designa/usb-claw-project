@@ -341,18 +341,18 @@ async function loadImageModels() {
 
 async function loadSessions() {
   // 优先从预加载缓存读取
-  const cached = sessionsCache[selectedModel.value];
+  const cached = sessionsCache._all;
   if (cached) {
     sessions.value = cached.sessions || [];
     currentSessionId.value = cached.currentSessionId;
     return;
   }
   try {
-    const result = await window.uclaw.ipcLoadImageSessions(selectedModel.value);
+    const result = await window.uclaw.ipcLoadImageSessions();
     if (result?.ok && result.data) {
       sessions.value = result.data.sessions || [];
       currentSessionId.value = result.data.currentSessionId;
-      sessionsCache[selectedModel.value] = result.data;
+      sessionsCache._all = result.data;
     }
   } catch (e) {
     console.error('[ImageGen] Load sessions failed:', e);
@@ -387,8 +387,8 @@ async function saveSessions() {
     // 深度转换为原始对象，避免 Vue 响应式代理导致 IPC 克隆失败
     const plainSessions = JSON.parse(JSON.stringify(toRaw(sessions.value)));
     // 同步更新缓存
-    sessionsCache[selectedModel.value] = { sessions: plainSessions, currentSessionId: currentSessionId.value };
-    await window.uclaw.ipcSaveImageSessions(selectedModel.value, plainSessions, currentSessionId.value);
+    sessionsCache._all = { sessions: plainSessions, currentSessionId: currentSessionId.value };
+    await window.uclaw.ipcSaveImageSessions(plainSessions, currentSessionId.value);
   } catch (e) {
     console.error('[ImageGen] Save sessions failed:', e);
   }

@@ -456,14 +456,14 @@ function registerIPCHandlers({ gateway }) {
     });
   });
 
-  // Image sessions persistence (per-model subdirectory under data/.openclaw/chat-history/)
-  ipcMain.handle('save-image-sessions', async (_, { model, sessions, currentSessionId }) => {
+  // Image sessions persistence
+  ipcMain.handle('save-image-sessions', async (_, { sessions, currentSessionId }) => {
     try {
-      const modelDir = path.join(dataRoot, '.openclaw', 'chat-history', model);
-      if (!fs.existsSync(modelDir)) {
-        fs.mkdirSync(modelDir, { recursive: true });
+      const dir = path.join(dataRoot, '.openclaw', 'chat-history');
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
       }
-      const file = path.join(modelDir, 'image-sessions.json');
+      const file = path.join(dir, 'image-sessions.json');
       fs.writeFileSync(file, JSON.stringify({ sessions, currentSessionId }, null, 2), 'utf-8');
       return { ok: true };
     } catch (err) {
@@ -472,9 +472,9 @@ function registerIPCHandlers({ gateway }) {
     }
   });
 
-  ipcMain.handle('load-image-sessions', async (_, { model }) => {
+  ipcMain.handle('load-image-sessions', async () => {
     try {
-      const file = path.join(dataRoot, '.openclaw', 'chat-history', model, 'image-sessions.json');
+      const file = path.join(dataRoot, '.openclaw', 'chat-history', 'image-sessions.json');
       if (!fs.existsSync(file)) {
         return { ok: true, data: { sessions: [], currentSessionId: null } };
       }
