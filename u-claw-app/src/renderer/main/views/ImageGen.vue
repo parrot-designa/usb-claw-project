@@ -573,7 +573,7 @@ referenceImages.value.length > 0 && { reference_images: referenceImages.value })
 }
 
 async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
-  const maxPolls = 300; // 10分钟 = 600秒 / 2秒
+  const maxPolls = 200; // 10分钟 = 600秒 / 3秒
   let pollCount = 0;
   let errorCount = 0;
   const maxErrors = 5;
@@ -668,7 +668,7 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
         showToast('图片生成失败: 网络连接异常', true);
       }
     }
-  }, 2000);
+  }, 3000);
 
   pollingTimers.value.set(taskId, timer);
 }
