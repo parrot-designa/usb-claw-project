@@ -8,7 +8,7 @@ import {
   checkNetwork,
   detectUSBStatus, 
 } from './activation.js';
-import { getGatewayEnv, getNodeBin, getNpmBin, getOpenClawPath, getPaths, readLicenseFile, writeLicenseFile, writeOpenClawConfig} from './paths.js';
+import { getGatewayEnv, getMediaDir, getNodeBin, getNpmBin, getOpenClawPath, getPaths, readLicenseFile, writeLicenseFile, writeOpenClawConfig} from './paths.js';
 import skillNameMap from './skill-name-map.js';
 import net from 'net';
 import { GATEWAY_DEFAULT_PORT } from './utils/env.js';
@@ -167,6 +167,28 @@ function registerIPCHandlers({ gateway }) {
       return { ok: true, base64 };
     } catch (e) {
       console.error('download-image failed:', e.message);
+      return { ok: false, error: e.message };
+    }
+  });
+
+  // Download and persist image to local media directory
+  ipcMain.handle('save-media-image', async (_, { url, taskId }) => {
+    try {
+      const mediaDir = getMediaDir();
+      if (!fs.existsSync(mediaDir)) {
+        fs.mkdirSync(mediaDir, { recursive: true });
+      }
+      const ext = url.match(/\.(png|jpg|jpeg|webp)(?:\?|$)/i)?.[1] || 'png';
+      const filename = `${taskId}.${ext}`;
+      const filepath = path.join(mediaDir, filename);
+
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      fs.writeFileSync(filepath, Buffer.from(arrayBuffer));
+      console.log('[save-media-image] saved:', filepath);
+      return { ok: true, filepath };
+    } catch (e) {
+      console.error('save-media-image failed:', e.message);
       return { ok: false, error: e.message };
     }
   });
@@ -435,7 +457,7 @@ function registerIPCHandlers({ gateway }) {
   });
 
   // Image sessions persistence (per-model subdirectory under data/.openclaw/chat-history/)
-ipcMain.handle('save-image-sessions', async (_, { model, sessions, currentSessionId }) => {
+  ipcMain.handle('save-image-sessions', async (_, { model, sessions, currentSessionId }) => {
     try {
       const modelDir = path.join(dataRoot, '.openclaw', 'chat-history', model);
       if (!fs.existsSync(modelDir)) {

@@ -429,6 +429,7 @@ async function ensureOpenClawDirectories() {
   fs.mkdirSync(path.join(configDir, 'workspace', 'memory'), { recursive: true });
   fs.mkdirSync(path.join(configDir, 'backups'), { recursive: true });
   fs.mkdirSync(path.join(configDir, 'workspace'), { recursive: true });
+  fs.mkdirSync(path.join(configDir, 'media'), { recursive: true });
 
   const configPath = readJsonFilePath();
   const appRoot = getAppRoot();
@@ -492,6 +493,10 @@ function copyDirSync(src, dest) {
   }
 }
  
+
+function getMediaDir() {
+  return path.join(getDataRoot(), DIR_OPENCLAW, 'media');
+}
 
 function getPaths() {
   const appRoot = getAppRoot();
@@ -698,6 +703,7 @@ export {
   getLocalBase,
   getAppRoot,
   getDataRoot,
+  getMediaDir,
   readJsonFileDir,
   readJsonFilePath,
   getOpenClawPath,

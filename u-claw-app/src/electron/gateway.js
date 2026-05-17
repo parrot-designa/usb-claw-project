@@ -8,8 +8,7 @@ import { sendBootPhase, isWin, sendGatewayStatus,sendGatewayLog,safeSend } from 
 
 
 function createGatewayManager() {
-  // Get paths at creation time (after app.whenReady())
-  const { openclawPath, dataRoot, configDir, configPath, openclawEntry } = getPaths();
+  // Get paths at creation time (after app.whenReady()) 
 
   let wechatManager = null;
 

@@ -79,4 +79,6 @@ contextBridge.exposeInMainWorld('uclaw', {
   ipcLoadImageSessions: (model) => ipcRenderer.invoke('load-image-sessions', { model }),
   // Image generation
   generateImage: (params) => ipcRenderer.invoke('generate-image', params),
+  // Save image to local media directory
+  ipcSaveMediaImage: ({ url, taskId }) => ipcRenderer.invoke('save-media-image', { url, taskId }),
 });

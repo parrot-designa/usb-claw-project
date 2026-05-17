@@ -565,6 +565,8 @@ referenceImages.value.length > 0 && { reference_images: referenceImages.value })
       } else {
         if (imageUrl) {
           showToast('图片生成成功');
+          const lastMsg = currentSession.value.messages[currentSession.value.messages.length - 1];
+          if (lastMsg) saveImageToMedia(imageUrl, taskId, lastMsg);
         }
         // 检查是否还有其他进行中的任务
         if (pendingTasks.value === 0) {
@@ -631,6 +633,7 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
           msg.loadedTime = formatTime();
           msg.loadDuration = Math.round((Date.now() - msg.startTime) / 1000);
           msg.loadStatus = 'success';
+          saveImageToMedia(result.result?.data[0].url, taskId, msg);
           clearInterval(timer);
           pollingTimers.value.delete(taskId);
           pendingTasks.value--;
@@ -774,6 +777,18 @@ async function handleDownloadImage(url) {
 function formatTime() {
   const now = new Date();
   return now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+}
+
+async function saveImageToMedia(url, taskId, msg) {
+  if (!url || url.startsWith('data:')) return;
+  try {
+    const result = await window.uclaw.ipcSaveMediaImage({ url, taskId });
+    if (result?.ok && result.filepath) {
+      msg.localPath = result.filepath;
+    }
+  } catch (e) {
+    console.error('[ImageGen] saveImageToMedia failed:', e);
+  }
 }
 
 function handleDeleteHistory(id) {
