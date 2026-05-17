@@ -503,6 +503,16 @@ function registerIPCHandlers({ gateway }) {
     }
   });
 
+  // 图片预览时全屏（隐藏窗口控制按钮）
+  ipcMain.handle('set-fullscreen', async (_, enter) => {
+    const win = getMainWindow();
+    if (win && !win.isDestroyed()) {
+      win.setFullScreen(enter);
+      return { ok: true };
+    }
+    return { ok: false, error: 'Window not available' };
+  });
+
   // Image sessions persistence
   ipcMain.handle('save-image-sessions', async (_, { sessions, currentSessionId }) => {
     try {

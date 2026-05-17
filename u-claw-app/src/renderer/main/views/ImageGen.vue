@@ -789,11 +789,13 @@ function handleInsertImage(url) {
 function handlePreviewImage(url) {
   previewUrl.value = url;
   showPreview.value = true;
+  window.uclaw.ipcSetFullScreen(true);
 }
 
 function closePreview() {
   showPreview.value = false;
   previewUrl.value = '';
+  window.uclaw.ipcSetFullScreen(false);
 }
 
 async function handleDownloadImage(url) {
@@ -1417,7 +1419,7 @@ function handleClearHistory() {
 
 .preview-download-btn {
   position: absolute;
-  top: 16px;
+  top: 48px;
   left: 16px;
   width: 36px;
   height: 36px;
@@ -1443,7 +1445,7 @@ function handleClearHistory() {
 
 .preview-close-btn {
   position: absolute;
-  top: 16px;
+  top: 48px;
   right: 16px;
   width: 36px;
   height: 36px;

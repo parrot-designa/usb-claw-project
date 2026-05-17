@@ -85,4 +85,6 @@ contextBridge.exposeInMainWorld('uclaw', {
   ipcLoadMessageJson: () => ipcRenderer.invoke('load-message-json'),
   ipcSaveMessageJson: (messages) => ipcRenderer.invoke('save-message-json', { messages }),
   ipcOpenMediaFolder: () => ipcRenderer.invoke('open-media-folder'),
+  // 全屏切换
+  ipcSetFullScreen: (fullscreen) => ipcRenderer.invoke('set-fullscreen', fullscreen),
 });
