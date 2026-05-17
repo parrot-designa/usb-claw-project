@@ -24,10 +24,6 @@
             <img :src="img" />
           </div>
         </div>
-        <!-- 进度条 -->
-        <div v-if="isLoading && fakeProgress > 0" class="bubble-progress">
-          <div class="progress-bar" :style="{ width: fakeProgress + '%' }"></div>
-        </div>
         <!-- 底部 -->
         <div class="bubble-footer">
           <div v-if="!isLoading" class="bubble-actions">
@@ -40,7 +36,7 @@
           </div>
           <span v-if="isLoading" class="bubble-loading">
             <span class="iconfont icon-clawshuaxin"></span>
-            生成中{{ fakeProgress > 0 ? ` ${Math.round(fakeProgress)}%` : '' }} 已用{{ formatDuration(elapsedSeconds) }}
+            生成中 已用{{ formatDuration(elapsedSeconds) }}
           </span>
   
         </div>
@@ -117,9 +113,6 @@ const referenceImages = computed(() => props.bubble.referenceImages || []);
 const error = computed(() => props.bubble.error);
 const status = computed(() => props.bubble.status);
 
-// 假的进度：从0慢慢增加到90%，成功时跳到100%
-const progress = computed(() => props.bubble.progress ?? 0);
-
 const bubbleType = computed(() => {
   const type = props.bubble.type || 'text-to-image';
   return type === 'image-to-image' ? '图生图' : '文生图';
@@ -152,8 +145,6 @@ const loadStatusText = computed(() => {
 
 const elapsedSeconds = ref(0);
 let timer = null;
-let progressTimer = null;
-const fakeProgress = ref(0);
 const imageLoaded = ref({});
 const imageError = ref({});
 
@@ -183,31 +174,10 @@ function formatDuration(seconds) {
   return `${seconds}秒`;
 }
 
-function startFakeProgress() {
-  // 用已有的真实进度作为起点，没有则从0开始
-  if (progress.value > fakeProgress.value) {
-    fakeProgress.value = progress.value;
-  }
-  progressTimer = setInterval(() => {
-    if (fakeProgress.value < 90) {
-      fakeProgress.value += Math.random() * 0.6 + 0.2; // 随机增加0.2-0.8%，5倍慢
-      if (fakeProgress.value > 90) fakeProgress.value = 90;
-    }
-  }, 1000); // 1秒间隔，5倍慢
-}
-
-function stopFakeProgress() {
-  if (progressTimer) {
-    clearInterval(progressTimer);
-    progressTimer = null;
-  }
-}
-
 onMounted(() => {
   if (isLoading.value) {
     updateElapsedTime();
     timer = setInterval(updateElapsedTime, 1000);
-    startFakeProgress();
   }
 });
 onUnmounted(() => {
@@ -215,19 +185,14 @@ onUnmounted(() => {
     clearInterval(timer);
     timer = null;
   }
-  stopFakeProgress();
 });
 
 watch(() => props.bubble.status, (newStatus) => {
   if (newStatus === 'in_progress') {
     elapsedSeconds.value = 0;
-    stopFakeProgress();
-    startFakeProgress();
     stopTimer();
     startTimer();
   } else if (newStatus === 'completed' || newStatus === 'failed') {
-    fakeProgress.value = 100;
-    stopFakeProgress();
     stopTimer();
   }
 });
@@ -379,21 +344,6 @@ function regenerateSingle(url) {
       height: 100%;
       object-fit: cover;
     }
-  }
-}
-
-.bubble-progress {
-  width: 100%;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 2px;
-  margin-top: 8px;
-  overflow: hidden;
-
-  .progress-bar {
-    height: 100%;
-    background: #fff;
-    transition: width 0.3s;
   }
 }
 
