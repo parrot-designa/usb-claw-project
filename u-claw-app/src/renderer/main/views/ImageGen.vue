@@ -185,6 +185,7 @@ import { ref, computed, nextTick, onMounted, toRaw, watch } from 'vue';
 import { useToast } from '../composables/useToast';
 import { useModelsStore } from '../stores/models';
 import { useUserStore } from '../stores/user';
+import { sessionsCache } from '../stores/imageGen';
 import { apiRequest } from '@renderer/js/api';
 import SessionList from '../components/ImageGen/SessionList.vue';
 import ReferenceImages from '../components/ImageGen/ReferenceImages.vue';
@@ -339,11 +340,19 @@ async function loadImageModels() {
 }
 
 async function loadSessions() {
+  // 优先从预加载缓存读取
+  const cached = sessionsCache[selectedModel.value];
+  if (cached) {
+    sessions.value = cached.sessions || [];
+    currentSessionId.value = cached.currentSessionId;
+    return;
+  }
   try {
     const result = await window.uclaw.ipcLoadImageSessions(selectedModel.value);
     if (result?.ok && result.data) {
       sessions.value = result.data.sessions || [];
       currentSessionId.value = result.data.currentSessionId;
+      sessionsCache[selectedModel.value] = result.data;
     }
   } catch (e) {
     console.error('[ImageGen] Load sessions failed:', e);
@@ -377,6 +386,8 @@ async function saveSessions() {
   try {
     // 深度转换为原始对象，避免 Vue 响应式代理导致 IPC 克隆失败
     const plainSessions = JSON.parse(JSON.stringify(toRaw(sessions.value)));
+    // 同步更新缓存
+    sessionsCache[selectedModel.value] = { sessions: plainSessions, currentSessionId: currentSessionId.value };
     await window.uclaw.ipcSaveImageSessions(selectedModel.value, plainSessions, currentSessionId.value);
   } catch (e) {
     console.error('[ImageGen] Save sessions failed:', e);
@@ -630,6 +641,7 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
         } else if (newStatus === 'failed') {
           msg.error = result.result?.error || result.error || '生成失败';
           msg.loadStatus = 'failed';
+          msg.loadDuration = Math.round((Date.now() - msg.startTime) / 1000);
           clearInterval(timer);
           pollingTimers.value.delete(taskId);
           pendingTasks.value--;
@@ -649,6 +661,7 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
         msg.status = 'failed';
         msg.error = '生成超时';
         msg.loadStatus = 'failed';
+        msg.loadDuration = Math.round((Date.now() - msg.startTime) / 1000);
         if (pendingTasks.value === 0) {
           generating.value = false;
         }
@@ -666,6 +679,7 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
           session.messages[msgIndex].error = '轮询失败: 网络错误';
           session.messages[msgIndex].status = 'failed';
           session.messages[msgIndex].loadStatus = 'failed';
+          session.messages[msgIndex].loadDuration = Math.round((Date.now() - session.messages[msgIndex].startTime) / 1000);
         }
         if (pendingTasks.value === 0) {
           generating.value = false;

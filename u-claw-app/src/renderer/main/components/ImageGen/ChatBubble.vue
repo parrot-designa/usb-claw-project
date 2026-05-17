@@ -30,7 +30,7 @@
         </div>
         <!-- 底部 -->
         <div class="bubble-footer">
-          <div v-if="!error" class="bubble-actions">
+          <div v-if="!isLoading" class="bubble-actions">
             <button class="action-btn" @click="handleCopy" title="复制">
               <span class="iconfont icon-clawfuzhi"></span> 复制文字
             </button>
@@ -42,16 +42,17 @@
             <span class="iconfont icon-clawshuaxin"></span>
             生成中{{ fakeProgress > 0 ? ` ${Math.round(fakeProgress)}%` : '' }} 已用{{ formatDuration(elapsedSeconds) }}
           </span>
-          <span v-if="error" class="bubble-error">{{ error }}</span>
+  
         </div>
       </div>
 
-      <!-- 图片区域：气泡下方，图片上方显示时间和状态 -->
+      <!-- 生成结果状态：耗时 + 成功/失败 -->
+      <div v-if="loadDuration && loadStatus" class="bubble-image-meta">
+        <span class="meta-time">耗时 {{ formatDuration(loadDuration) }}</span>
+        <span class="meta-status" :class="loadStatus">{{ loadStatusText }}</span>
+      </div>
+      <!-- 图片区域 -->
       <div v-if="imageUrls.length > 0" class="bubble-images-wrapper">
-        <div v-if="loadDuration" class="bubble-image-meta">
-          <span class="meta-time">耗时 {{ formatDuration(loadDuration) }}</span>
-          <span class="meta-status" :class="loadStatus">{{ loadStatusText }}</span>
-        </div>
         <div v-for="(url, index) in imageUrls" :key="index" class="bubble-image-item">
           <div class="image-placeholder" :class="{ loaded: imageLoaded[index], error: imageError[index] }">
             <img
@@ -61,7 +62,7 @@
               @click="previewImage(url)"
               class="bubble-image"
             />
-            <div class="image-actions">
+            <div v-if="imageLoaded[index]" class="image-actions">
               <button class="image-action-btn generate-btn" @click.stop="insertImage(url)" title="基于此图生成（插入左侧参考图）">
                 <span class="iconfont icon-clawtupian"></span>
               </button>
@@ -409,7 +410,9 @@ function regenerateSingle(url) {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-top: 8px;
   margin-bottom: 4px;
+  margin-left: 52px;
   font-size: 11px;
 
   .meta-time {
@@ -449,29 +452,6 @@ function regenerateSingle(url) {
     height: 100px;
     transition: box-shadow 0.25s ease;
 
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.15) 50%,
-        transparent 100%
-      );
-      animation: shimmer 1.5s infinite;
-    }
-
-    &:not(.loaded)::after {
-      content: '⏳';
-      font-size: 32px;
-      opacity: 0.6;
-    }
-
-    &.loaded::before {
-      display: none;
-    }
-
     &.loaded {
       background: transparent;
       position: relative;
@@ -498,10 +478,6 @@ function regenerateSingle(url) {
         }
         box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 0 0 5px rgba(0, 0, 0, 0.25);
       }
-    }
-
-    &.error::before {
-      display: none;
     }
 
     .bubble-image {
@@ -608,12 +584,5 @@ function regenerateSingle(url) {
   }
 }
 
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
+
 </style>

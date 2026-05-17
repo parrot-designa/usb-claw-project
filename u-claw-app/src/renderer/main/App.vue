@@ -30,6 +30,7 @@ import LoadingOverlay from './components/LoadingOverlay.vue';
 import { fetchAllModels, useModelsStore } from './stores/models';
 import { fetchUserInfo, useUserStore } from './stores/user';
 import { fetchAllSkills } from './stores/skills';
+import { preloadAllImageSessions } from './stores/imageGen';
 import { useGatewayStore } from './stores/gateway';
 import { useEnvCheck } from './composables/useEnvCheck';
 import './assets/fonts/fonts-iconfont.scss';
@@ -47,6 +48,7 @@ function doInit() {
   fetchUserInfo();
   fetchAllModels();
   fetchAllSkills();
+  preloadAllImageSessions();
   runAllChecks();
   gatewayStore.setEnvCheckResults(JSON.parse(JSON.stringify(checkItems.value)));
 }
