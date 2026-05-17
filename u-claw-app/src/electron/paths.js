@@ -700,8 +700,13 @@ dns.lookup = function(hostname, options, cb) {
   origLookup.apply(this, arguments);
 };
 `;
-  fs.writeFileSync(hookPath, content, 'utf-8');
-  return hookPath;
+  try {
+    fs.writeFileSync(hookPath, content, 'utf-8');
+    return hookPath;
+  } catch (e) {
+    console.error(`[DNS Hook] 写入失败: ${e.message}`);
+    return null;
+  }
 }
 
 function getGatewayEnv() {
@@ -719,7 +724,7 @@ function getGatewayEnv() {
   // DNS Hook：让 openrouter.ai 解析到 127.0.0.1 快速失败，避免启动时定价请求阻塞 15 秒
   const dnsHookPath = writeDnsHook();
   const nodeOptions = [
-    `--require=${dnsHookPath}`,
+    dnsHookPath ? `--require=${dnsHookPath}` : '',
     process.env.NODE_OPTIONS
   ].filter(Boolean).join(' ');
 
