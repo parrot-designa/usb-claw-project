@@ -678,6 +678,32 @@ function getOpenClawPath() {
 }
 
 
+
+/**
+ * 写入 DNS Hook 文件，使 openrouter.ai 解析到 127.0.0.1。
+ * Gateway 子进程通过 NODE_OPTIONS=--require 预加载此 hook，
+ * 避免因国内网络无法访问 openrouter.ai 导致启动时价格请求阻塞 15 秒。
+ */
+function writeDnsHook() {
+  const hookPath = path.join(RUNTIME_DIR, 'dns-hook.cjs');
+  if (fs.existsSync(hookPath)) return hookPath;
+  const content = `\
+// DNS Hook: redirect openrouter.ai → 127.0.0.1 for fast-fail on pricing bootstrap
+const dns = require('dns');
+const origLookup = dns.lookup;
+dns.lookup = function(hostname, options, cb) {
+  if (typeof hostname === 'string' && (hostname === 'openrouter.ai' || hostname.endsWith('.openrouter.ai'))) {
+    if (typeof options === 'function') { cb = options; }
+    process.nextTick(() => cb(null, '127.0.0.1', 4));
+    return;
+  }
+  origLookup.apply(this, arguments);
+};
+`;
+  fs.writeFileSync(hookPath, content, 'utf-8');
+  return hookPath;
+}
+
 function getGatewayEnv() {
   // Local runtime first (faster), USB as fallback
   const usbRuntime = path.join(getAppRoot(), 'runtime');
@@ -689,12 +715,28 @@ function getGatewayEnv() {
     paths.push(usbRuntime);
   }
   const runtimePath = paths[0] || RUNTIME_DIR;
+
+  // DNS Hook：让 openrouter.ai 解析到 127.0.0.1 快速失败，避免启动时定价请求阻塞 15 秒
+  const dnsHookPath = writeDnsHook();
+  const nodeOptions = [
+    `--require=${dnsHookPath}`,
+    process.env.NODE_OPTIONS
+  ].filter(Boolean).join(' ');
+
+  // NO_PROXY：阻止 openrouter.ai 走用户中转代理，确保 DNS Hook 生效
+  const noProxy = [
+    'openrouter.ai',
+    process.env.NO_PROXY
+  ].filter(Boolean).join(',');
+
   return {
     ...process.env,
     OPENCLAW_HOME: getDataRoot(),
     OPENCLAW_WORKSPACE: path.join(getDataRoot(), '.openclaw', 'workspace'),
     NODE_PATH: path.join(runtimePath, 'node_modules'),
     PATH: `${paths.join(path.delimiter)}${path.delimiter}${process.env.PATH}`,
+    NODE_OPTIONS: nodeOptions,
+    NO_PROXY: noProxy,
   };
 }
 
