@@ -456,6 +456,53 @@ function registerIPCHandlers({ gateway }) {
     });
   });
 
+  // 历史作品 message.json 读写
+  ipcMain.handle('load-message-json', async () => {
+    try {
+      const mediaDir = getMediaDir();
+      const file = path.join(mediaDir, 'message.json');
+      if (!fs.existsSync(file)) {
+        return { ok: true, data: [] };
+      }
+      const content = fs.readFileSync(file, 'utf-8');
+      const data = JSON.parse(content);
+      return { ok: true, data: Array.isArray(data) ? data : [] };
+    } catch (err) {
+      console.error('[load-message-json] failed:', err);
+      return { ok: true, data: [] };
+    }
+  });
+
+  ipcMain.handle('save-message-json', async (_, { messages }) => {
+    try {
+      const mediaDir = getMediaDir();
+      if (!fs.existsSync(mediaDir)) {
+        fs.mkdirSync(mediaDir, { recursive: true });
+      }
+      const file = path.join(mediaDir, 'message.json');
+      fs.writeFileSync(file, JSON.stringify(messages, null, 2), 'utf-8');
+      return { ok: true };
+    } catch (err) {
+      console.error('[save-message-json] failed:', err);
+      return { ok: false, error: err.message };
+    }
+  });
+
+  ipcMain.handle('open-media-folder', async () => {
+    try {
+      const mediaDir = getMediaDir();
+      if (!fs.existsSync(mediaDir)) {
+        fs.mkdirSync(mediaDir, { recursive: true });
+      }
+      const { shell } = await import('electron');
+      await shell.openPath(mediaDir);
+      return { ok: true };
+    } catch (err) {
+      console.error('[open-media-folder] failed:', err);
+      return { ok: false, error: err.message };
+    }
+  });
+
   // Image sessions persistence
   ipcMain.handle('save-image-sessions', async (_, { sessions, currentSessionId }) => {
     try {

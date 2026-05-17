@@ -1,35 +1,100 @@
 <template>
-  <div class="image-grid">
-    <div v-if="images.length === 0" class="grid-empty">
-      <span>暂无历史作品</span>
-      <p>生成的图片将保存在这里</p>
-    </div>
-    <div
-      v-for="image in images"
-      :key="image.id"
-      class="image-card"
-      @click="previewImage(image)"
-    >
-      <img :src="image.url" :alt="image.prompt" />
-      <div class="card-overlay">
-        <button @click.stop="downloadImage(image.url)">↓</button>
-        <button @click.stop="copyImage(image.url)">📋</button>
-        <button @click.stop="deleteImage(image.id)">🗑</button>
+  <div class="image-grid-wrapper">
+    <!-- 顶部工具栏 -->
+    <div class="grid-toolbar">
+      <div class="toolbar-left">
+        <div class="search-box">
+          <span class="iconfont icon-clawsousuo search-icon"></span>
+          <input
+            v-model="searchText"
+            type="text"
+            class="search-input"
+            placeholder="搜索提示词或模型..."
+            @input="onSearch"
+          />
+          <span v-if="searchText" class="search-clear" @click="searchText = ''; onSearch()">&times;</span>
+        </div>
+        <span class="count-badge">共 {{ filteredImages.length }} 条</span>
+      </div>
+      <div class="toolbar-right">
+        <button class="tool-btn" @click="$emit('openFolder')">
+          <span class="iconfont icon-clawwenjianjia"></span>
+          打开文件夹
+        </button>
+        <button class="tool-btn danger" @click="showClearConfirm = true" :disabled="images.length === 0">
+          <span class="iconfont icon-clawshanchu"></span>
+          清空
+        </button>
       </div>
     </div>
 
-    <!-- 大图预览 Modal -->
+    <!-- 图片网格 -->
+    <div v-if="filteredImages.length > 0" class="image-grid">
+      <div
+        v-for="image in filteredImages"
+        :key="image.id"
+        class="image-card"
+        @click="previewImage(image)"
+      >
+        <div class="card-img-wrapper">
+          <img :src="image.url" :alt="image.prompt" loading="lazy" />
+          <div class="card-overlay">
+            <button class="overlay-btn" title="下载" @click.stop="$emit('download', image.url)">
+              <span class="iconfont icon-clawxiazai"></span>
+            </button>
+            <button class="overlay-btn" title="删除" @click.stop="$emit('delete', image.id)">
+              <span class="iconfont icon-clawshanchu"></span>
+            </button>
+          </div>
+        </div>
+        <div class="card-info">
+          <div class="card-prompt" :title="image.prompt">
+            {{ image.prompt || '无提示词' }}
+          </div>
+          <div class="card-meta">
+            <span class="card-date">{{ image.date }}</span>
+            <span class="card-time">{{ image.time }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 空状态 -->
+    <div v-else class="grid-empty">
+      <div class="empty-content">
+        <span class="iconfont icon-clawtupianshengcheng empty-icon"></span>
+        <h3>{{ images.length === 0 ? '暂无历史作品' : '无匹配结果' }}</h3>
+        <p>{{ images.length === 0 ? '生成的图片将显示在这里' : '尝试其他搜索关键词' }}</p>
+      </div>
+    </div>
+
+    <!-- 大图预览 -->
     <div v-if="previewUrl" class="preview-modal" @click="previewUrl = null">
       <div class="preview-content" @click.stop>
         <img :src="previewUrl" alt="Preview" />
-        <button @click="previewUrl = null" class="preview-close">×</button>
+        <div class="preview-info">
+          <p class="preview-prompt">{{ previewPrompt }}</p>
+        </div>
+        <button @click="previewUrl = null" class="preview-close">&times;</button>
+      </div>
+    </div>
+
+    <!-- 清空确认弹窗 -->
+    <div v-if="showClearConfirm" class="modal-overlay" @click.self="showClearConfirm = false">
+      <div class="modal-card">
+        <h3 class="modal-title">确认清空</h3>
+        <p class="modal-desc">确定要清空所有历史作品吗？此操作不可撤销。</p>
+        <div class="modal-actions">
+          <button class="modal-btn cancel" @click="showClearConfirm = false">取消</button>
+          <button class="modal-btn confirm" @click="confirmClear">确认清空</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
   images: {
@@ -38,155 +103,438 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['preview', 'download', 'copy', 'delete']);
+const emit = defineEmits(['delete', 'download', 'openFolder', 'clear']);
 
+const searchText = ref('');
 const previewUrl = ref(null);
+const previewPrompt = ref('');
+const showClearConfirm = ref(false);
+
+const filteredImages = computed(() => {
+  const kw = searchText.value.trim().toLowerCase();
+  if (!kw) return props.images;
+  return props.images.filter(img => {
+    const prompt = (img.prompt || '').toLowerCase();
+    const model = (img.model || '').toLowerCase();
+    return prompt.includes(kw) || model.includes(kw);
+  });
+});
+
+function onSearch() {
+  // 搜索由 computed 自动处理
+}
 
 function previewImage(image) {
-  const url = typeof image === 'string' ? image : image.url;
-  previewUrl.value = url;
-  emit('preview', image);
+  previewUrl.value = image.url;
+  previewPrompt.value = image.prompt || '';
 }
 
-function downloadImage(url) {
-  emit('download', url);
-}
-
-function copyImage(url) {
-  emit('copy', url);
-}
-
-function deleteImage(id) {
-  emit('delete', id);
+function confirmClear() {
+  showClearConfirm.value = false;
+  emit('clear');
 }
 </script>
 
 <style scoped lang="scss">
-.image-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+.image-grid-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.grid-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
   gap: 16px;
-  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
 
-  .grid-empty {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 48px 24px;
-    color: #999;
-    font-size: 14px;
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
 
-    span {
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 360px;
+  flex: 1;
+}
 
-    p {
-      margin: 0;
-      font-size: 12px;
-    }
+.search-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 36px 8px 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-variant);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: rgb(160, 120, 220);
   }
 
-  .image-card {
-    position: relative;
-    aspect-ratio: 1;
-    border-radius: 8px;
-    overflow: hidden;
-    cursor: pointer;
-    background: #f0f0f0;
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+}
 
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.2s;
-    }
+.search-clear {
+  position: absolute;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 16px;
+  transition: color 0.2s, background 0.2s;
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--border);
+  }
+}
+
+.count-badge {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-variant);
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  .iconfont {
+    font-size: 14px;
+  }
+
+  &:hover {
+    background: var(--border);
+  }
+
+  &.danger {
+    color: #e53e3e;
+    border-color: rgba(229, 62, 62, 0.3);
 
     &:hover {
-      img {
-        transform: scale(1.05);
-      }
-
-      .card-overlay {
-        opacity: 1;
-      }
+      background: rgba(229, 62, 62, 0.1);
+      border-color: rgba(229, 62, 62, 0.5);
     }
 
-    .card-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      opacity: 0;
-      transition: opacity 0.2s;
-
-      button {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: none;
-        background: rgba(255, 255, 255, 0.9);
-        cursor: pointer;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.2s, background 0.2s;
-
-        &:hover {
-          transform: scale(1.1);
-          background: #fff;
-        }
-      }
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
   }
+}
 
-  .preview-modal {
-    position: fixed;
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+  align-content: start;
+}
+
+.image-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface-variant);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.card-img-wrapper {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #1a1a2e;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card-overlay {
+    position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.45);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    gap: 12px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
 
-    .preview-content {
-      position: relative;
-      max-width: 90vw;
-      max-height: 90vh;
+  &:hover .card-overlay {
+    opacity: 1;
+  }
+}
 
-      img {
-        max-width: 100%;
-        max-height: 90vh;
-        border-radius: 8px;
-      }
+.overlay-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, background 0.2s;
 
-      .preview-close {
-        position: absolute;
-        top: -16px;
-        right: -16px;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        border: none;
-        background: rgba(255, 255, 255, 0.9);
-        cursor: pointer;
-        font-size: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+  .iconfont {
+    font-size: 16px;
+  }
 
-        &:hover {
-          background: #fff;
-          transform: scale(1.1);
-        }
-      }
-    }
+  &:hover {
+    transform: scale(1.15);
+    background: #fff;
+  }
+}
+
+.card-info {
+  padding: 10px 12px;
+}
+
+.card-prompt {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 6px;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.card-date {
+  white-space: nowrap;
+}
+
+.card-time {
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--text-secondary);
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+}
+
+// 空状态
+.grid-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-content {
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 48px;
+  opacity: 0.3;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.empty-content h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.empty-content p {
+  font-size: 13px;
+  margin: 0;
+}
+
+// 预览弹窗
+.preview-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.preview-content {
+  position: relative;
+  max-width: 85vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  img {
+    max-width: 100%;
+    max-height: 75vh;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+}
+
+.preview-info {
+  max-width: 600px;
+  margin-top: 12px;
+}
+
+.preview-prompt {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.preview-close {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  cursor: pointer;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+// 清空确认弹窗
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 24px;
+  width: 380px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.modal-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 20px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.modal-btn {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &.cancel {
+    background: var(--surface-variant);
+    color: var(--text-secondary);
+  }
+
+  &.confirm {
+    background: #e53e3e;
+    color: white;
   }
 }
 </style>

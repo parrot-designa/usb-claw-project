@@ -81,4 +81,8 @@ contextBridge.exposeInMainWorld('uclaw', {
   generateImage: (params) => ipcRenderer.invoke('generate-image', params),
   // Save image to local media directory
   ipcSaveMediaImage: ({ url, taskId }) => ipcRenderer.invoke('save-media-image', { url, taskId }),
+  // 历史作品 message.json 读写
+  ipcLoadMessageJson: () => ipcRenderer.invoke('load-message-json'),
+  ipcSaveMessageJson: (messages) => ipcRenderer.invoke('save-message-json', { messages }),
+  ipcOpenMediaFolder: () => ipcRenderer.invoke('open-media-folder'),
 });

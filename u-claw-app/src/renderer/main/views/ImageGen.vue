@@ -144,7 +144,13 @@
 
     <!-- 历史作品 Tab -->
     <div v-show="activeTab === 'history'" class="history-works-tab">
-      <ImageGrid :images="historyImages" @delete="handleDeleteHistory" />
+      <ImageGrid
+        :images="historyImages"
+        @delete="handleDeleteHistory"
+        @download="handleDownloadImage"
+        @openFolder="handleOpenMediaFolder"
+        @clear="handleClearHistory"
+      />
     </div>
 
     <!-- 删除会话确认弹窗 -->
@@ -204,7 +210,7 @@ const leftPanelCollapsed = ref(false); // 左侧面板是否折叠
 const referenceImages = ref([]);    // 参考图列表
 const pollingTimers = ref(new Map()); // 存储轮询定时器: taskId -> timer
 
-// 历史作品：从所有非删除会话中提取已完成的图片
+// 历史作品：从所有会话中提取已完成的图片
 const historyImages = computed(() => {
   const images = [];
   for (const session of sessions.value) {
@@ -216,6 +222,8 @@ const historyImages = computed(() => {
           id: msg.taskId || `${session.id}_${i}`,
           url: msg.imageUrl,
           prompt: msg.text || '',
+          model: msg.model || '',
+          date: msg.startTime ? new Date(msg.startTime).toLocaleDateString('zh-CN') : '',
           time: msg.loadedTime || msg.time || '',
         });
       }
@@ -512,6 +520,7 @@ async function generateImage() {
     progress: 0,
     imageUrl: null,
     revisedPrompt: '',
+    model: selectedModel.value,
     time: formatTime(),
     startTime: Date.now(),
     referenceImages: referenceImages.value
@@ -818,6 +827,19 @@ function handleDeleteHistory(id) {
       }
     }
   }
+}
+
+async function handleOpenMediaFolder() {
+  await window.uclaw.ipcOpenMediaFolder();
+}
+
+function handleClearHistory() {
+  for (const session of sessions.value) {
+    if (session.deleted) continue;
+    session.messages = session.messages.filter(msg => msg.status !== 'completed');
+  }
+  saveSessions();
+  showToast('已清空历史作品');
 }
 </script>
 
