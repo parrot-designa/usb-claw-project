@@ -98,7 +98,7 @@
         </div>
       </div>
 
-      <div class="right-panel">
+      <div class="right-panel" :class="{ 'right-panel-active': bubbles.length > 0 }">
         <span class="collapse-icon" @click="toggleLeftPanel">
           <span class="iconfont icon-clawzhedie"></span>
         </span>
@@ -868,10 +868,14 @@ async function handleDeleteHistory(id) {
   flex: 1;
   position: relative;
   border-radius: 0;
-  background: var(--surface);
+  background: linear-gradient(to bottom right, rgb(15, 18, 28) 0%, rgb(22, 26, 48) 50%, rgb(68, 55, 130) 100%);
   transition: all 0.3s ease;
   overflow: hidden;
   border-left: 1px solid var(--border);
+
+  &.right-panel-active {
+    background: var(--surface);
+  }
 }
 
 .collapse-icon {
