@@ -37,6 +37,7 @@
               :currentSessionId="currentSessionId"
               @select="handleSessionSelect"
               @delete="handleSessionDelete"
+              @edit="handleSessionEdit"
             />
           </div>
           <div class="api-key-hint">已自动使用【模型配置】的API Key</div>
@@ -129,6 +130,25 @@
     <div v-show="activeTab === 'history'" class="history-works-tab">
       <ImageGrid :images="historyImages" @delete="handleDeleteHistory" />
     </div>
+
+    <!-- 编辑会话标题弹窗 -->
+    <div v-if="showEditModal" class="modal-overlay" @click.self="closeEditModal">
+      <div class="modal-card">
+        <h3 class="modal-title">编辑会话标题</h3>
+        <input
+          ref="editInput"
+          v-model="editingTitle"
+          class="modal-input"
+          placeholder="输入会话标题..."
+          @keyup.enter="saveSessionTitle"
+          @keyup.esc="closeEditModal"
+        />
+        <div class="modal-actions">
+          <button class="modal-btn cancel" @click="closeEditModal">取消</button>
+          <button class="modal-btn confirm" @click="saveSessionTitle">保存</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -163,6 +183,12 @@ const selectedResolution = ref('1K');
 const selectedSizeRatio = ref('1:1');
 const generating = ref(false);
 const pendingTasks = ref(0); // 待完成的轮询任务数量
+
+// 编辑会话标题
+const showEditModal = ref(false);
+const editingSessionId = ref(null);
+const editingTitle = ref('');
+const editInput = ref(null);
 
 // resolution 与 size 选项的映射
 const resolutionSizeMap = {
@@ -357,6 +383,31 @@ function handleSessionDelete(sessionId) {
     }
     saveSessions();
   }
+}
+
+function handleSessionEdit(sessionId) {
+  const session = sessions.value.find(s => s.id === sessionId);
+  if (!session) return;
+  editingSessionId.value = sessionId;
+  editingTitle.value = session.title || '';
+  showEditModal.value = true;
+  nextTick(() => {
+    editInput.value?.focus();
+  });
+}
+
+function saveSessionTitle() {
+  const session = sessions.value.find(s => s.id === editingSessionId.value);
+  if (!session) return;
+  session.title = editingTitle.value.trim() || '';
+  saveSessions();
+  closeEditModal();
+}
+
+function closeEditModal() {
+  showEditModal.value = false;
+  editingSessionId.value = null;
+  editingTitle.value = '';
 }
 
 async function generateImage() {
@@ -1068,5 +1119,80 @@ async function handleDeleteHistory(id) {
 
 .history-works-tab {
   height: calc(100vh - 100px - 32px);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 24px;
+  width: 380px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 16px 0;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-variant);
+  font-size: 14px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: rgb(160, 120, 220);
+  }
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.modal-btn {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &.cancel {
+    background: var(--surface-variant);
+    color: var(--text-secondary);
+  }
+
+  &.confirm {
+    background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
+    color: white;
+  }
 }
 </style>

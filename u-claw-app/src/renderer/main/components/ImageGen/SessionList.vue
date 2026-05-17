@@ -19,7 +19,10 @@
         @click="selectSession(session.id)"
       >
         <span class="session-text" :title="getSessionFullText(session)">{{ getSessionPreview(session) }}</span>
-        <span class="session-delete iconfont icon-clawguanbi" @click.stop="deleteSession(session.id)"></span>
+        <span class="session-actions">
+          <span class="session-edit" @click.stop="editSession(session.id)">✎</span>
+          <span class="session-delete iconfont icon-clawguanbi" @click.stop="deleteSession(session.id)"></span>
+        </span>
       </div>
     </div>
   </div>
@@ -39,7 +42,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['select', 'create', 'delete']);
+const emit = defineEmits(['select', 'create', 'delete', 'edit']);
 
 const expanded = ref(true);
 
@@ -61,7 +64,12 @@ async function deleteSession(id) {
   emit('delete', id);
 }
 
+function editSession(id) {
+  emit('edit', id);
+}
+
 function getSessionFullText(session) {
+  if (session.title) return session.title;
   const messages = session.messages || [];
   if (messages.length === 0) {
     return '新会话';
@@ -173,36 +181,50 @@ function getSessionPreview(session) {
     }
   }
 
-  .session-text {
-    width: 90%;
+  .session-text { 
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 13px;
     line-height: 1;
+    min-width: 0;
   }
 
-  .session-delete {
-    font-size: 12px;
-    color: inherit; 
+  .session-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     margin-left: 8px;
     flex-shrink: 0;
+    opacity: 0;
     transition: opacity 0.2s;
+
+    .session-item:hover & {
+      opacity: 1;
+    }
+  }
+
+  .session-edit {
+    font-size: 14px;
+    cursor: pointer;
     padding: 4px;
     border-radius: 4px;
-    position: absolute;
-    right: 8px;
+    transition: background 0.2s;
 
     &:hover {
       background: rgba(255, 255, 255, 0.1);
     }
+  }
 
-    .session-item:hover & {
-      opacity: 0.7;
-    }
+  .session-delete {
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
 
-    .session-item.active & {
-      opacity: 0.7;
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
     }
   }
 }

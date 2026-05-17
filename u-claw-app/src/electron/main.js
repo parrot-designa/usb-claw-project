@@ -17,7 +17,6 @@ import { initWechat } from "./plugin/wechat-init.js";
 if (!app.requestSingleInstanceLock()) {
   console.log('[startup] another instance is running, quitting...');
   app.quit();
-  return;
 }else{
   app.on('second-instance', () => {
     // 已有实例运行时，聚焦已有窗口
