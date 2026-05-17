@@ -45,33 +45,49 @@
 
         <!-- 中部：表单区域 -->
         <div class="form-area">
-          <ReferenceImages v-model:images="referenceImages" />
-
-          <div class="prompt-area">
-            <textarea
-              v-model="inputText"
-              class="prompt-textarea"
-              placeholder="描述你想要生成的图片..."
-              :rows="4"
-            ></textarea>
+          <div class="form-item">
+            <label class="form-label">参考图</label>
+            <ReferenceImages v-model:images="referenceImages" />
           </div>
 
-          <div class="generate-options">
+          <div class="form-item">
+            <label class="form-label">提示词</label>
+            <div class="prompt-area">
+              <textarea
+                v-model="inputText"
+                class="prompt-textarea"
+                placeholder="描述你想要生成的图片..."
+                :rows="4"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-item">
+            <label class="form-label">模型</label>
             <select v-model="selectedModel" class="option-select">
               <option v-for="model in imageModels" :key="model.model_name" :value="model.model_name">
                 {{ model.model_name }}
               </option>
             </select>
-            <select v-model="selectedResolution" class="option-select">
-              <option value="1K">1K</option>
-              <option value="2K">2K</option>
-              <option value="4K">4K</option>
-            </select>
-            <select v-model="selectedSizeRatio" class="option-select">
-              <option v-for="size in currentSizeOptions" :key="size.ratio" :value="size.ratio">
-                {{ size.ratio }} ({{ size.pixels }})
-              </option>
-            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-item form-col">
+              <label class="form-label">分辨率</label>
+              <select v-model="selectedResolution" class="option-select">
+                <option value="1K">1K</option>
+                <option value="2K">2K</option>
+                <option value="4K">4K</option>
+              </select>
+            </div>
+            <div class="form-item form-col">
+              <label class="form-label">尺寸</label>
+              <select v-model="selectedSizeRatio" class="option-select">
+                <option v-for="size in currentSizeOptions" :key="size.ratio" :value="size.ratio">
+                  {{ size.ratio }} ({{ size.pixels }})
+                </option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -389,7 +405,14 @@ function handleSessionEdit(sessionId) {
   const session = sessions.value.find(s => s.id === sessionId);
   if (!session) return;
   editingSessionId.value = sessionId;
-  editingTitle.value = session.title || '';
+  // 没有标题时，用最后一条消息的 text 作为初始值
+  if (session.title) {
+    editingTitle.value = session.title;
+  } else {
+    const messages = session.messages || [];
+    const lastMsg = messages[messages.length - 1];
+    editingTitle.value = lastMsg?.text || '';
+  }
   showEditModal.value = true;
   nextTick(() => {
     editInput.value?.focus();
@@ -1023,8 +1046,30 @@ async function handleDeleteHistory(id) {
   padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   min-height: 0;
+}
+
+.form-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.form-row {
+  display: flex;
+  gap: 8px;
+}
+
+.form-col {
+  flex: 1;
+  min-width: 0;
 }
 
 .prompt-area {
@@ -1047,21 +1092,13 @@ async function handleDeleteHistory(id) {
   }
 }
 
-.generate-options {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-
-  .option-select {
-    flex: 1;
-    min-width: 100px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    font-size: 14px;
-  }
-
+.option-select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 14px;
 }
 
 .btn-area {
