@@ -145,12 +145,20 @@
     <!-- 历史作品 Tab -->
     <div v-show="activeTab === 'history'" class="history-works-tab">
       <ImageGrid
+        v-if="historyImages.length > 0"
         :images="historyImages"
         @delete="handleDeleteHistory"
         @download="handleDownloadImage"
         @openFolder="handleOpenMediaFolder"
         @clear="handleClearHistory"
       />
+      <div v-else class="history-empty">
+        <div class="history-empty-icon">
+          <span class="iconfont icon-clawtupianshengcheng"></span>
+        </div>
+        <p class="history-empty-title">还没有作品</p>
+        <p class="history-empty-desc">去<span class="history-empty-link" @click="activeTab = 'free'">「自由创作」</span>生成第一张图吧</p>
+      </div>
     </div>
 
     <!-- 删除会话确认弹窗 -->
@@ -1238,6 +1246,54 @@ function handleClearHistory() {
 
 .history-works-tab {
   height: calc(100vh - 100px - 32px);
+}
+
+.history-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+}
+
+.history-empty-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
+
+  .iconfont {
+    font-size: 32px;
+    color: white;
+  }
+}
+
+.history-empty-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.history-empty-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.history-empty-link {
+  color: rgb(157, 67, 234);
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
 }
 
 .modal-overlay {
