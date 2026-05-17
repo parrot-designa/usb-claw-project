@@ -109,10 +109,9 @@ function handleCopy() {
 const role = computed(() => props.bubble.role);
 const text = computed(() => props.bubble.text);
 const imageUrls = computed(() => {
-  const url = props.bubble.localPath || props.bubble.imageUrl;
-  if (!url) return [];
-  if (Array.isArray(url)) return url;
-  return [url];
+  if (!props.bubble.imageUrl) return [];
+  if (Array.isArray(props.bubble.imageUrl)) return props.bubble.imageUrl;
+  return [props.bubble.imageUrl];
 });
 const referenceImages = computed(() => props.bubble.referenceImages || []);
 const error = computed(() => props.bubble.error);
