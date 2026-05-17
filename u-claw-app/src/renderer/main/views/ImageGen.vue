@@ -1255,6 +1255,7 @@ function handleClearHistory() {
   justify-content: center;
   height: 100%;
   color: var(--text-secondary);
+  background: linear-gradient(to bottom right, rgb(15, 18, 28) 0%, rgb(22, 26, 48) 50%, rgb(68, 55, 130) 100%);
 }
 
 .history-empty-icon {
