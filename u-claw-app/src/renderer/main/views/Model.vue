@@ -97,16 +97,16 @@
               <p class="model-panel-subtitle">官方模型</p>
             </div>
           </div>
-          <p class="model-panel-desc">使用我们的中转站，稳定快速，国内直连</p>
+          <p class="model-panel-desc">稳定高效AI 模型聚合平台</p>
 
           <div class="model-feature-list">
             <div class="model-feature">
               <img src="@assets/zhichi.png" alt="check" class="model-check-icon" />
-              <span>支持GPT-5、Claude、Gemini</span>
+              <span>支持 GPT-5、Claude、Gemini 等主流模型</span>
             </div> 
             <div class="model-feature">
               <img src="@assets/zhichi.png" alt="check" class="model-check-icon" />
-              <span>国内高速线路，按量计费，充值即用</span>
+              <span>高速网络优化，低延迟稳定调用 ，按量计费</span>
             </div>
           </div>
 
