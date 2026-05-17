@@ -116,6 +116,9 @@
           />
           <div v-if="!bubbles.length" class="empty-bubbles">
             <div class="empty-bubbles-content">
+              <div class="empty-bubbles-icon">
+                <span class="iconfont icon-clawtupianshengcheng"></span>
+              </div>
               <h3 class="empty-bubbles-title">开始创作</h3>
               <p class="empty-bubbles-desc">在左侧填写描述 → 点"生成图片"<br/>每次生成会自动新建会话，保存到 U 盘</p>
               <ul class="empty-bubbles-tips">
@@ -926,6 +929,22 @@ async function handleDeleteHistory(id) {
 .empty-bubbles-content {
   text-align: center;
   max-width: 360px;
+}
+
+.empty-bubbles-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
+
+  .iconfont {
+    font-size: 30px;
+    color: white;
+  }
 }
 
 .empty-bubbles-title {
