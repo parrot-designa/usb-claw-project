@@ -20,8 +20,8 @@
       >
         <span class="session-text" :title="getSessionFullText(session)">{{ getSessionPreview(session) }}</span>
         <span class="session-actions">
-          <span class="session-edit" @click.stop="editSession(session.id)">✎</span>
-          <span class="session-delete iconfont icon-clawguanbi" @click.stop="deleteSession(session.id)"></span>
+          <span class="session-edit iconfont icon-clawbianji" @click.stop="editSession(session.id)"></span>
+          <span class="session-delete iconfont icon-clawshanchu" @click.stop="deleteSession(session.id)"></span>
         </span>
       </div>
     </div>
@@ -181,13 +181,13 @@ function getSessionPreview(session) {
     }
   }
 
-  .session-text { 
+  .session-text {
+    width: 400px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     font-size: 13px;
     line-height: 1;
-    min-width: 0;
   }
 
   .session-actions {
@@ -205,7 +205,6 @@ function getSessionPreview(session) {
   }
 
   .session-edit {
-    font-size: 14px;
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
@@ -217,7 +216,6 @@ function getSessionPreview(session) {
   }
 
   .session-delete {
-    font-size: 12px;
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
