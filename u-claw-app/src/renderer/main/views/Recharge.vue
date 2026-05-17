@@ -3,7 +3,13 @@
 
     <!-- Balance Card -->
     <div class="recharge-balance-panel">
-      <h4 class="recharge-balance-title">官方模型账户积分</h4>
+      <div class="recharge-balance-header">
+        <h4 class="recharge-balance-title">官方模型账户积分</h4>
+        <button class="recharge-balance-refresh" :disabled="refreshingBalance" @click="refreshBalance">
+          <span v-if="refreshingBalance" class="recharge-loading-spinner-small"></span>
+          <span v-else class="iconfont icon-clawshuaxin" title="刷新积分"></span>
+        </button>
+      </div>
       <div class="recharge-balance-content">
         <div class="recharge-usage-bar-container">
           <div class="recharge-usage-labels">
@@ -221,13 +227,26 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useUserStore } from '../stores/user';
+import { useUserStore, fetchUserInfo } from '../stores/user';
 import { apiRequest } from '@renderer/js/api.js';
 import { useToast } from '../composables/useToast';
 import QRCode from 'qrcode';
 
 const userStore = useUserStore();
 const { showToast } = useToast();
+
+const refreshingBalance = ref(false);
+
+async function refreshBalance() {
+  refreshingBalance.value = true;
+  try {
+    await fetchUserInfo();
+  } catch (e) {
+    console.error('[Recharge] refreshBalance error:', e);
+  } finally {
+    refreshingBalance.value = false;
+  }
+}
 
 // Amount options from API
 const amountOptions = ref([10, 50, 100, 200, 500]);
@@ -503,11 +522,42 @@ onMounted(async () => {
   margin-bottom: 16px;
 }
 
+.recharge-balance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
 .recharge-balance-title {
   font-size: 14px;
   font-weight: 400;
   color: var(--text-primary);
-  margin-bottom: 12px;
+  margin-bottom: 0;
+}
+
+.recharge-balance-refresh {
+  padding: 4px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--text-primary);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .recharge-balance-content {
