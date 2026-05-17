@@ -283,6 +283,7 @@ function regenerateSingle(url) {
   width: 100%;
   margin-bottom: 10px;
   box-sizing: border-box;
+  position: relative;
 }
 
 .bubble-main {
