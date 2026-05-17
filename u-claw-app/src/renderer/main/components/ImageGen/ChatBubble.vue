@@ -47,8 +47,8 @@
       </div>
 
       <!-- 生成结果状态：耗时 + 成功/失败 -->
-      <div v-if="loadDuration && loadStatus" class="bubble-image-meta">
-        <span class="meta-time">耗时 {{ formatDuration(loadDuration) }}</span>
+      <div v-if="loadStatus" class="bubble-image-meta">
+        <span v-if="loadDuration" class="meta-time">耗时 {{ formatDuration(loadDuration) }}</span>
         <span class="meta-status" :class="loadStatus">{{ loadStatusText }}</span>
       </div>
       <!-- 图片区域 -->
@@ -145,7 +145,7 @@ const loadStatus = computed(() => props.bubble.loadStatus || '');
 const loadStatusText = computed(() => {
   switch (loadStatus.value) {
     case 'success': return '加载成功';
-    case 'failed': return '生成失败';
+    case 'failed': return '加载失败';
     default: return '';
   }
 });
