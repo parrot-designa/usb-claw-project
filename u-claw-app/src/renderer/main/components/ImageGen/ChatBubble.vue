@@ -298,7 +298,7 @@ function regenerateSingle(url) {
   align-items: center;
   gap: 8px;
   font-size: 11px;
-  padding-left: 42px; /* 32px avatar + 10px gap */
+  padding-left: 58px; /* 32px avatar + 10px gap */
   margin-bottom: 16px;
 }
 
@@ -349,7 +349,7 @@ function regenerateSingle(url) {
   padding: 10px 12px;
   position: relative;
   color: #fff;
-  margin-left:36px;
+  margin-left:52px;
 }
 
 .bubble-content {
@@ -401,7 +401,7 @@ function regenerateSingle(url) {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 8px;
-  margin-left: 36px;
+  margin-left: 52px;
 }
 
 .bubble-image-meta {
