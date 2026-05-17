@@ -224,7 +224,7 @@ watch(() => props.bubble.status, (newStatus) => {
     startFakeProgress();
     stopTimer();
     startTimer();
-  } else if (newStatus === 'completed') {
+  } else if (newStatus === 'completed' || newStatus === 'failed') {
     fakeProgress.value = 100;
     stopFakeProgress();
     stopTimer();

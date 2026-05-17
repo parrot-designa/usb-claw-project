@@ -573,7 +573,7 @@ referenceImages.value.length > 0 && { reference_images: referenceImages.value })
 }
 
 async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
-  const maxPolls = 220;
+  const maxPolls = 300; // 10分钟 = 600秒 / 2秒
   let pollCount = 0;
   let errorCount = 0;
   const maxErrors = 5;
@@ -640,6 +640,7 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
         clearInterval(timer);
         pollingTimers.value.delete(taskId);
         pendingTasks.value--;
+        msg.status = 'failed';
         msg.error = '生成超时';
         msg.loadStatus = 'failed';
         if (pendingTasks.value === 0) {
