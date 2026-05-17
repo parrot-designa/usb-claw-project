@@ -18,7 +18,7 @@
         :class="['session-item', { active: session.id === currentSessionId }]"
         @click="selectSession(session.id)"
       >
-        <span class="session-text">{{ getSessionPreview(session) }}</span>
+        <span class="session-text" :title="getSessionFullText(session)">{{ getSessionPreview(session) }}</span>
         <span class="session-delete iconfont icon-clawguanbi" @click.stop="deleteSession(session.id)"></span>
       </div>
     </div>
@@ -61,17 +61,17 @@ async function deleteSession(id) {
   emit('delete', id);
 }
 
-function getSessionPreview(session) {
+function getSessionFullText(session) {
   const messages = session.messages || [];
   if (messages.length === 0) {
     return '新会话';
   }
   const lastMessage = messages[messages.length - 1];
-  const text = lastMessage.text || '';
-  if (text.length <= 20) {
-    return text || '新会话';
-  }
-  return text.substring(0, 20) + '...';
+  return lastMessage.text || '新会话';
+}
+
+function getSessionPreview(session) {
+  return getSessionFullText(session);
 }
 </script>
 
@@ -174,7 +174,7 @@ function getSessionPreview(session) {
   }
 
   .session-text {
-    flex: 1;
+    width: 90%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
