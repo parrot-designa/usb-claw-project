@@ -789,13 +789,11 @@ function handleInsertImage(url) {
 function handlePreviewImage(url) {
   previewUrl.value = url;
   showPreview.value = true;
-  window.uclaw.ipcSetFullScreen(true);
 }
 
 function closePreview() {
   showPreview.value = false;
   previewUrl.value = '';
-  window.uclaw.ipcSetFullScreen(false);
 }
 
 async function handleDownloadImage(url) {
