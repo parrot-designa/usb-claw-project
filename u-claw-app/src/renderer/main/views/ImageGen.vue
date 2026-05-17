@@ -492,18 +492,39 @@ async function generateImage() {
   const text = inputText.value.trim();
   if (!text) return;
 
-  // 重新生成模式：不创建新会话，更新现有消息
   const isRegenerate = regenerateSessionId !== null;
 
-  // 每次点击都创建新会话（除非是重新生成）
   if (!isRegenerate) {
     createNewSession();
   }
 
   generating.value = true;
 
+  const msgType = referenceImages.value.length > 0 ? 'image-to-image' : 'text-to-image';
+
+  // 乐观更新：先立即插入气泡，等接口返回再更新
+  const optimisticMsg = {
+    role: 'ai',
+    type: msgType,
+    text: text,
+    taskId: null,
+    status: 'queued',
+    progress: 0,
+    imageUrl: null,
+    revisedPrompt: '',
+    time: formatTime(),
+    startTime: Date.now(),
+    referenceImages: referenceImages.value
+  };
+
+  let msgIndex = -1;
+  if (currentSession.value) {
+    currentSession.value.messages.push(optimisticMsg);
+    msgIndex = currentSession.value.messages.length - 1;
+    saveSessions();
+  }
+
   try {
-    // 调用图片生成接口，返回任务 ID
     const taskResult = await apiRequest('/v1/images/generations', {
       method: 'POST',
       body: {
@@ -517,76 +538,69 @@ referenceImages.value.length > 0 && { reference_images: referenceImages.value })
       }
     });
 
+    const msg = currentSession.value?.messages[msgIndex];
+    if (!msg) {
+      generating.value = false;
+      return;
+    }
+
     if (taskResult.error) {
+      msg.status = 'failed';
+      msg.error = taskResult.error;
+      msg.loadStatus = 'failed';
+      msg.loadDuration = Math.round((Date.now() - msg.startTime) / 1000);
+      saveSessions();
       showToast('生成失败: ' + taskResult.error, true);
       generating.value = false;
       return;
     }
 
-    // 兼容处理：直接返回图片URL（同步模式）或返回task_id（异步模式）
     let taskId = taskResult.id;
     let imageUrl = null;
     let status = 'queued';
 
     if (taskResult.result?.data && taskResult.result?.data[0]?.url) {
-      // 同步模式：直接返回图片
       imageUrl = taskResult.result?.data[0].url;
       status = 'completed';
     } else if (taskResult.result?.data && taskResult.result?.data[0]?.b64_json) {
-      // Base64 模式
       imageUrl = `data:image/png;base64,${taskResult.result?.data[0].b64_json}`;
       status = 'completed';
     }
 
-    if (currentSession.value) {
-      const msgType = referenceImages.value.length > 0 ? 'image-to-image' : 'text-to-image';
+    msg.taskId = taskId;
+    msg.status = status;
+    msg.imageUrl = imageUrl;
+    msg.revisedPrompt = taskResult.result?.data?.[0]?.revised_prompt || '';
+    saveSessions();
 
-      // 添加新消息（重新生成也是追加，不覆盖原气泡）
-      currentSession.value.messages.push({
-        role: 'ai',
-        type: msgType,
-        text: text,
-        taskId: taskId,
-        status: status,
-        progress: 0,
-        imageUrl: imageUrl,
-        revisedPrompt: taskResult.result?.data?.[0]?.revised_prompt || '',
-        time: formatTime(),
-        startTime: Date.now(),
-        referenceImages: referenceImages.value
-      });
-      saveSessions();
-
-      // 如果是异步任务（返回task_id），开始轮询
-      if (taskId && status !== 'completed') {
-        const msgIndex = currentSession.value.messages.length - 1;
-        pendingTasks.value++;
-        pollTaskStatus(taskId, msgIndex, currentSession.value.id, selectedModel.value);
-      } else {
-        if (imageUrl) {
-          showToast('图片生成成功');
-          const lastMsg = currentSession.value.messages[currentSession.value.messages.length - 1];
-          if (lastMsg) saveImageToMedia(imageUrl, taskId, lastMsg);
-        }
-        // 检查是否还有其他进行中的任务
-        if (pendingTasks.value === 0) {
-          generating.value = false;
-        }
-      }
+    if (taskId && status !== 'completed') {
+      pendingTasks.value++;
+      pollTaskStatus(taskId, msgIndex, currentSession.value.id, selectedModel.value);
     } else {
-      // currentSession 为空时重置状态
-      generating.value = false;
+      if (imageUrl) {
+        showToast('图片生成成功');
+        saveImageToMedia(imageUrl, taskId, msg);
+      }
+      if (pendingTasks.value === 0) {
+        generating.value = false;
+      }
     }
 
     inputText.value = '';
     referenceImages.value = [];
 
-    // 清除重新生成状态
     regenerateSessionId = null;
   } catch (e) {
+    const msg = currentSession.value?.messages[msgIndex];
+    if (msg) {
+      msg.status = 'failed';
+      msg.error = e.message;
+      msg.loadStatus = 'failed';
+      msg.loadDuration = Math.round((Date.now() - msg.startTime) / 1000);
+      saveSessions();
+    }
     showToast('生成失败: ' + e.message, true);
     generating.value = false;
-    // 清除重新生成状态
     regenerateSessionId = null;
   }
 }
