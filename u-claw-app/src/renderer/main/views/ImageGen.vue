@@ -217,12 +217,13 @@ const historyImages = computed(() => {
     if (session.deleted) continue;
     for (let i = 0; i < session.messages.length; i++) {
       const msg = session.messages[i];
-      if (msg.status === 'completed' && msg.imageUrl) {
+      if (msg.status === 'completed' && msg.imageUrl && !msg.hideInHistory) {
         images.push({
           id: msg.taskId || `${session.id}_${i}`,
           url: msg.imageUrl,
           prompt: msg.text || '',
           model: msg.model || '',
+          type: msg.type || '',
           date: msg.startTime ? new Date(msg.startTime).toLocaleDateString('zh-CN') : '',
           time: msg.loadedTime || msg.time || '',
         });
@@ -821,7 +822,7 @@ function handleDeleteHistory(id) {
       const msg = session.messages[i];
       const msgId = msg.taskId || `${session.id}_${i}`;
       if (msgId === id) {
-        session.messages.splice(i, 1);
+        msg.hideInHistory = true;
         saveSessions();
         return;
       }
@@ -836,7 +837,11 @@ async function handleOpenMediaFolder() {
 function handleClearHistory() {
   for (const session of sessions.value) {
     if (session.deleted) continue;
-    session.messages = session.messages.filter(msg => msg.status !== 'completed');
+    for (const msg of session.messages) {
+      if (msg.status === 'completed' && msg.imageUrl) {
+        msg.hideInHistory = true;
+      }
+    }
   }
   saveSessions();
   showToast('已清空历史作品');

@@ -38,11 +38,9 @@
       >
         <div class="card-img-wrapper">
           <img :src="image.url" :alt="image.prompt" loading="lazy" />
+          <span v-if="image.type === 'image-to-image'" class="type-badge">图生图</span>
           <div class="card-overlay">
-            <button class="overlay-btn" title="下载" @click.stop="$emit('download', image.url)">
-              <span class="iconfont icon-clawxiazai"></span>
-            </button>
-            <button class="overlay-btn" title="删除" @click.stop="$emit('delete', image.id)">
+            <button class="overlay-btn" title="从历史作品中移除" @click.stop="$emit('delete', image.id)">
               <span class="iconfont icon-clawshanchu"></span>
             </button>
           </div>
@@ -82,11 +80,11 @@
     <!-- 清空确认弹窗 -->
     <div v-if="showClearConfirm" class="modal-overlay" @click.self="showClearConfirm = false">
       <div class="modal-card">
-        <h3 class="modal-title">确认清空</h3>
-        <p class="modal-desc">确定要清空所有历史作品吗？此操作不可撤销。</p>
+        <h3 class="modal-title">确认清除</h3>
+        <p class="modal-desc">确认是否清除所有历史作品？此操作不可逆，请确认是否操作。</p>
         <div class="modal-actions">
           <button class="modal-btn cancel" @click="showClearConfirm = false">取消</button>
-          <button class="modal-btn confirm" @click="confirmClear">确认清空</button>
+          <button class="modal-btn confirm" @click="confirmClear">清除</button>
         </div>
       </div>
     </div>
@@ -304,6 +302,20 @@ function confirmClear() {
     display: block;
   }
 
+  .type-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 3px 8px;
+    font-size: 11px;
+    color: #fff;
+    background: linear-gradient(135deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
+    border-radius: 0 0 6px 0;
+    z-index: 2;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
   .card-overlay {
     position: absolute;
     inset: 0;
@@ -326,7 +338,7 @@ function confirmClear() {
   height: 36px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(229, 62, 62, 0.85);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -335,11 +347,12 @@ function confirmClear() {
 
   .iconfont {
     font-size: 16px;
+    color: #fff;
   }
 
   &:hover {
     transform: scale(1.15);
-    background: #fff;
+    background: #e53e3e;
   }
 }
 
@@ -500,13 +513,13 @@ function confirmClear() {
   font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0 0 12px;
+  margin: 0 0 16px;
 }
 
 .modal-desc {
   font-size: 14px;
   color: var(--text-secondary);
-  margin: 0 0 20px;
+  margin: 0 0 16px;
 }
 
 .modal-actions {
@@ -533,7 +546,7 @@ function confirmClear() {
   }
 
   &.confirm {
-    background: #e53e3e;
+    background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
     color: white;
   }
 }
