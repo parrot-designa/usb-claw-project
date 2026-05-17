@@ -122,8 +122,21 @@ function getSessionPreview(session) {
   }
 
   .arrow {
-    font-size: 12px;
-    transition: transform 0.2s;
+    font-size: 10px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(160, 120, 220, 0.35);
+    border-radius: 6px;
+    transition: transform 0.2s, background 0.2s, border-color 0.2s;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(160, 120, 220, 0.15);
+      border-color: rgba(160, 120, 220, 0.6);
+    }
 
     &.expanded {
       transform: rotate(180deg);

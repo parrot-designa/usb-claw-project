@@ -910,11 +910,17 @@ function handleDeleteHistory(id) {
     align-items: center;
     justify-content: center;
     background: var(--surface-variant);
+    border: 1px solid rgba(160, 120, 220, 0.35);
     border-radius: 6px;
     cursor: pointer;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, background 0.2s, border-color 0.2s;
     z-index: 10;
+
+    &:hover {
+      background: rgba(160, 120, 220, 0.15);
+      border-color: rgba(160, 120, 220, 0.6);
+    }
 
     .left-panel:hover & {
       opacity: 1;
@@ -951,19 +957,25 @@ function handleDeleteHistory(id) {
 
 .collapse-icon {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 6px;
+  left: 6px;
   width: 28px;
   height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--surface-variant);
+  border: 1px solid rgba(160, 120, 220, 0.35);
   border-radius: 6px;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, background 0.2s, border-color 0.2s;
   z-index: 10;
+
+  &:hover {
+    background: rgba(160, 120, 220, 0.15);
+    border-color: rgba(160, 120, 220, 0.6);
+  }
 
   .right-panel:hover & {
     opacity: 1;
