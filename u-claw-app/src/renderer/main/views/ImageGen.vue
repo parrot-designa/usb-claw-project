@@ -115,7 +115,16 @@
             @download="handleDownloadImage"
           />
           <div v-if="!bubbles.length" class="empty-bubbles">
-            <span>生成的图片将在这里显示</span>
+            <div class="empty-bubbles-content">
+              <h3 class="empty-bubbles-title">开始创作</h3>
+              <p class="empty-bubbles-desc">在左侧填写描述 → 点"生成图片"<br/>每次生成会自动新建会话，保存到 U 盘</p>
+              <ul class="empty-bubbles-tips">
+                <li>💡 文生图：不传参考图，从文字生成</li>
+                <li>💡 图生图：上传参考图 + 描述修改</li>
+                <li>💡 继续修改：点结果图的按钮→图到左侧参考图</li>
+                <li>💡 右键图片：复制到剪贴板</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -912,6 +921,38 @@ async function handleDeleteHistory(id) {
   justify-content: center;
   height: 100%;
   color: var(--text-secondary);
+}
+
+.empty-bubbles-content {
+  text-align: center;
+  max-width: 360px;
+}
+
+.empty-bubbles-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.empty-bubbles-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.empty-bubbles-tips {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+
+  li {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
 }
 
 .form-area {
