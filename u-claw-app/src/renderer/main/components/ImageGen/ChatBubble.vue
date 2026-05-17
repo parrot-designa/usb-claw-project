@@ -183,7 +183,10 @@ function formatDuration(seconds) {
 }
 
 function startFakeProgress() {
-  fakeProgress.value = 0;
+  // 用已有的真实进度作为起点，没有则从0开始
+  if (progress.value > fakeProgress.value) {
+    fakeProgress.value = progress.value;
+  }
   progressTimer = setInterval(() => {
     if (fakeProgress.value < 90) {
       fakeProgress.value += Math.random() * 0.6 + 0.2; // 随机增加0.2-0.8%，5倍慢
@@ -206,7 +209,6 @@ onMounted(() => {
     startFakeProgress();
   }
 });
-
 onUnmounted(() => {
   if (timer) {
     clearInterval(timer);
@@ -217,7 +219,6 @@ onUnmounted(() => {
 
 watch(() => props.bubble.status, (newStatus) => {
   if (newStatus === 'in_progress') {
-    fakeProgress.value = 0;
     elapsedSeconds.value = 0;
     stopFakeProgress();
     startFakeProgress();

@@ -524,42 +524,25 @@ referenceImages.value.length > 0 && { reference_images: referenceImages.value })
     if (currentSession.value) {
       const msgType = referenceImages.value.length > 0 ? 'image-to-image' : 'text-to-image';
 
-      if (isRegenerate && regenerateIndex >= 0 && regenerateIndex < currentSession.value.messages.length) {
-        // 重新生成：替换现有消息
-        currentSession.value.messages[regenerateIndex] = {
-          role: 'ai',
-          type: msgType,
-          text: text,
-          taskId: taskId,
-          status: status,
-          progress: 0,
-          imageUrl: imageUrl,
-          revisedPrompt: taskResult.result?.data?.[0]?.revised_prompt || '',
-          time: formatTime(),
-          startTime: Date.now(),
-          referenceImages: referenceImages.value
-        };
-      } else {
-        // 普通生成：添加新消息
-        currentSession.value.messages.push({
-          role: 'ai',
-          type: msgType,
-          text: text,
-          taskId: taskId,
-          status: status,
-          progress: 0,
-          imageUrl: imageUrl,
-          revisedPrompt: taskResult.result?.data?.[0]?.revised_prompt || '',
-          time: formatTime(),
-          startTime: Date.now(),
-          referenceImages: referenceImages.value
-        });
-      }
+      // 添加新消息（重新生成也是追加，不覆盖原气泡）
+      currentSession.value.messages.push({
+        role: 'ai',
+        type: msgType,
+        text: text,
+        taskId: taskId,
+        status: status,
+        progress: 0,
+        imageUrl: imageUrl,
+        revisedPrompt: taskResult.result?.data?.[0]?.revised_prompt || '',
+        time: formatTime(),
+        startTime: Date.now(),
+        referenceImages: referenceImages.value
+      });
       saveSessions();
 
       // 如果是异步任务（返回task_id），开始轮询
       if (taskId && status !== 'completed') {
-        const msgIndex = isRegenerate ? regenerateIndex : currentSession.value.messages.length - 1;
+        const msgIndex = currentSession.value.messages.length - 1;
         pendingTasks.value++;
         pollTaskStatus(taskId, msgIndex, currentSession.value.id, selectedModel.value);
       } else {
@@ -580,15 +563,11 @@ referenceImages.value.length > 0 && { reference_images: referenceImages.value })
     referenceImages.value = [];
 
     // 清除重新生成状态
-    regenerateImageUrl = null;
-    regenerateIndex = -1;
     regenerateSessionId = null;
   } catch (e) {
     showToast('生成失败: ' + e.message, true);
     generating.value = false;
     // 清除重新生成状态
-    regenerateImageUrl = null;
-    regenerateIndex = -1;
     regenerateSessionId = null;
   }
 }
@@ -693,24 +672,19 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
   pollingTimers.value.set(taskId, timer);
 }
 
-// 重新生成图片参数（从气泡中提取）
-let regenerateImageUrl = null;
-let regenerateIndex = -1;
+// 重新生成：标记在哪个会话上追加新气泡（null = 普通生成，会创建新会话）
 let regenerateSessionId = null;
 
 async function handleRegenerate(bubble) {
-  // 查找气泡所在的会话和索引
-  // 注意：regenerateSingle 可能创建了新对象，所以用遍历比较属性而不是 indexOf
+  // 查找气泡所在的会话
   let targetSession = null;
-  let targetIndex = -1;
 
   for (const session of sessions.value) {
+    if (session.deleted) continue;
     for (let i = 0; i < session.messages.length; i++) {
       const msg = session.messages[i];
-      // 通过 taskId 或消息内容匹配（regenerateSingle 创建的新对象有相同的 taskId）
       if (msg.taskId === bubble.taskId && msg.text === bubble.text) {
         targetSession = session;
-        targetIndex = i;
         break;
       }
     }
@@ -718,35 +692,19 @@ async function handleRegenerate(bubble) {
   }
 
   if (!targetSession) {
-    // 找不到时降级为普通生成 - 必须清除重新生成状态
+    // 找不到时降级为普通生成
+    regenerateSessionId = null;
     inputText.value = bubble.text;
     referenceImages.value = bubble.referenceImages || [];
-    regenerateImageUrl = null;
-    regenerateIndex = -1;
-    regenerateSessionId = null;
     await generateImage();
     return;
   }
 
-  // 立即更新目标消息的进度为0，确保UI立即响应
-  if (targetIndex >= 0) {
-    targetSession.messages[targetIndex].progress = 0;
-    targetSession.messages[targetIndex].status = 'in_progress';
-    targetSession.messages[targetIndex].error = null;
-  }
-
-  // 保存参数用于 generateImage 调用
+  // 在当前会话中追加新气泡（不覆盖原气泡）
   inputText.value = bubble.text;
   referenceImages.value = bubble.referenceImages || [];
-  regenerateImageUrl = bubble.regenerateImageUrl || null;
-  regenerateIndex = targetIndex;
   regenerateSessionId = targetSession.id;
-
-  // 切换到目标会话，确保 generateImage 在正确的会话上操作
   currentSessionId.value = targetSession.id;
-
-  // 立即持久化状态变更，防止 generateImage 提前返回时丢失
-  saveSessions();
 
   await generateImage();
 }
