@@ -315,6 +315,15 @@ onMounted(async () => {
   resumePendingPolls();
 });
 
+// 切换模型时保存当前会话，加载新模型的会话
+watch(selectedModel, async (newModel, oldModel) => {
+  if (!oldModel) return; // 首次初始化不处理
+  await saveSessions();
+  sessions.value = [];
+  currentSessionId.value = null;
+  await loadSessions();
+});
+
 async function loadImageModels() {
   try {
     const res = await apiRequest('/api/models/image', { method: 'POST' });
@@ -331,7 +340,7 @@ async function loadImageModels() {
 
 async function loadSessions() {
   try {
-    const result = await window.uclaw.ipcLoadImageSessions();
+    const result = await window.uclaw.ipcLoadImageSessions(selectedModel.value);
     if (result?.ok && result.data) {
       sessions.value = result.data.sessions || [];
       currentSessionId.value = result.data.currentSessionId;
@@ -368,10 +377,7 @@ async function saveSessions() {
   try {
     // 深度转换为原始对象，避免 Vue 响应式代理导致 IPC 克隆失败
     const plainSessions = JSON.parse(JSON.stringify(toRaw(sessions.value)));
-    await window.uclaw.ipcSaveImageSessions({
-      sessions: plainSessions,
-      currentSessionId: currentSessionId.value
-    });
+    await window.uclaw.ipcSaveImageSessions(selectedModel.value, plainSessions, currentSessionId.value);
   } catch (e) {
     console.error('[ImageGen] Save sessions failed:', e);
   }

@@ -434,17 +434,15 @@ function registerIPCHandlers({ gateway }) {
     });
   });
 
-  const CHAT_HISTORY_DIR = path.join(appRoot, 'runtime', 'chat-history');
-
-  // Image sessions persistence
-  const IMAGE_SESSIONS_FILE = path.join(CHAT_HISTORY_DIR, 'image-sessions.json');
-
-  ipcMain.handle('save-image-sessions', async (_, data) => {
+  // Image sessions persistence (per-model subdirectory under data/.openclaw/chat-history/)
+ipcMain.handle('save-image-sessions', async (_, { model, sessions, currentSessionId }) => {
     try {
-      if (!fs.existsSync(CHAT_HISTORY_DIR)) {
-        fs.mkdirSync(CHAT_HISTORY_DIR, { recursive: true });
+      const modelDir = path.join(dataRoot, '.openclaw', 'chat-history', model);
+      if (!fs.existsSync(modelDir)) {
+        fs.mkdirSync(modelDir, { recursive: true });
       }
-      fs.writeFileSync(IMAGE_SESSIONS_FILE, JSON.stringify(data, null, 2), 'utf-8');
+      const file = path.join(modelDir, 'image-sessions.json');
+      fs.writeFileSync(file, JSON.stringify({ sessions, currentSessionId }, null, 2), 'utf-8');
       return { ok: true };
     } catch (err) {
       console.error('[save-image-sessions] failed:', err);
@@ -452,12 +450,13 @@ function registerIPCHandlers({ gateway }) {
     }
   });
 
-  ipcMain.handle('load-image-sessions', async () => {
+  ipcMain.handle('load-image-sessions', async (_, { model }) => {
     try {
-      if (!fs.existsSync(IMAGE_SESSIONS_FILE)) {
+      const file = path.join(dataRoot, '.openclaw', 'chat-history', model, 'image-sessions.json');
+      if (!fs.existsSync(file)) {
         return { ok: true, data: { sessions: [], currentSessionId: null } };
       }
-      const content = fs.readFileSync(IMAGE_SESSIONS_FILE, 'utf-8');
+      const content = fs.readFileSync(file, 'utf-8');
       const data = JSON.parse(content);
       return { ok: true, data };
     } catch (err) {
