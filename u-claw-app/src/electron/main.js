@@ -12,6 +12,25 @@ import { initWechat } from "./plugin/wechat-init.js";
 // ============================================================
 // Electron 主进程启动入口
 // ============================================================
+
+// 单实例锁：防止多开导致端口冲突
+if (!app.requestSingleInstanceLock()) {
+  console.log('[startup] another instance is running, quitting...');
+  app.quit();
+  return;
+}else{
+  app.on('second-instance', () => {
+    // 已有实例运行时，聚焦已有窗口
+    const win = getMainWindow();
+    if (win) {
+      if (win.isMinimized()) win.restore();
+      win.focus();
+    }
+  });
+}
+
+
+
 app.whenReady().then(async () => {
   console.log('[DEBUG] App ready, creating window...');
   if (isWin()) {

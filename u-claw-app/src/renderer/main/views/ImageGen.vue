@@ -71,14 +71,6 @@
                 {{ size.ratio }} ({{ size.pixels }})
               </option>
             </select>
-            <input
-              v-model.number="imageCount"
-              type="number"
-              min="1"
-              max="4"
-              class="option-input"
-              placeholder="1-4"
-            />
           </div>
         </div>
 
@@ -169,7 +161,6 @@ const imageModels = ref([]);
 const selectedModel = ref('gpt-image-2');
 const selectedResolution = ref('1K');
 const selectedSizeRatio = ref('1:1');
-const imageCount = ref(1);
 const generating = ref(false);
 const pendingTasks = ref(0); // 待完成的轮询任务数量
 
@@ -391,7 +382,7 @@ async function generateImage() {
         prompt: text,
         size: selectedSizeRatio.value,
         resolution: selectedResolution.value,
-        n: isRegenerate ? 1 : imageCount.value,
+        n: 1,
         ...(
 referenceImages.value.length > 0 && { reference_images: referenceImages.value })
       }
@@ -1020,21 +1011,6 @@ async function handleDeleteHistory(id) {
     font-size: 14px;
   }
 
-  .option-input {
-    width: 70px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    text-align: center;
-    font-size: 14px;
-
-    &::-webkit-inner-spin-button,
-    &::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-  }
 }
 
 .btn-area {
