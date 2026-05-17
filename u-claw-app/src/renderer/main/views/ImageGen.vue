@@ -1468,8 +1468,8 @@ function handleClearHistory() {
 }
 
 .preview-image {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 120px);
   object-fit: contain;
   cursor: zoom-out;
 }
