@@ -149,11 +149,11 @@
 
         <!-- Right: Balance -->
         <div class="model-balance-panel">
-          <h4 class="model-balance-title">剩余余额</h4>
+          <h4 class="model-balance-title">剩余积分</h4>
           <div class="model-balance-content">
             <div class="model-usage-bar-container">
               <div class="model-usage-labels">
-                <span>已用额度</span>
+                <span>已用积分</span>
                 <span>{{ userStore.userInfo?.used_percent ? Math.round(userStore.userInfo.used_percent * 100) + '%' : '0%' }}</span>
               </div>
               <div class="model-usage-bar-bg">
@@ -163,16 +163,16 @@
             <div class="model-balance-stats">
               <div class="model-stat-item">
                 <div class="model-stat-label">已用</div>
-                <div class="model-stat-value"><span class="model-balance-symbol">¥</span>{{ formatBalance(userStore.userInfo?.used_balance) }}</div>
+                <div class="model-stat-value"><span class="model-balance-symbol"></span>{{ formatBalance(userStore.userInfo?.used_balance) }}</div>
               </div>
               <div class="model-stat-item">
                 <div class="model-stat-label">剩余</div>
-                <div class="model-stat-value"><span class="model-balance-symbol">¥</span>{{ formatBalance(userStore.userInfo?.remain_balance) }}</div>
+                <div class="model-stat-value"><span class="model-balance-symbol"></span>{{ formatBalance(userStore.userInfo?.remain_balance) }}</div>
               </div>
             </div>
             <button @click="refreshUsage" class="model-btn-refresh">
               <span class="iconfont icon-clawshuaxin"></span>
-              刷新余额
+              刷新积分
             </button>
           </div>
         </div>

@@ -3,11 +3,11 @@
 
     <!-- Balance Card -->
     <div class="recharge-balance-panel">
-      <h4 class="recharge-balance-title">官方模型账户余额</h4>
+      <h4 class="recharge-balance-title">官方模型账户积分</h4>
       <div class="recharge-balance-content">
         <div class="recharge-usage-bar-container">
           <div class="recharge-usage-labels">
-            <span>已用额度</span>
+            <span>已用积分</span>
             <span>{{ userStore.userInfo?.used_percent ? Math.round(userStore.userInfo.used_percent * 100) + '%' : '0%' }}</span>
           </div>
           <div class="recharge-usage-bar-bg">
@@ -16,17 +16,13 @@
         </div>
         <div class="recharge-balance-stats">
           <div class="recharge-stat-item">
-            <div class="recharge-stat-label">已用额度</div>
-            <div class="recharge-stat-value"><span class="recharge-balance-symbol">¥</span>{{ formatBalance(userStore.userInfo?.used_balance) }}</div>
+            <div class="recharge-stat-label">已用积分</div>
+            <div class="recharge-stat-value"><span class="recharge-balance-symbol"></span>{{ formatBalance(userStore.userInfo?.used_balance) }}</div>
           </div>
           <div class="recharge-stat-item">
-            <div class="recharge-stat-label">剩余额度</div>
-            <div class="recharge-stat-value"><span class="recharge-balance-symbol">¥</span>{{ formatBalance(userStore.userInfo?.remain_balance) }}</div>
+            <div class="recharge-stat-label">剩余积分</div>
+            <div class="recharge-stat-value"><span class="recharge-balance-symbol"></span>{{ formatBalance(userStore.userInfo?.remain_balance) }}</div>
           </div>
-        </div>
-        <div v-if="userStore.userInfo?.remain_balance < 100" class="recharge-balance-warning">
-          <span class="recharge-warning-icon">⚠️</span>
-          <span>余额不足，请及时充值以保证服务连续性</span>
         </div>
       </div>
     </div>
@@ -35,7 +31,7 @@
     <div class="recharge-tip-card">
       <div class="recharge-tip-icon iconfont icon-clawtishi"></div>
       <div class="recharge-tip-content">
-        此充值仅用于官方代理的AI模型调用费用(按实际 token用量计费)。OpenClaw软件本身完全免费，您也可以在「模型配置」填入自己的 API Key来使用自有额度。
+        此充值仅用于官方代理的AI模型调用费用(按实际 token用量计费)。OpenClaw软件本身完全免费，您也可以在「模型配置」填入自己的 API Key来使用自有积分。
       </div>
     </div>
 
@@ -54,7 +50,7 @@
             :class="{ 'recharge-active': selectedAmount === amount && !customAmount }"
             @click="selectAmount(amount)"
           >
-           ¥ {{ amount }}
+           {{ amount }}
            <span v-if="discountConfig[amount] && discountConfig[amount] < 1" class="recharge-discount-tag">
              {{ discountConfig[amount] * 10 }}折
            </span>
@@ -109,12 +105,12 @@
         </div>
         <div class="recharge-detail-row" v-if="hasDiscount">
           <span class="recharge-detail-label">原价</span>
-          <span class="recharge-detail-value recharge-original-price">¥{{ displayAmount.toFixed(2) }}</span>
+          <span class="recharge-detail-value recharge-original-price">{{ displayAmount.toFixed(2) }}</span>
         </div>
         <div class="recharge-detail-row">
           <span class="recharge-detail-label">{{ hasDiscount ? '折扣价' : '对应金额' }}</span>
           <span class="recharge-detail-value" :class="{ 'recharge-discounted': hasDiscount }">
-            ¥{{ (displayAmount * currentDiscount).toFixed(2) }}
+            {{ (displayAmount * currentDiscount).toFixed(2) }}
             <span v-if="hasDiscount" class="recharge-detail-discount">{{ currentDiscount * 10 }}折</span>
           </span>
         </div>
@@ -167,7 +163,7 @@
           </thead>
           <tbody>
             <tr v-for="record in rechargeRecords" :key="record.id">
-              <td>¥{{ record.money.toFixed(2) }}</td>
+              <td>{{ record.money.toFixed(2) }}</td>
               <td>{{ getPaymentMethodName(record.payment_method) }}</td>
               <td>{{ formatTime(record.create_time) }}</td>
               <td>
