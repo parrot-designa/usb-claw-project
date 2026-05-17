@@ -147,6 +147,18 @@
       <ImageGrid :images="historyImages" @delete="handleDeleteHistory" />
     </div>
 
+    <!-- 删除会话确认弹窗 -->
+    <div v-if="showDeleteConfirm" class="modal-overlay" @click.self="cancelDeleteSession">
+      <div class="modal-card">
+        <h3 class="modal-title">确认删除</h3>
+        <p class="modal-desc">确定要删除该会话吗？</p>
+        <div class="modal-actions">
+          <button class="modal-btn cancel" @click="cancelDeleteSession">取消</button>
+          <button class="modal-btn confirm" @click="confirmDeleteSession">删除</button>
+        </div>
+      </div>
+    </div>
+
     <!-- 编辑会话标题弹窗 -->
     <div v-if="showEditModal" class="modal-overlay" @click.self="closeEditModal">
       <div class="modal-card">
@@ -189,8 +201,28 @@ const currentSessionId = ref(null); // 当前会话ID
 const activeTab = ref('free');      // 当前激活的 Tab
 const leftPanelCollapsed = ref(false); // 左侧面板是否折叠
 const referenceImages = ref([]);    // 参考图列表
-const historyImages = ref([]);      // 历史作品列表
 const pollingTimers = ref(new Map()); // 存储轮询定时器: taskId -> timer
+
+// 历史作品：从所有非删除会话中提取已完成的图片
+const historyImages = computed(() => {
+  const images = [];
+  for (const session of sessions.value) {
+    if (session.deleted) continue;
+    for (let i = 0; i < session.messages.length; i++) {
+      const msg = session.messages[i];
+      if (msg.status === 'completed' && msg.imageUrl) {
+        images.push({
+          id: msg.taskId || `${session.id}_${i}`,
+          url: msg.imageUrl,
+          prompt: msg.text || '',
+          time: msg.loadedTime || msg.time || '',
+        });
+      }
+    }
+  }
+  images.reverse();
+  return images;
+});
 
 const inputText = ref('');
 const imageModels = ref([]);
@@ -199,6 +231,10 @@ const selectedResolution = ref('1K');
 const selectedSizeRatio = ref('1:1');
 const generating = ref(false);
 const pendingTasks = ref(0); // 待完成的轮询任务数量
+
+// 删除会话确认
+const showDeleteConfirm = ref(false);
+const deletingSessionId = ref(null);
 
 // 编辑会话标题
 const showEditModal = ref(false);
@@ -276,7 +312,6 @@ function toggleLeftPanel() {
 onMounted(async () => {
   await loadSessions();
   await loadImageModels();
-  await loadHistoryImages();
   resumePendingPolls();
 });
 
@@ -303,17 +338,6 @@ async function loadSessions() {
     }
   } catch (e) {
     console.error('[ImageGen] Load sessions failed:', e);
-  }
-}
-
-async function loadHistoryImages() {
-  try {
-    const result = await window.uclaw.ipcLoadImageGenHistory();
-    if (result?.ok && result.messages) {
-      historyImages.value = result.messages;
-    }
-  } catch (e) {
-    console.error('[ImageGen] Load history failed:', e);
   }
 }
 
@@ -376,6 +400,14 @@ function handleSessionSelect(sessionId) {
 }
 
 function handleSessionDelete(sessionId) {
+  deletingSessionId.value = sessionId;
+  showDeleteConfirm.value = true;
+}
+
+function confirmDeleteSession() {
+  const sessionId = deletingSessionId.value;
+  if (!sessionId) return;
+
   // 取消该会话下所有轮询定时器
   sessions.value.forEach(session => {
     if (session.id === sessionId) {
@@ -393,12 +425,18 @@ function handleSessionDelete(sessionId) {
   if (session) {
     session.deleted = true;
     if (currentSessionId.value === sessionId) {
-      // 切换到下一个未删除的会话
       const nextSession = sessions.value.find(s => !s.deleted);
       currentSessionId.value = nextSession?.id || null;
     }
     saveSessions();
   }
+
+  cancelDeleteSession();
+}
+
+function cancelDeleteSession() {
+  showDeleteConfirm.value = false;
+  deletingSessionId.value = null;
 }
 
 function handleSessionEdit(sessionId) {
@@ -527,7 +565,6 @@ referenceImages.value.length > 0 && { reference_images: referenceImages.value })
       } else {
         if (imageUrl) {
           showToast('图片生成成功');
-          addToHistory(imageUrl, text);
         }
         // 检查是否还有其他进行中的任务
         if (pendingTasks.value === 0) {
@@ -602,7 +639,6 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
           pollingTimers.value.delete(taskId);
           pendingTasks.value--;
           showToast('图片生成成功');
-          addToHistory(result.result.data[0].url, msg.text);
           if (pendingTasks.value === 0) {
             generating.value = false;
           }
@@ -761,20 +797,19 @@ function formatTime() {
   return now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
 }
 
-function addToHistory(imageUrl, prompt) {
-  const newImage = {
-    id: Date.now().toString(),
-    url: imageUrl,
-    prompt: prompt || '',
-    time: formatTime()
-  };
-  historyImages.value.unshift(newImage);
-  window.uclaw.ipcSaveImageGenHistory(JSON.parse(JSON.stringify(toRaw(historyImages.value))));
-}
-
-async function handleDeleteHistory(id) {
-  historyImages.value = historyImages.value.filter(img => img.id !== id);
-  await window.uclaw.ipcSaveImageGenHistory(historyImages.value);
+function handleDeleteHistory(id) {
+  for (const session of sessions.value) {
+    if (session.deleted) continue;
+    for (let i = 0; i < session.messages.length; i++) {
+      const msg = session.messages[i];
+      const msgId = msg.taskId || `${session.id}_${i}`;
+      if (msgId === id) {
+        session.messages.splice(i, 1);
+        saveSessions();
+        return;
+      }
+    }
+  }
 }
 </script>
 
@@ -1180,6 +1215,12 @@ async function handleDeleteHistory(id) {
   font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
+  margin: 0 0 16px 0;
+}
+
+.modal-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
   margin: 0 0 16px 0;
 }
 

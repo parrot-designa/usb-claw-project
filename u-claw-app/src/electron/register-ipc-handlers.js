@@ -434,37 +434,7 @@ function registerIPCHandlers({ gateway }) {
     });
   });
 
-  // Chat history persistence (ImageGen)
   const CHAT_HISTORY_DIR = path.join(appRoot, 'runtime', 'chat-history');
-  const IMAGE_GEN_HISTORY_FILE = path.join(CHAT_HISTORY_DIR, 'image-gen.json');
-
-  ipcMain.handle('save-image-gen-history', async (_, messages) => {
-    try {
-      console.log("我来保存")
-      if (!fs.existsSync(CHAT_HISTORY_DIR)) {
-        fs.mkdirSync(CHAT_HISTORY_DIR, { recursive: true });
-      }
-      fs.writeFileSync(IMAGE_GEN_HISTORY_FILE, JSON.stringify(messages, null, 2), 'utf-8');
-      return { ok: true };
-    } catch (err) {
-      console.error('[save-image-gen-history] failed:', err);
-      return { ok: false, error: err.message };
-    }
-  });
-
-  ipcMain.handle('load-image-gen-history', async () => {
-    try {
-      if (!fs.existsSync(IMAGE_GEN_HISTORY_FILE)) {
-        return { ok: true, messages: [] };
-      }
-      const content = fs.readFileSync(IMAGE_GEN_HISTORY_FILE, 'utf-8');
-      const messages = JSON.parse(content);
-      return { ok: true, messages };
-    } catch (err) {
-      console.error('[load-image-gen-history] failed:', err);
-      return { ok: true, messages: [] };
-    }
-  });
 
   // Image sessions persistence
   const IMAGE_SESSIONS_FILE = path.join(CHAT_HISTORY_DIR, 'image-sessions.json');

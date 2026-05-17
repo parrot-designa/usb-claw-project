@@ -58,9 +58,7 @@ function selectSession(id) {
   emit('select', id);
 }
 
-async function deleteSession(id) {
-  const result = await window.uclaw.ipcShowConfirmDialog('确认删除', '确定要删除该会话吗？');
-  if (!result?.confirmed) return;
+function deleteSession(id) {
   emit('delete', id);
 }
 
