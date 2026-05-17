@@ -434,7 +434,7 @@ function regenerateSingle(url) {
       max-width: 100%;
       max-height: 100%;
       border-radius: 6px;
-      cursor: pointer;
+      cursor: zoom-in;
       transition: opacity 0.2s;
       position: relative;
       z-index: 1;

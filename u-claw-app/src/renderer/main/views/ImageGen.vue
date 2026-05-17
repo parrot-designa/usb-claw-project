@@ -122,6 +122,7 @@
             @copySuccess="showToast"
             @insert="handleInsertImage"
             @download="handleDownloadImage"
+            @preview="handlePreviewImage"
           />
           <div v-if="!bubbles.length" class="empty-bubbles">
             <div class="empty-bubbles-content">
@@ -191,6 +192,17 @@
         </div>
       </div>
     </div>
+
+    <!-- 全屏图片预览 -->
+    <div v-if="showPreview" class="fullscreen-preview" @click="closePreview">
+      <button class="preview-download-btn" @click.stop="handleDownloadImage(previewUrl)" title="下载">
+        <span class="iconfont icon-clawxiazai"></span>
+      </button>
+      <button class="preview-close-btn" @click.stop="closePreview" title="关闭">
+        <span class="iconfont icon-clawguanbi"></span>
+      </button>
+      <img :src="previewUrl" class="preview-image" />
+    </div>
   </div>
 </template>
 
@@ -259,6 +271,10 @@ const showEditModal = ref(false);
 const editingSessionId = ref(null);
 const editingTitle = ref('');
 const editInput = ref(null);
+
+// 全屏图片预览
+const showPreview = ref(false);
+const previewUrl = ref('');
 
 // resolution 与 size 选项的映射
 const resolutionSizeMap = {
@@ -768,6 +784,16 @@ async function handleRegenerate(bubble) {
 function handleInsertImage(url) {
   referenceImages.value = [...referenceImages.value, url];
   showToast('已添加为参考图，可进行图生图');
+}
+
+function handlePreviewImage(url) {
+  previewUrl.value = url;
+  showPreview.value = true;
+}
+
+function closePreview() {
+  showPreview.value = false;
+  previewUrl.value = '';
 }
 
 async function handleDownloadImage(url) {
@@ -1376,5 +1402,75 @@ function handleClearHistory() {
     background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
     color: white;
   }
+}
+
+.fullscreen-preview {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.preview-download-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .iconfont {
+    font-size: 18px;
+  }
+}
+
+.preview-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  .iconfont {
+    font-size: 18px;
+  }
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  cursor: zoom-out;
 }
 </style>
