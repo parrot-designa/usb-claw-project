@@ -14,10 +14,10 @@
         <span class="remove-btn iconfont icon-clawshanchu" @click.stop="removeImage(index)"></span>
       </div>
 
-      <!-- 添加按钮 -->
+      <!-- 添加按钮 / 拖拽区域 -->
       <div class="add-image-btn" @click="triggerFileInput">
         <span>+</span>
-        <span>添加参考图</span>
+        <span>{{ isDragOver ? '松开即可上传' : '拖拽或点击上传' }}</span>
       </div>
     </div>
 
@@ -137,11 +137,13 @@ function removeImage(index) {
 
 <style scoped lang="scss">
 .reference-images {
-  border-radius: 8px; 
-  transition: border-color 0.2s;
+  border-radius: 8px;
+  border: 2px dashed transparent;
+  transition: border-color 0.2s, border-style 0.2s;
 
   &.drag-over {
-    border: 2px dashed #1890ff;
+    border-color: #1890ff;
+    border-style: solid;
   }
 }
 
@@ -159,9 +161,9 @@ function removeImage(index) {
 
 .ref-image-item {
   position: relative;
-  width: 72px;
-  height: 72px;
-  border-radius: 4px;
+  width: 100px;
+  height: 100px;
+  border-radius: 6px;
   overflow: hidden;
   cursor: pointer;
 
@@ -194,10 +196,10 @@ function removeImage(index) {
 }
 
 .add-image-btn {
-  width: 72px;
-  height: 72px;
+  width: 100px;
+  height: 100px;
   border: 1px dashed #d9d9d9;
-  border-radius: 4px;
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -206,7 +208,7 @@ function removeImage(index) {
   cursor: pointer;
   color: #666;
   font-size: 12px;
-  transition: border-color 0.2s, color 0.2s;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
 
   span:first-child {
     font-size: 24px;
@@ -216,6 +218,7 @@ function removeImage(index) {
   &:hover {
     border-color: #1890ff;
     color: #1890ff;
+    background: rgba(24, 144, 255, 0.05);
   }
 }
 </style>
