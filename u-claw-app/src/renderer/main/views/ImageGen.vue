@@ -1046,7 +1046,7 @@ function handleClearHistory() {
   flex: 1;
   position: relative;
   border-radius: 0;
-  background: linear-gradient(to bottom right, rgb(15, 18, 28) 0%, rgb(22, 26, 48) 50%, rgb(68, 55, 130) 100%);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230F121C'/%3E%3Cstop offset='50%25' stop-color='%23161A30'/%3E%3Cstop offset='100%25' stop-color='%23443782'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
   transition: all 0.3s ease;
   overflow: hidden;
   border-left: 1px solid var(--border);
@@ -1272,7 +1272,7 @@ function handleClearHistory() {
   justify-content: center;
   height: 100%;
   color: var(--text-secondary);
-  background: linear-gradient(to bottom right, rgb(15, 18, 28) 0%, rgb(22, 26, 48) 50%, rgb(68, 55, 130) 100%);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230F121C'/%3E%3Cstop offset='50%25' stop-color='%23161A30'/%3E%3Cstop offset='100%25' stop-color='%23443782'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='1' height='1' fill='url(%23g)'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
 }
 
 .history-empty-icon {
