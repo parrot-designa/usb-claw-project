@@ -1408,7 +1408,7 @@ function handleClearHistory() {
 
 .preview-download-btn {
   position: absolute;
-  top: 48px;
+  top: 16px;
   left: 16px;
   width: 36px;
   height: 36px;
@@ -1434,7 +1434,7 @@ function handleClearHistory() {
 
 .preview-close-btn {
   position: absolute;
-  top: 48px;
+  top: 16px;
   right: 16px;
   width: 36px;
   height: 36px;
