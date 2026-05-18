@@ -90,7 +90,7 @@ app.whenReady().then(async () => {
   updateSplash('正在加载界面...',100);
 
    // 第1步：创建主窗口
-  createWindow(); 
+  createWindow(gateway); 
   
   // 第2步：加载激活页面
   loadActivationPage(); 

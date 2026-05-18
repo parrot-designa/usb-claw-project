@@ -1,5 +1,4 @@
-/**
- * P-Claw 激活模块
+/** 
  * 处理 USB 绑定激活逻辑
  */
 import { app, BrowserWindow } from 'electron'; 
@@ -82,7 +81,7 @@ function getDriveLetterFromPath(p) {
 
 function getMacOSUSBDrive() {
   // 打包后 process.cwd() 不一定是 USB 挂载点，改用 process.execPath
-  // execPath 格式: /Volumes/XXX/P-Claw.app/Contents/MacOS/P-Claw
+  // execPath 格式: /Volumes/XXX/OpenClawPro.app/Contents/MacOS/OpenClawPro
   const execPath = process.execPath;
   if (execPath.startsWith('/Volumes/')) {
     const parts = execPath.split('/');

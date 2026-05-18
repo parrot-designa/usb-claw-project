@@ -203,7 +203,7 @@ async function getAppDriveInfo() {
     driveLetter = match ? match[1].toUpperCase() + ':' : null;
     rootPath = driveLetter ? driveLetter + '\\' : null;
   } else if (process.platform === 'darwin') {
-    // /Volumes/XXX/P-Claw.app/Contents/MacOS/P-Claw → /Volumes/XXX
+    // /Volumes/XXX/OpenClawPro/Contents/MacOS/OpenClawPro → /Volumes/XXX
     if (targetPath.startsWith('/Volumes/')) {
       const parts = targetPath.split('/');
       rootPath = '/' + parts[1] + '/' + parts[2];

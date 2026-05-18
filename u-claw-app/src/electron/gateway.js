@@ -404,7 +404,8 @@ function createGatewayManager() {
     startGateway,
     stopGateway,
     restartGateway, 
-    isGatewayReady
+    isGatewayReady,
+    stopGatewaySync
   };
 }
 

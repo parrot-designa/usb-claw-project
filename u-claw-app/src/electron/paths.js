@@ -50,8 +50,8 @@ export const RUNTIME_DIR = path.join(localBase, 'runtime');
  * @param {Electron.App} app - Electron app 实例
  * @returns {string}
  * appRoot: dev=u-claw-app/, prod=实际app根目录(.app/或win-unpacked同级)
- * 生产中app.getPath('exe') mac .app/Contents/MacOS/P-Claw runtime 放Contents下面放就行
- * 生产中app.getPath('exe') win win/P-Claw.exe
+ * 生产中app.getPath('exe') mac .app/Contents/MacOS/OpenClawPro runtime 放Contents下面放就行
+ * 生产中app.getPath('exe') win win/OpenClawPro.exe
  */
 function getAppRoot() {
   if (_appRoot) return _appRoot;

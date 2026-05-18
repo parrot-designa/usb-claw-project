@@ -1,9 +1,11 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, Tray, Menu, nativeImage } from 'electron';
 import path from 'path';
+import {  getWechatManagerInstance } from "./plugin/wechat-init.js";
 import { APP_NAME, IS_DEV,RENDER_PORT,GATEWAY_DEFAULT_PORT } from './utils/env.js';
 
 let mainWindow = null;
 let splashWindow = null;
+let tray = null;
 
 const logoPath = IS_DEV
   ? path.join(app.getAppPath(), 'src', 'assets', 'logo.png')
@@ -121,7 +123,56 @@ export function sendGatewayLog(type, msg) {
   safeSend('gateway-log', { type, msg });
 }
 
-export function createWindow() { 
+
+
+export function createWindow(gateway) {
+
+  function createTray() {
+    try {
+      // 使用 app 图标作为托盘图标
+      const iconPath = IS_DEV
+        ? path.join(app.getAppPath(), 'src', 'assets', 'logo.png')
+        : path.join(import.meta.dirname, '..', 'assets', 'logo.png');
+
+      const trayIcon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 });
+      tray = new Tray(trayIcon);
+      tray.setToolTip(APP_NAME);
+
+      const contextMenu = Menu.buildFromTemplate([
+        {
+          label: '📱 打开面板',
+          click: () => {
+            if (mainWindow) {
+              mainWindow.show();
+              mainWindow.focus();
+            }
+          }
+        },
+        { type: 'separator' },
+        {
+          label: '❌ 完全退出',
+          click: () => {
+            app.isQuitting = true;
+            gateway.stopGatewaySync();
+            getWechatManagerInstance()?.destroy();
+            app.quit();
+          }
+        }
+      ]);
+
+      tray.setContextMenu(contextMenu);
+
+      // 双击托盘图标显示窗口
+      tray.on('double-click', () => {
+        if (mainWindow) {
+          mainWindow.show();
+          mainWindow.focus();
+        }
+      });
+    } catch (e) {
+      console.warn('[tray] 创建托盘失败:', e);
+    }
+  }
   console.log("创建window===>")
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -129,7 +180,7 @@ export function createWindow() {
     minWidth: 800,
     minHeight: 600,
     title: APP_NAME,
-    maximizable: false,  
+    maximizable: false,
     icon: IS_DEV
       ? path.join(app.getAppPath(), 'src', 'assets', 'icon.png')
       : path.join(app.getAppPath(), 'assets', 'icon.png'),
@@ -145,6 +196,17 @@ export function createWindow() {
     titleBarOverlay: {
       color: '#0B0E14',      // 覆盖层的背景色
       symbolColor: 'white' // 按钮图标的颜色
+    }
+  });
+
+  // 创建系统托盘
+  createTray();
+
+  // 点击关闭时隐藏到托盘，而不是退出
+  mainWindow.on('close', (event) => {
+    if (!app.isQuitting) {
+      event.preventDefault();
+      mainWindow.hide();
     }
   });
 
@@ -170,8 +232,10 @@ export function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
-    // 这条语句会确保程序彻底退出，清除所有后台进程
-    app.quit();
+    if (tray) {
+      tray.destroy();
+      tray = null;
+    }
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
