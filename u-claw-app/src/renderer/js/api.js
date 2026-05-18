@@ -97,8 +97,11 @@ export async function apiRequest(path, options = {}) {
 
   // GET 请求只通过 params 传递 session_cookie，不放入 body
   // 注意：FormData 不能用 spread 展开，会丢失文件数据
-  if (sessionCookie && !(data instanceof FormData)) {
-    if (method === 'GET') {
+  if (sessionCookie) {
+    if (data instanceof FormData) {
+      // FormData 通过 params 传递 session_cookie，避免破坏文件数据
+      params = { ...params, session_cookie: sessionCookie };
+    } else if (method === 'GET') {
       params = { ...params, session_cookie: sessionCookie };
     } else {
       data = { ...data, session_cookie: sessionCookie };

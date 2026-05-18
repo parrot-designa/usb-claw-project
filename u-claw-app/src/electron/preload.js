@@ -57,6 +57,8 @@ contextBridge.exposeInMainWorld('uclaw', {
   ipcCheckStepLogin: ({ serial, activation_code }) => ipcRenderer.invoke('check-step-login', { serial, activation_code }),
   // 获取内存中的 session_cookie
   ipcGetSessionCookie: () => ipcRenderer.invoke('store-get', 'session_cookie'),
+  // 设置 HTTP Cookie 到 Electron cookie 存储
+  ipcSetSessionCookie: (value) => ipcRenderer.invoke('set-session-cookie', value),
   ipcSetRuntimeStore: ({ key, value }) => ipcRenderer.invoke('store-set', { key, value }),
   ipcGetRuntimeStore: (key) => ipcRenderer.invoke('store-get', key),
   // data dir

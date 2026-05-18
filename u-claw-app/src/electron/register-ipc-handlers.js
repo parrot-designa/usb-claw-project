@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { ipcMain, dialog, app, shell } from 'electron';
+import { ipcMain, dialog, app, shell, session } from 'electron';
 import { RUNTIME_DIR, getAppRoot } from './paths.js';
 import { exec,spawn } from 'child_process';
 import { 
@@ -11,7 +11,7 @@ import {
 import { getGatewayEnv, getMediaDir, getNodeBin, getNpmBin, getOpenClawPath, getPaths, readLicenseFile, writeLicenseFile, writeOpenClawConfig} from './paths.js';
 import skillNameMap from './skill-name-map.js';
 import net from 'net';
-import { GATEWAY_DEFAULT_PORT } from './utils/env.js';
+import { GATEWAY_DEFAULT_PORT, API_BASE } from './utils/env.js';
 import { createWindow, getMainWindow, isWin, loadConfigPage } from './window-manager.js';
 import { apiRequest } from './api-node.js';
 import { runtimeStore } from './utils/runtime-store.js';
@@ -252,9 +252,34 @@ function registerIPCHandlers({ gateway }) {
     }); 
     if (result.success && result.data && result.data.session_cookie) {
       runtimeStore.session_cookie = result.data.session_cookie;
+      // 设置 HTTP Cookie 到 Electron 的 cookie 存储，使所有请求自动携带
+      setUclawSessionCookie(result.data.session_cookie);
       return { ok: true, token: result.data.token };
     }
     return { ok: false, error: result.message || '登录校验失败' };
+  });
+
+  // 设置 uclaw_session cookie，供后端 authHelper 中间件认证
+  async function setUclawSessionCookie(cookieValue) {
+    try {
+      await session.defaultSession.cookies.set({
+        url: API_BASE,
+        name: 'uclaw_session',
+        value: cookieValue,
+        path: '/',
+        secure: false,
+        httpOnly: false,
+        expirationDate: Math.floor(Date.now() / 1000) + 30 * 24 * 3600
+      });
+      console.log('[setUclawSessionCookie] cookie set successfully');
+    } catch (e) {
+      console.error('[setUclawSessionCookie] failed:', e.message);
+    }
+  }
+
+  ipcMain.handle('set-session-cookie', async (_, value) => {
+    await setUclawSessionCookie(value);
+    return { ok: true };
   });
 
   ipcMain.handle('store-get', async (_, key) => {
