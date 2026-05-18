@@ -83,7 +83,11 @@
       "Bash(node -e \"const p=require\\('./package.json'\\);console.log\\('electron:',p.devDependencies.electron\\);console.log\\('builder:',p.devDependencies['electron-builder']\\);console.log\\('vite:',p.devDependencies.vite\\);\")",
       "Bash(grep -r \"pay\" /Users/jiabao/Desktop/ai-agent-middle/new-api --include=\"*.ts\" --include=\"*.js\" ! -path \"*/node_modules/*\" ! -path \"*/dist/*\")",
       "Bash(grep -r \"user/pay\" /Users/jiabao/Desktop/ai-agent-middle --include=\"*.ts\" --include=\"*.js\" ! -path \"*/node_modules/*\" ! -path \"*/dist/*\")",
-      "Bash(go env *)"
+      "Bash(go env *)",
+      "Bash(sed -i '403 a\\\\\\\\t    cursor: default;' \"c:/Users/jiabao/Desktop/claw/usb-claw-project/u-claw-app/src/renderer/main/components/ImageGen/ChatBubble.vue\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\jiabao\\Desktop\\claw\\usb-claw-project\\u-claw-app\\src\\renderer\\main\\components\\ImageGen"
     ]
   }
 }

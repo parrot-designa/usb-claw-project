@@ -401,6 +401,7 @@ function regenerateSingle(url) {
     width: 100px;
     height: 100px;
     transition: box-shadow 0.25s ease;
+    cursor: default;
 
     &.loaded {
       background: transparent;
