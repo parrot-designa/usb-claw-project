@@ -1,14 +1,14 @@
 # ── Runtime dependencies (too large for git, download on build) ──
-u-claw-app/node_modules/ 
-u-claw-app/dist/
-u-claw-app/data/ 
-u-claw-app/extensions/
-u-claw-app/runtime/
-u-claw-app/skills/
-u-claw-app/release/
-u-claw-app/.license
-u-claw-app/out
-u-claw-app/usb_info.txt 
+open-claw-pro/node_modules/ 
+open-claw-pro/dist/
+open-claw-pro/data/ 
+open-claw-pro/extensions/
+open-claw-pro/runtime/
+open-claw-pro/skills/
+open-claw-pro/release/
+open-claw-pro/.license
+open-claw-pro/out
+open-claw-pro/usb_info.txt 
 
 
 # ── Non-dev assets (stored locally, not in repo) ──
