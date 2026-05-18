@@ -104,10 +104,7 @@ onMounted(() => {
 .loading-overlay-logo-text {
   font-size: 32px;
   font-weight: 400;
-  background: linear-gradient(135deg, #ff6b35, #ff8f65);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ff6b35;
 }
 
 .loading-overlay-progress-container {

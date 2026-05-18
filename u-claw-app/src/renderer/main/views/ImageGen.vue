@@ -915,18 +915,12 @@ function handleClearHistory() {
 
     &.active {
       .tab-text {
-        background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        color: rgb(189, 60, 182);
         font-weight: 600;
       }
 
       .iconfont {
-        background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        color: rgb(189, 60, 182);
       }
     }
 
@@ -960,10 +954,7 @@ function handleClearHistory() {
     }
 
     &.active .tab-desc {
-      background: linear-gradient(90deg, rgb(157, 67, 234) 0%, rgb(221, 54, 130) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: rgb(189, 60, 182);
       opacity: 0.8;
     }
 
