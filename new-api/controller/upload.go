@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/model"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/gin-gonic/gin"
 )
@@ -68,6 +69,48 @@ func getOSSBucket() (*oss.Bucket, error) {
 // Upload 处理图片上传
 // POST /api/upload
 func Upload(c *gin.Context) {
+	// 优先从 query string 获取，回退到 form field（支持两种传参方式）
+	sessionCookie := c.Query("session_cookie")
+	if sessionCookie == "" {
+		sessionCookie = c.PostForm("session_cookie")
+	}
+	if sessionCookie == "" {
+		c.JSON(http.StatusOK, UploadResponse{
+			Success: false,
+			Error:   "未登录或会话已过期",
+		})
+		return
+	}
+
+	// 解码并验证 session
+	sessionData, err := decodeSessionCookie(sessionCookie)
+	if err != nil {
+		c.JSON(http.StatusOK, UploadResponse{
+			Success: false,
+			Error:   "会话无效",
+		})
+		return
+	}
+
+	userId, err := extractUserIdFromSession(sessionData)
+	if err != nil {
+		c.JSON(http.StatusOK, UploadResponse{
+			Success: false,
+			Error:   "用户 ID 解析失败",
+		})
+		return
+	}
+
+	// 验证用户是否存在且未被禁用
+	user, err := model.GetUserById(userId, false)
+	if err != nil || user.Status != common.UserStatusEnabled {
+		c.JSON(http.StatusOK, UploadResponse{
+			Success: false,
+			Error:   "用户已被禁用或不存在",
+		})
+		return
+	}
+
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, UploadResponse{

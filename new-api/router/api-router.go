@@ -301,8 +301,8 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.POST("/models/video", controller.GetVideoModelsBySession)
 		// models/image 公开接口，供 U-Claw 主窗口获取用户图片模型（通过 session_cookie 认证）
 		apiRouter.POST("/models/image", controller.GetImageModelsBySession)
-		// 上传接口
-		apiRouter.POST("/upload", middleware.UserAuth(), controller.Upload)
+		// 上传接口（通过 session_cookie query 参数自行认证，前端 FormData 只能走 query 传参）
+		apiRouter.POST("/upload", controller.Upload)
 		// user/self 公开接口，供 U-Claw 主窗口获取用户信息（通过 session_cookie 认证）
 		apiRouter.POST("/user/self", controller.GetSelfBySession)
 		tokenRoute := apiRouter.Group("/token")
