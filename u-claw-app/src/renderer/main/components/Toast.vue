@@ -1,5 +1,5 @@
 <template>
-  <div id="toast" class="toast-toast" :class="{ 'toast-show': visible, 'toast-error': isError }">
+  <div id="toast" class="toast-toast" :class="{ 'toast-show': visible, 'toast-error': isError, 'toast-success': !isError }">
     <span class="toast-message">{{ message }}</span>
     <div v-if="actionText" class="toast-actions">
       <button class="toast-btn" @click="handleAction">{{ actionText }}</button>
@@ -42,21 +42,23 @@ function handleAction() {
 
 .toast-toast {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  background: var(--secondary);
-  color: var(--on-primary);
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-size: 0.9em;
+  top: 46px;
+  left: 50%;
+  transform: translate(-50%, -12px);
+  background: #16a34a;
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 0.88em;
   font-weight: 400;
   opacity: 0;
-  transform: translateY(-10px);
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 999;
   display: flex;
   align-items: center;
   gap: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
 
   .toast-message {
     flex: 1;
@@ -85,12 +87,17 @@ function handleAction() {
 
   &.toast-show {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, 0);
+  }
+
+  &.toast-success {
+    background: #16a34a;
+    color: #fff;
   }
 
   &.toast-error {
-    background: var(--error);
-    color: white;
+    background: #dc2626;
+    color: #fff;
   }
 }
 </style>

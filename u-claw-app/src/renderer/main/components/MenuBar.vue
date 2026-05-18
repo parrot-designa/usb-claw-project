@@ -5,7 +5,12 @@
       <span class="menu-bar-title">{{ title }}</span>
     </div>
     <div class="menu-bar-right">
-      <!-- 预留菜单项区域 -->
+      <button class="win-btn win-btn-minimize" @click="onMinimize" title="最小化">
+        <span class="iconfont icon-clawzuixiaohua"></span>
+      </button>
+      <button class="win-btn win-btn-close" @click="onClose" title="关闭">
+        <span class="iconfont icon-clawguanbi1"></span>
+      </button> 
     </div>
   </div>
 </template>
@@ -17,6 +22,14 @@ const menuItems = [
   // { label: '视图', onClick: () => console.log('视图菜单') },
   // { label: '帮助', onClick: () => console.log('帮助菜单') },
 ];
+
+function onMinimize() {
+  window.uclaw?.ipcMinimize();
+}
+
+function onClose() {
+  window.uclaw?.ipcClose();
+}
 
 defineProps({
   title: {
@@ -52,6 +65,32 @@ defineProps({
 
   &-right {
     justify-content: flex-end;
+    gap: 4px;
+  }
+
+  .win-btn {
+    -webkit-app-region: no-drag;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary, #94a3b8);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary, #fff);
+    }
+  }
+
+  .win-btn-close:hover {
+    background: #e81123;
+    color: #fff;
   }
 
   &-center {

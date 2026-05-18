@@ -181,6 +181,7 @@ export function createWindow(gateway) {
     minHeight: 600,
     title: APP_NAME,
     maximizable: false,
+    frame: false,
     icon: IS_DEV
       ? path.join(app.getAppPath(), 'src', 'assets', 'icon.png')
       : path.join(app.getAppPath(), 'assets', 'icon.png'),
@@ -192,11 +193,6 @@ export function createWindow(gateway) {
     },
     show: false,
     backgroundColor: '#0a0a0a',
-    titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      color: '#0B0E14',      // 覆盖层的背景色
-      symbolColor: 'white' // 按钮图标的颜色
-    }
   });
 
   // 创建系统托盘
