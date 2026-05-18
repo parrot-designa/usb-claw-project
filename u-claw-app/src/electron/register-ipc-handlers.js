@@ -212,12 +212,6 @@ function registerIPCHandlers({ gateway }) {
 
   ipcMain.handle('get-default-port', () => GATEWAY_DEFAULT_PORT);
 
-  ipcMain.handle('navigate-to', async (_, route) => {
-    const { navigateTo } = await import('./window-manager.js');
-    navigateTo(route);
-    return { ok: true };
-  });
-
   ipcMain.handle('check-step-serial', async () => {
     try {
       const info = await detectUSBStatus();

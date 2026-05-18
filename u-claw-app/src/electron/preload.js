@@ -51,8 +51,6 @@ contextBridge.exposeInMainWorld('uclaw', {
   ipcSaveFile: ({ filepath, buffer }) => ipcRenderer.invoke('save-file', { filepath, buffer }),
   // Download image (to avoid CORS)
   ipcDownloadImage: ({ url }) => ipcRenderer.invoke('download-image', { url }),
-  // 路由导航（单窗口模式）
-  ipcNavigateTo: (route) => ipcRenderer.invoke('navigate-to', route), 
   ipcCheckStepSerial: () => ipcRenderer.invoke('check-step-serial'),
   ipcCheckStepLicense: (serial) => ipcRenderer.invoke('check-step-license', serial),
   // Step 3.5: 登录接口校验

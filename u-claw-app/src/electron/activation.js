@@ -11,7 +11,7 @@ import {
   getAppRoot
 } from './paths.js';
 import { runtimeStore } from './utils/runtime-store.js';
-import { RENDER_PORT, IS_DEV } from './utils/env.js'; 
+import { IS_DEV } from './utils/env.js'; 
 
 // ── State ──
 let startupResolver = null;

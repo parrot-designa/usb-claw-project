@@ -43,26 +43,7 @@ export function updateSplash(text, percent) {
 
 export function closeSplash() {
   if (splashWindow && !splashWindow.isDestroyed()) { splashWindow.close(); splashWindow = null; }
-}
-
-export function navigateTo(route) {
-  if (!mainWindow || mainWindow.isDestroyed()) {
-    console.warn('[navigateTo] mainWindow is null or destroyed');
-    return;
-  }
-
-  if (IS_DEV) {
-    const url = `http://localhost:${RENDER_PORT}${route}`;
-    console.log('[navigateTo] DEV: loading', url);
-    mainWindow.loadURL(url);
-  } else {
-    // 生产模式：使用 hash 路由
-    const indexPath = path.join(import.meta.dirname, '..', 'assets', 'main', 'index.html');
-    const hashUrl = `file://${indexPath}#${route}`;
-    console.log('[navigateTo] PROD: loading', hashUrl);
-    mainWindow.loadURL(hashUrl);
-  }
-}
+} 
 
 export function loadActivationPage() {
   if (!mainWindow) {
