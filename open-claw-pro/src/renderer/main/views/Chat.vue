@@ -24,7 +24,7 @@
     <!-- WeChat Tab -->
     <div v-show="activeChatTab === 'wechat'" class="chat-chat-content">
       <!-- ========== CONNECTED ========== -->
-      <div v-if="wechatStore.status === 'connected'" class="chat-wechat-card">
+      <div v-if="status === 'connected'" class="chat-wechat-card">
         <div class="chat-success-icon">✓</div>
         <h2 class="chat-wechat-title">微信助手已连接成功</h2>
         <p class="chat-wechat-desc">在微信中给 AI 发消息即可对话</p>
@@ -42,24 +42,24 @@
       </div>
 
       <!-- ========== INSTALLING ========== -->
-      <div v-else-if="wechatStore.status === 'installing'" class="chat-wechat-card">
+      <div v-else-if="status === 'installing'" class="chat-wechat-card">
         <div class="chat-spinner">⟳</div>
         <h2 class="chat-wechat-title">正在安装微信插件...</h2>
         <p class="chat-wechat-desc">首次连接需要安装，请稍候</p>
-        <div v-if="wechatStore.logs.length" class="chat-install-logs">
-          <div v-for="(log, i) in wechatStore.logs" :key="i" class="chat-install-log-line">{{ log }}</div>
+        <div v-if="logs.length" class="chat-install-logs">
+          <div v-for="(log, i) in logs" :key="i" class="chat-install-log-line">{{ log }}</div>
         </div>
       </div>
 
       <!-- ========== SCANNING ========== -->
-      <div v-else-if="wechatStore.status === 'scanning'" class="chat-wechat-card">
+      <div v-else-if="status === 'scanning'" class="chat-wechat-card">
         <!-- 有二维码 -->
-        <template v-if="wechatStore.qrCodeUrl || wechatStore.qrCodeAscii">
-          <div v-if="wechatStore.qrCodeUrl" class="chat-qr-container">
-            <img :src="wechatStore.qrCodeUrl" alt="微信登录二维码" class="chat-qr-image" />
+        <template v-if="qrCodeUrl || qrCodeAscii">
+          <div v-if="qrCodeUrl" class="chat-qr-container">
+            <img :src="qrCodeUrl" alt="微信登录二维码" class="chat-qr-image" />
           </div>
-          <div v-else-if="wechatStore.qrCodeAscii" class="chat-qr-container chat-qr-ascii">
-            <pre>{{ wechatStore.qrCodeAscii }}</pre>
+          <div v-else-if="qrCodeAscii" class="chat-qr-container chat-qr-ascii">
+            <pre>{{ qrCodeAscii }}</pre>
           </div>
           <p class="chat-qr-hint">请用手机微信扫描上方二维码</p>
         </template>
@@ -80,12 +80,12 @@
       </div>
 
       <!-- ========== ERROR ========== -->
-      <div v-else-if="wechatStore.status === 'error'" class="chat-wechat-card">
+      <div v-else-if="status === 'error'" class="chat-wechat-card">
         <div class="chat-error-icon">✗</div>
         <h2 class="chat-wechat-title">连接失败</h2>
         <p class="chat-wechat-desc">请查看下方日志排查问题，或重试</p>
-        <div v-if="wechatStore.logs.length" class="chat-install-logs">
-          <div v-for="(log, i) in wechatStore.logs" :key="i" class="chat-install-log-line">{{ log }}</div>
+        <div v-if="logs.length" class="chat-install-logs">
+          <div v-for="(log, i) in logs" :key="i" class="chat-install-log-line">{{ log }}</div>
         </div>
         <div class="chat-wechat-action">
           <button @click="retryConnection" class="chat-btn-scan">
@@ -95,7 +95,7 @@
       </div>
 
       <!-- ========== DISCONNECTED: 插件未安装 ========== -->
-      <div v-else-if="wechatStore.isInstalled === false" class="chat-wechat-card">
+      <div v-else-if="isInstalled === false" class="chat-wechat-card">
         <div class="chat-wechat-icon">
           <img src="@assets/send-msg.png" alt="wechat" />
         </div>
@@ -155,15 +155,18 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useToast } from '../composables/useToast';
 import { useWechatStore } from '../stores/wechat';
 
 const { showToast } = useToast();
 const wechatStore = useWechatStore();
+const { status, logs, qrCodeUrl, qrCodeAscii, isInstalled } = storeToRefs(wechatStore);
+const { checkInstalled, clearQrCode, setQrCode, clearLogs } = wechatStore;
 const activeChatTab = ref('wechat');
 
 onMounted(async () => {
-  wechatStore.checkInstalled();
+  checkInstalled();
 });
 
 function retryConnection() {
@@ -172,30 +175,30 @@ function retryConnection() {
  
  
 async function startScan() {
-  wechatStore.clearQrCode();
+  clearQrCode();
 
   window.uclaw.ipcOnWeChatQrUrl((url) => {
     console.log('WeChat QR URL received:', url);
-    wechatStore.setQrCode(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`, '');
+    setQrCode(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`, '');
   });
 
   try {
     const result = await window.uclaw.startWeChatScan();
     if (result?.error) {
       showToast(result.error, true);
-      wechatStore.clearQrCode();
+      clearQrCode();
     } else {
       const output = result?.stdout || result?.stderr || '';
       const urlMatch = output.match(/https:\/\/liteapp\.weixin\.qq\.com\/q\/[^\s]+/);
       if (urlMatch) {
-        wechatStore.setQrCode(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(urlMatch[0])}`, '');
+        setQrCode(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(urlMatch[0])}`, '');
       } else if (output.includes('data:image')) {
-        wechatStore.setQrCode('', output.trim());
+        setQrCode('', output.trim());
       }
     }
   } catch (e) {
     showToast('扫码启动失败', true);
-    wechatStore.clearQrCode();
+    clearQrCode();
   }
 }
 
@@ -210,18 +213,18 @@ async function disconnectWeChat() {
   } catch (e) {
     console.error('断开微信失败:', e);
     showToast('断开失败: ' + e.message, true);
-    wechatStore.clearQrCode();
+    clearQrCode();
     return;
   }
-  wechatStore.clearQrCode();
+  clearQrCode();
 }
 
 async function startInstall() {
-  wechatStore.clearLogs();
+  clearLogs();
   try {
     const result = await window.uclaw.wechatInstall();
     if (result?.success) {
-      wechatStore.checkInstalled();
+      checkInstalled();
     } else {
       showToast(result?.error || '安装失败', true);
     }
@@ -242,7 +245,7 @@ async function updatePlugin() {
   } catch (e) {
     showToast('更新失败: ' + e.message, true);
   }
-  wechatStore.checkInstalled();
+  checkInstalled();
 }
 
 async function uninstallAndReinstall() {
@@ -257,7 +260,7 @@ async function uninstallAndReinstall() {
   } catch (e) {
     showToast('重装失败: ' + e.message, true);
   }
-  wechatStore.checkInstalled();
+  checkInstalled();
 }
 
 </script>
