@@ -290,10 +290,12 @@ class WechatManager extends EventEmitter {
    * Spawns `openclaw channels login --channel openclaw-weixin`
    * and captures stdout for QR code URL.
    */
-  startLogin() { 
+  startLogin() {
     if (this.loginProcess) {
-      this.loginProcess.kill();
+      const oldProcess = this.loginProcess;
       this.loginProcess = null;
+      oldProcess.removeAllListeners();
+      oldProcess.kill();
     }
 
     this.status = 'scanning';
@@ -394,8 +396,10 @@ class WechatManager extends EventEmitter {
   /** Cancel ongoing login */
   cancelLogin() {
     if (this.loginProcess) {
-      this.loginProcess.kill();
+      const oldProcess = this.loginProcess;
       this.loginProcess = null;
+      oldProcess.removeAllListeners();
+      oldProcess.kill();
     }
     this.status = 'disconnected';
     this.emit('status', this.status);
