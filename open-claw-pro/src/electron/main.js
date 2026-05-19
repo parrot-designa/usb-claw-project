@@ -5,7 +5,6 @@ import { APP_NAME, GATEWAY_DEFAULT_PORT, IS_DEV } from './utils/env.js';
 import { createGatewayManager } from './gateway.js';
 import { setupLifecycle } from './lifecycle.js';
 import { createWindow, getMainWindow, createSplash,updateSplash, loadActivationPage, isWin } from './window-manager.js';
-import { ensurePlugins } from './js/plugin.js'; 
 import { registerIPCHandlers,registerWechatIPCHandler } from './register-ipc-handlers.js';
 import { initWechat } from "./plugin/wechat-init.js";
 
@@ -80,9 +79,7 @@ app.whenReady().then(async () => {
   await extractRuntime();
 
   await ensureOpenClawDirectories();
-
-  await ensurePlugins();
-
+ 
   updateSplash('正在加载微信插件...',80);
 
   registerWechatIPCHandler({ gateway });
