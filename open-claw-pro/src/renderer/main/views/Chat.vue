@@ -154,7 +154,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useToast } from '../composables/useToast';
 import { useWechatStore } from '../stores/wechat';
 
@@ -163,27 +163,11 @@ const wechatStore = useWechatStore();
 const activeChatTab = ref('wechat');
 
 onMounted(async () => {
-  checkWeChatStatus();
   wechatStore.checkInstalled();
 });
 
-watch(() => wechatStore.status, (status) => {
-  if (status === 'connected') {
-    wechatStore.checkInstalled();
-  }
-});
-
-async function checkWeChatStatus() {
-  try {
-    const result = await window.uclaw.ipcGetWeChatStatus();
-    wechatStore.setStatus(result === 'refreshing' ? 'scanning' : result);
-  } catch (e) {
-    console.error('检测微信状态失败:', e);
-  }
-}
-
 function retryConnection() {
-  wechatStore.setStatus('disconnected');
+  window.uclaw.ipcGetWeChatStatus();
 }
  
  
@@ -234,18 +218,15 @@ async function disconnectWeChat() {
 
 async function startInstall() {
   wechatStore.clearLogs();
-  wechatStore.setStatus('installing');
   try {
     const result = await window.uclaw.wechatInstall();
     if (result?.success) {
       wechatStore.checkInstalled();
     } else {
       showToast(result?.error || '安装失败', true);
-      wechatStore.setStatus('disconnected');
     }
   } catch (e) {
     showToast('安装失败: ' + e.message, true);
-    wechatStore.setStatus('disconnected');
   }
 }
 

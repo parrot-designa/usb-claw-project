@@ -57,16 +57,24 @@ function doInit() {
 
 function handleWechatStatus(status) {
   wechatStore.setStatus(status === 'refreshing' ? 'scanning' : status);
+  if (status === 'connected') {
+    wechatStore.checkInstalled();
+  }
 }
 
 function onWechatLog(msg) {
   wechatStore.addLog(msg);
 }
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('main-init', doInit);
   window.uclaw.ipcOnWeChatStatus(handleWechatStatus);
   window.uclaw.ipcOnWechatLog(onWechatLog);
+
+  try {
+    const status = await window.uclaw.ipcGetWeChatStatus();
+    handleWechatStatus(status);
+  } catch {}
 });
 
 onUnmounted(() => {
