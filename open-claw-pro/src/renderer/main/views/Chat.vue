@@ -23,8 +23,48 @@
 
     <!-- WeChat Tab -->
     <div v-show="activeChatTab === 'wechat'" class="chat-chat-content">
+      <!-- ========== DISCONNECTED ========== -->
+      <div v-if="status !== 'connected' && status !== 'installing' && status !== 'scanning' && status !== 'error'" class="chat-wechat-card">
+        <!-- 插件未安装 -->
+        <template v-if="isInstalled === false">
+          <div class="chat-wechat-icon">
+            <img src="@assets/send-msg.png" alt="wechat" />
+          </div>
+          <h2 class="chat-wechat-title">一键安装微信插件</h2>
+          <p class="chat-wechat-desc">安装后扫码连接微信，让 AI 自动回复消息</p>
+
+          <div class="chat-install-steps">
+            <p class="chat-install-steps-title">流程：</p>
+            <p>1. 点击安装，自动下载微信插件</p>
+            <p>2. 安装完成后出现二维码</p>
+            <p>3. 用手机微信扫码即可连接</p>
+          </div>
+
+          <div class="chat-wechat-action">
+            <button @click="startInstall" class="chat-btn-install-primary">
+              <span class="iconfont icon-clawinstall-fill"></span>开始安装
+            </button>
+          </div>
+        </template>
+        <!-- 插件已安装 -->
+        <template v-else>
+          <div class="chat-wechat-icon">
+            <img src="@assets/send-msg.png" alt="wechat" />
+          </div>
+          <h2 class="chat-wechat-title">连接微信</h2>
+          <p class="chat-wechat-status-installed"><img src="@assets/installed.png" alt="installed" />插件已安装</p>
+          <p class="chat-wechat-desc">扫码连接后，在微信中给 AI 发消息即可对话</p>
+
+          <div class="chat-wechat-actions">
+            <button @click="startScan" class="chat-btn-scan">
+              <span class="iconfont icon-clawiconfontscan"></span>扫码连接
+            </button>
+          </div>
+        </template>
+      </div>
+
       <!-- ========== CONNECTED ========== -->
-      <div v-if="status === 'connected'" class="chat-wechat-card">
+      <div v-else-if="status === 'connected'" class="chat-wechat-card">
         <div class="chat-success-icon">✓</div>
         <h2 class="chat-wechat-title">微信助手已连接成功</h2>
         <p class="chat-wechat-desc">在微信中给 AI 发消息即可对话</p>
@@ -34,7 +74,7 @@
           </button>
           <button @click="cancelScan" class="chat-btn-disconnect">
             断开连接
-          </button> 
+          </button>
         </div>
       </div>
 
@@ -74,51 +114,13 @@
       </div>
 
       <!-- ========== ERROR ========== -->
-      <div v-else-if="status === 'error'" class="chat-wechat-card">
+      <div v-else class="chat-wechat-card">
         <div class="chat-error-icon">✗</div>
         <h2 class="chat-wechat-title">连接失败</h2>
         <p class="chat-wechat-desc">请查看下方日志排查问题，或重试</p>
         <div class="chat-wechat-action">
           <button @click="retryConnection" class="chat-btn-scan">
             重试
-          </button>
-        </div>
-      </div>
-
-      <!-- ========== DISCONNECTED: 插件未安装 ========== -->
-      <div v-else-if="isInstalled === false" class="chat-wechat-card">
-        <div class="chat-wechat-icon">
-          <img src="@assets/send-msg.png" alt="wechat" />
-        </div>
-        <h2 class="chat-wechat-title">一键安装微信插件</h2>
-        <p class="chat-wechat-desc">安装后扫码连接微信，让 AI 自动回复消息</p>
-
-        <div class="chat-install-steps">
-          <p class="chat-install-steps-title">流程：</p>
-          <p>1. 点击安装，自动下载微信插件</p>
-          <p>2. 安装完成后出现二维码</p>
-          <p>3. 用手机微信扫码即可连接</p>
-        </div>
-
-        <div class="chat-wechat-action">
-          <button @click="startInstall" class="chat-btn-install-primary">
-            <span class="iconfont icon-clawinstall-fill"></span>开始安装
-          </button>
-        </div>
-      </div>
-
-      <!-- ========== DISCONNECTED: 插件已安装 ========== -->
-      <div v-else class="chat-wechat-card">
-        <div class="chat-wechat-icon">
-          <img src="@assets/send-msg.png" alt="wechat" />
-        </div>
-        <h2 class="chat-wechat-title">连接微信</h2>
-        <p class="chat-wechat-status-installed"><img src="@assets/installed.png" alt="installed" />插件已安装</p>
-        <p class="chat-wechat-desc">扫码连接后，在微信中给 AI 发消息即可对话</p>
-
-        <div class="chat-wechat-actions">
-          <button @click="startScan" class="chat-btn-scan">
-            <span class="iconfont icon-clawiconfontscan"></span>扫码连接
           </button>
         </div>
       </div>
