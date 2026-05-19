@@ -24,7 +24,7 @@
     <!-- WeChat Tab -->
     <div v-show="activeChatTab === 'wechat'" class="chat-chat-content">
       <!-- ========== DISCONNECTED ========== -->
-      <div v-if="status !== 'connected' && status !== 'installing' && status !== 'scanning' && status !== 'error'" class="chat-wechat-card">
+      <div v-if="status == 'disconnected'" class="chat-wechat-card">
         <!-- 插件未安装 -->
         <template v-if="isInstalled === false">
           <div class="chat-wechat-icon">
@@ -225,8 +225,17 @@ async function startInstall() {
 }
 
 async function reinstall() {
+  const confirmed = await window.uclaw.ipcShowConfirmDialog(
+    '卸载重装',
+    '确定卸载微信插件并重新安装？\n这会删除插件文件和配置，需要重新扫码连接'
+  );
+  if (!confirmed) return;
+
+  setStatus('installing');
   try {
-    await window.uclaw.uninstallAndReinstallWeChat();
+    await window.uclaw.wechatUninstall();
+    await window.uclaw.wechatInstall();
+    await window.uclaw.ipcRestartGateway();
     checkInstalled();
     showToast('卸载重装完成');
   } catch (e) {
