@@ -2,17 +2,12 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 export const useWechatStore = defineStore('wechat', () => {
-  const connected = ref(false);
-  const connecting = ref(false);
+  const status = ref('disconnected'); // disconnected | installing | scanning | connected | error
   const qrCodeUrl = ref('');
   const qrCodeAscii = ref('');
 
-  function setConnected(value) {
-    connected.value = value;
-  }
-
-  function setConnecting(value) {
-    connecting.value = value;
+  function setStatus(value) {
+    status.value = value;
   }
 
   function setQrCode(url, ascii) {
@@ -26,12 +21,10 @@ export const useWechatStore = defineStore('wechat', () => {
   }
 
   return {
-    connected,
-    connecting,
+    status,
     qrCodeUrl,
     qrCodeAscii,
-    setConnected,
-    setConnecting,
+    setStatus,
     setQrCode,
     clearQrCode,
   };

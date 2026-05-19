@@ -24,7 +24,7 @@
     <!-- WeChat Tab -->
     <div v-show="activeChatTab === 'wechat'" class="chat-chat-content">
       <!-- ========== CONNECTED ========== -->
-      <div v-if="wechatStatus === 'connected'" class="chat-wechat-card">
+      <div v-if="wechatStore.status === 'connected'" class="chat-wechat-card">
         <div class="chat-success-icon">✓</div>
         <h2 class="chat-wechat-title">微信助手已连接成功</h2>
         <p class="chat-wechat-desc">在微信中给 AI 发消息即可对话</p>
@@ -42,14 +42,14 @@
       </div>
 
       <!-- ========== INSTALLING ========== -->
-      <div v-else-if="wechatStatus === 'installing'" class="chat-wechat-card">
+      <div v-else-if="wechatStore.status === 'installing'" class="chat-wechat-card">
         <div class="chat-spinner">⟳</div>
         <h2 class="chat-wechat-title">正在安装微信插件...</h2>
         <p class="chat-wechat-desc">首次连接需要安装，请稍候</p>
       </div>
 
       <!-- ========== SCANNING ========== -->
-      <div v-else-if="wechatStatus === 'scanning'" class="chat-wechat-card">
+      <div v-else-if="wechatStore.status === 'scanning'" class="chat-wechat-card">
         <!-- 有二维码 -->
         <template v-if="wechatStore.qrCodeUrl || wechatStore.qrCodeAscii">
           <div v-if="wechatStore.qrCodeUrl" class="chat-qr-container">
@@ -77,7 +77,7 @@
       </div>
 
       <!-- ========== ERROR ========== -->
-      <div v-else-if="wechatStatus === 'error'" class="chat-wechat-card">
+      <div v-else-if="wechatStore.status === 'error'" class="chat-wechat-card">
         <div class="chat-error-icon">✗</div>
         <h2 class="chat-wechat-title">连接失败</h2>
         <p class="chat-wechat-desc">请查看下方日志排查问题，或重试</p>
@@ -155,7 +155,6 @@ import { useWechatStore } from '../stores/wechat';
 const { showToast } = useToast();
 const wechatStore = useWechatStore();
 const activeChatTab = ref('wechat');
-const wechatStatus = ref('disconnected'); // disconnected | installing | scanning | connected | error
 const isWechatInstalled = ref(null); // null=检测中, true/false=安装状态
 
 onMounted(async () => {
@@ -171,35 +170,16 @@ onUnmounted(() => {
 function handleWechatStatus(status) {
   console.log('WeChat status changed:', status);
   // 'refreshing' 是短暂的过渡状态，UI 上等同 scanning
-  wechatStatus.value = status === 'refreshing' ? 'scanning' : status;
-  switch (status) {
-    case 'disconnected':
-      wechatStore.setConnected(false);
-      wechatStore.setConnecting(false);
-      break;
-    case 'installing':
-      wechatStore.setConnecting(false);
-      break;
-    case 'scanning':
-    case 'refreshing':
-      wechatStore.setConnecting(true);
-      break;
-    case 'connected':
-      wechatStore.setConnected(true);
-      wechatStore.setConnecting(false);
-      checkInstallStatus();
-      break;
-    case 'error':
-      wechatStore.setConnected(false);
-      wechatStore.setConnecting(false);
-      break;
+  wechatStore.setStatus(status === 'refreshing' ? 'scanning' : status);
+  if (status === 'connected') {
+    checkInstallStatus();
   }
 }
 
 async function checkWeChatStatus() {
   try {
-    const wechatStatus = await window.uclaw.ipcGetWeChatStatus();
-    handleWechatStatus(wechatStatus);
+    const result = await window.uclaw.ipcGetWeChatStatus();
+    handleWechatStatus(result);
   } catch (e) {
     console.error('检测微信状态失败:', e);
   }
