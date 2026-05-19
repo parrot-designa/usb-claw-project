@@ -256,9 +256,8 @@ func (a *TaskAdaptor) DoResponse(c *gin.Context, resp *http.Response, info *rela
 		return
 	}
 
-	// 使用公开 task_xxxx ID 返回给客户端
-	dResp.ID = info.PublicTaskID
-	dResp.TaskID = info.PublicTaskID
+	// 使用上游返回的 ID 作为公开任务 ID
+	info.TaskRelayInfo.PublicTaskID = upstreamID
 	c.JSON(http.StatusOK, dResp)
 	return upstreamID, responseBody, nil
 }

@@ -490,8 +490,7 @@ async function generateVideo() {
       model: selectedModel.value,
       prompt: text,
       duration: 8,
-      aspect_ratio: selectedAspectRatio.value,
-      n: 1,
+      aspect_ratio: selectedAspectRatio.value
     };
     if (referenceImages.value.length > 0) {
       requestBody.image_urls = [...referenceImages.value];
@@ -519,7 +518,7 @@ async function generateVideo() {
       return;
     }
 
-    let taskId = taskResult.task_id || taskResult.id;
+    let taskId = taskResult.id || taskResult.task_id;
     let videoUrl = null;
     let status = 'queued';
 
