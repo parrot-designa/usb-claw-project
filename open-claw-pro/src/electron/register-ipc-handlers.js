@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import { ipcMain, dialog, app, shell, session } from 'electron';
-import { RUNTIME_DIR, getAppRoot } from './paths.js';
+import { RUNTIME_DIR, getAppRoot, getDataRoot } from './paths.js';
 import { exec,spawn } from 'child_process';
 import { 
   checkNetwork,
@@ -672,6 +672,46 @@ function registerWechatIPCHandler({ gateway }){
   ipcMain.handle('wechat-install', async () => {
     const manager = getWechatManagerInstance();
     return manager.installPlugin({ usbRoot: getAppRoot() });
+  });
+
+  ipcMain.handle('wechat-uninstall', async () => {
+    try {
+      const manager = getWechatManagerInstance();
+      manager?.cancelLogin?.();
+      await gateway.stopGateway();
+
+      const dataDir = getDataRoot();
+      const extDir = path.join(dataDir, '.openclaw', 'extensions', 'openclaw-weixin');
+      if (fs.existsSync(extDir)) {
+        fs.rmSync(extDir, { recursive: true, force: true });
+      }
+
+      const wechatDataDir = path.join(dataDir, 'openclaw-weixin');
+      if (fs.existsSync(wechatDataDir)) {
+        fs.rmSync(wechatDataDir, { recursive: true, force: true });
+      }
+
+      const configFile = path.join(dataDir, '.openclaw', 'openclaw.json');
+      if (fs.existsSync(configFile)) {
+        const config = JSON.parse(fs.readFileSync(configFile, 'utf-8'));
+        if (Array.isArray(config.plugins?.allow)) {
+          config.plugins.allow = config.plugins.allow.filter(p => p !== 'openclaw-weixin');
+        }
+        if (config.plugins?.entries?.['openclaw-weixin']) {
+          delete config.plugins.entries['openclaw-weixin'];
+        }
+        if (config.channels?.['openclaw-weixin']) {
+          delete config.channels['openclaw-weixin'];
+        }
+        fs.writeFileSync(configFile, JSON.stringify(config, null, 2), 'utf-8');
+      }
+
+      console.log('[wechat] Uninstalled successfully');
+      return { success: true };
+    } catch (e) {
+      console.error('[wechat] Uninstall error:', e);
+      return { success: false, error: e.message };
+    }
   });
 
 }
