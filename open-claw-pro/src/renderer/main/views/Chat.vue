@@ -102,7 +102,7 @@
 
         <div class="chat-wechat-action">
           <button @click="startInstall" class="chat-btn-install-primary">
-            🚀 开始安装
+            <span class="iconfont icon-clawinstall-fill"></span>开始安装
           </button>
         </div>
       </div>
