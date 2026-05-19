@@ -46,9 +46,9 @@ const gatewayStore = useGatewayStore();
 const wechatStore = useWechatStore();
 const { checkItems, runAllChecks } = useEnvCheck();
 
-function doInit() {
-  fetchUserInfo();
-  fetchAllModels();
+async function doInit() {
+  await fetchUserInfo();
+  await fetchAllModels();
   fetchAllSkills();
   preloadAllImageSessions();
   runAllChecks();
