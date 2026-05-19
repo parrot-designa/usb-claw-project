@@ -32,6 +32,7 @@ import { fetchUserInfo, useUserStore } from './stores/user';
 import { fetchAllSkills } from './stores/skills';
 import { preloadAllImageSessions } from './stores/imageGen';
 import { useGatewayStore } from './stores/gateway';
+import { useWechatStore } from './stores/wechat';
 import { useEnvCheck } from './composables/useEnvCheck';
 import './assets/fonts/fonts-iconfont.scss';
 import './assets/styles/main.scss';
@@ -42,6 +43,7 @@ const isActivatePage = computed(() => route.path === '/activate');
 const modelsStore = useModelsStore();
 const userStore = useUserStore();
 const gatewayStore = useGatewayStore();
+const wechatStore = useWechatStore();
 const { checkItems, runAllChecks } = useEnvCheck();
 
 function doInit() {
@@ -53,8 +55,18 @@ function doInit() {
   gatewayStore.setEnvCheckResults(JSON.parse(JSON.stringify(checkItems.value)));
 }
 
+function handleWechatStatus(status) {
+  wechatStore.setStatus(status === 'refreshing' ? 'scanning' : status);
+}
+
+function onWechatLog(msg) {
+  wechatStore.addLog(msg);
+}
+
 onMounted(() => {
   window.addEventListener('main-init', doInit);
+  window.uclaw.ipcOnWeChatStatus(handleWechatStatus);
+  window.uclaw.ipcOnWechatLog(onWechatLog);
 });
 
 onUnmounted(() => {

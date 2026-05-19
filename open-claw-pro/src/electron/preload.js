@@ -47,6 +47,9 @@ contextBridge.exposeInMainWorld('uclaw', {
   updateWeChatPlugin: () => ipcRenderer.invoke('update-wechat-plugin'),
   // Uninstall and reinstall WeChat plugin
   uninstallAndReinstallWeChat: () => ipcRenderer.invoke('uninstall-reinstall-wechat'),
+  wechatInstall: () => ipcRenderer.invoke('wechat-install'),
+  ipcOnWechatLog: (callback) => ipcRenderer.on('wechat-log', (_, msg) => callback(msg)),
+  ipcOffWechatLog: (callback) => ipcRenderer.removeListener('wechat-log', callback),
   // Desktop error dialog
   ipcShowErrorDialog: (title, message) => ipcRenderer.invoke('show-error-dialog', { title, message }),
   // Desktop confirm dialog

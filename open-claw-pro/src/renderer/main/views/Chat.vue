@@ -46,6 +46,9 @@
         <div class="chat-spinner">⟳</div>
         <h2 class="chat-wechat-title">正在安装微信插件...</h2>
         <p class="chat-wechat-desc">首次连接需要安装，请稍候</p>
+        <div v-if="wechatStore.logs.length" class="chat-install-logs">
+          <div v-for="(log, i) in wechatStore.logs" :key="i" class="chat-install-log-line">{{ log }}</div>
+        </div>
       </div>
 
       <!-- ========== SCANNING ========== -->
@@ -81,6 +84,9 @@
         <div class="chat-error-icon">✗</div>
         <h2 class="chat-wechat-title">连接失败</h2>
         <p class="chat-wechat-desc">请查看下方日志排查问题，或重试</p>
+        <div v-if="wechatStore.logs.length" class="chat-install-logs">
+          <div v-for="(log, i) in wechatStore.logs" :key="i" class="chat-install-log-line">{{ log }}</div>
+        </div>
         <div class="chat-wechat-action">
           <button @click="retryConnection" class="chat-btn-scan">
             重试
@@ -89,7 +95,7 @@
       </div>
 
       <!-- ========== DISCONNECTED: 插件未安装 ========== -->
-      <div v-else-if="isWechatInstalled === false" class="chat-wechat-card">
+      <div v-else-if="wechatStore.isInstalled === false" class="chat-wechat-card">
         <div class="chat-wechat-icon">
           <img src="@assets/send-msg.png" alt="wechat" />
         </div>
@@ -148,54 +154,36 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useToast } from '../composables/useToast';
 import { useWechatStore } from '../stores/wechat';
 
 const { showToast } = useToast();
 const wechatStore = useWechatStore();
 const activeChatTab = ref('wechat');
-const isWechatInstalled = ref(null); // null=检测中, true/false=安装状态
 
 onMounted(async () => {
-  window.uclaw.ipcOnWeChatStatus(handleWechatStatus);
   checkWeChatStatus();
-  checkInstallStatus();
+  wechatStore.checkInstalled();
 });
 
-onUnmounted(() => {
-  window.uclaw.ipcOffWeChatStatus(handleWechatStatus);
-});
-
-function handleWechatStatus(status) {
-  console.log('WeChat status changed:', status);
-  // 'refreshing' 是短暂的过渡状态，UI 上等同 scanning
-  wechatStore.setStatus(status === 'refreshing' ? 'scanning' : status);
+watch(() => wechatStore.status, (status) => {
   if (status === 'connected') {
-    checkInstallStatus();
+    wechatStore.checkInstalled();
   }
-}
+});
 
 async function checkWeChatStatus() {
   try {
     const result = await window.uclaw.ipcGetWeChatStatus();
-    handleWechatStatus(result);
+    wechatStore.setStatus(result === 'refreshing' ? 'scanning' : result);
   } catch (e) {
     console.error('检测微信状态失败:', e);
   }
 }
 
-async function checkInstallStatus() {
-  try {
-    isWechatInstalled.value = await window.uclaw.isWechatPluginInstalled();
-  } catch (e) {
-    console.error('检测安装状态失败:', e);
-    isWechatInstalled.value = false;
-  }
-}
-
 function retryConnection() {
-  handleWechatStatus('disconnected');
+  wechatStore.setStatus('disconnected');
 }
  
  
@@ -245,8 +233,20 @@ async function disconnectWeChat() {
 }
 
 async function startInstall() {
-  await startScan();
-  checkInstallStatus();
+  wechatStore.clearLogs();
+  wechatStore.setStatus('installing');
+  try {
+    const result = await window.uclaw.wechatInstall();
+    if (result?.success) {
+      wechatStore.checkInstalled();
+    } else {
+      showToast(result?.error || '安装失败', true);
+      wechatStore.setStatus('disconnected');
+    }
+  } catch (e) {
+    showToast('安装失败: ' + e.message, true);
+    wechatStore.setStatus('disconnected');
+  }
 }
 
 async function updatePlugin() {
@@ -261,7 +261,7 @@ async function updatePlugin() {
   } catch (e) {
     showToast('更新失败: ' + e.message, true);
   }
-  checkInstallStatus();
+  wechatStore.checkInstalled();
 }
 
 async function uninstallAndReinstall() {
@@ -276,7 +276,7 @@ async function uninstallAndReinstall() {
   } catch (e) {
     showToast('重装失败: ' + e.message, true);
   }
-  checkInstallStatus();
+  wechatStore.checkInstalled();
 }
 
 </script>
@@ -373,6 +373,25 @@ async function uninstallAndReinstall() {
   font-size: 14px;
   color: var(--text-secondary);
   margin-bottom: 16px;
+}
+
+.chat-install-logs {
+  background: #1e1e1e;
+  border-radius: 6px;
+  padding: 10px 12px;
+  max-height: 200px;
+  overflow-y: auto;
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.chat-install-log-line {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  color: #a0a0a0;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 .chat-placeholder {

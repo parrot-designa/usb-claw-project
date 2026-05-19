@@ -675,6 +675,11 @@ function registerWechatIPCHandler({ gateway }){
     return manager.installPlugin({ usbRoot: getAppRoot() });
   });
 
+  ipcMain.handle('wechat-install', async () => {
+    const manager = getWechatManagerInstance();
+    return manager.installPlugin({ usbRoot: getAppRoot() });
+  });
+
 }
 
 export { registerIPCHandlers,registerWechatIPCHandler };
