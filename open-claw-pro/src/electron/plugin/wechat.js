@@ -329,6 +329,7 @@ class WechatManager extends EventEmitter {
     let qrFound = false;
 
     const processOutput = (data, source) => {
+      console.log("processOutput==>",data);
       const text = data.toString();
       output += text;
       console.log(`[wechat] ${source}: ${text}`);

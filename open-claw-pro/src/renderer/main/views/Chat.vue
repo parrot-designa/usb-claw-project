@@ -363,6 +363,7 @@ async function uninstallAndReinstall() {
 
 .chat-log-card {
   text-align: left;
+  margin-top: 16px;
 }
 
 .chat-log-title {
