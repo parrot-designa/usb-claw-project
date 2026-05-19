@@ -173,15 +173,13 @@ onMounted(async () => {
   });
 });
 
-function retryConnection() {
-  setStatus('scanning');
+function retryConnection() { 
   clearQrCode();
   window.uclaw.ipcGetWeChatStatus();
 }
  
  
-async function startScan() {
-  setStatus('scanning');
+async function startScan() { 
   clearQrCode();
 
   try {
