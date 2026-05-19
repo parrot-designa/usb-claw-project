@@ -59,7 +59,7 @@
             <button @click="startScan" class="chat-btn-scan">
               <span class="iconfont icon-clawiconfontscan"></span>扫码连接
             </button>
-            <button @click="reinstall" class="chat-btn-reinstall">
+            <button @click="reInstall" class="chat-btn-reinstall">
               <span class="iconfont icon-clawshanchu"></span>卸载重装
             </button>
           </div>
@@ -224,7 +224,7 @@ async function startInstall() {
   }
 }
 
-async function reinstall() {
+async function reInstall() {
   const confirmed = await window.showConfirmVue(
     '卸载重装',
     '确定卸载微信插件并重新安装？\n这会删除插件文件和配置，需要重新扫码连接'
@@ -235,6 +235,7 @@ async function reinstall() {
   try {
     await window.uclaw.wechatUninstall();
     await window.uclaw.wechatInstall();
+    window.showLoadingOverlayVue?.(); 
     await window.uclaw.ipcRestartGateway();
     checkInstalled();
     showToast('卸载重装完成');
