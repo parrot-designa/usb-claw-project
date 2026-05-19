@@ -23,78 +23,111 @@
 
     <!-- WeChat Tab -->
     <div v-show="activeChatTab === 'wechat'" class="chat-chat-content">
-      <!-- Loading/Installing state -->
-      <div v-if="wechatStore.scanStep === 'loading'" class="chat-wechat-card">
-        <div class="chat-wechat-icon">
-          <img src="@assets/send-msg.png" alt="wechat" />
-        </div>
-        <h2 class="chat-wechat-title">{{ '正在加载二维码...' }}</h2>
-        <p class="chat-wechat-desc">{{ '请稍候...' }}</p>
-      </div>
-
-      <!-- Refreshing QR state -->
-      <div v-else-if="wechatStore.scanStep === 'refreshing'" class="chat-wechat-card">
-        <div class="chat-wechat-icon">
-          <img src="@assets/send-msg.png" alt="wechat" />
-        </div>
-        <h2 class="chat-wechat-title">二维码已过期</h2>
-        <p class="chat-wechat-desc">正在刷新二维码，请稍候...</p>
-        <div class="chat-qr-container chat-qr-loading">
-          <div class="chat-qr-loading-text">正在刷新...</div>
-        </div>
-      </div>
-
-      <!-- QR Code display state -->
-      <div v-else-if="wechatStore.scanStep === 'qr'" class="chat-wechat-card">
-        <div class="chat-wechat-icon">
-          <img src="@assets/send-msg.png" alt="wechat" />
-        </div>
-        <h2 class="chat-wechat-title">请使用微信扫码</h2>
-        <p class="chat-wechat-desc">请使用手机微信扫描下方二维码进行连接</p>
-        <div v-if="wechatStore.qrCodeUrl" class="chat-qr-container">
-          <img :src="wechatStore.qrCodeUrl" alt="微信登录二维码" class="chat-qr-image" />
-        </div>
-        <div v-else-if="wechatStore.qrCodeAscii" class="chat-qr-container chat-qr-ascii">
-          <pre>{{ wechatStore.qrCodeAscii }}</pre>
-        </div>
-        <div v-else class="chat-qr-container chat-qr-loading">
-          <div class="chat-qr-loading-text">正在加载二维码...</div>
-        </div>
-        <div class="chat-scan-actions">
-          <button @click="cancelScan" class="chat-btn-cancel">
-            取消扫码
+      <!-- ========== CONNECTED ========== -->
+      <div v-if="wechatStatus === 'connected'" class="chat-wechat-card">
+        <div class="chat-success-icon">✓</div>
+        <h2 class="chat-wechat-title">微信助手已连接成功</h2>
+        <p class="chat-wechat-desc">在微信中给 AI 发消息即可对话</p>
+        <div class="chat-wechat-actions">
+          <button @click="startScan" class="chat-btn-scan">
+            🔄 重新扫码
+          </button>
+          <button @click="disconnectWeChat" class="chat-btn-disconnect">
+            断开连接
+          </button>
+          <button @click="uninstallAndReinstall" class="chat-btn-reinstall">
+            🗑️ 卸载重装
           </button>
         </div>
       </div>
 
-      <!-- Success state -->
-      <div v-else-if="wechatStore.scanStep === 'success'" class="chat-wechat-card">
-        <div class="chat-success-icon">✓</div>
-        <h2 class="chat-wechat-title">微信助手已连接</h2>
-        <p class="chat-wechat-desc">在微信中给AI发送消息即可对话</p>
-        <button @click="disconnectWeChat" class="chat-btn-disconnect">
-          断开连接
-        </button> 
-      </div> 
+      <!-- ========== INSTALLING ========== -->
+      <div v-else-if="wechatStatus === 'installing'" class="chat-wechat-card">
+        <div class="chat-spinner">⟳</div>
+        <h2 class="chat-wechat-title">正在安装微信插件...</h2>
+        <p class="chat-wechat-desc">首次连接需要安装，请稍候</p>
+      </div>
 
-      <!-- Default state: installed but not scanning -->
+      <!-- ========== SCANNING ========== -->
+      <div v-else-if="wechatStatus === 'scanning'" class="chat-wechat-card">
+        <!-- 有二维码 -->
+        <template v-if="wechatStore.qrCodeUrl || wechatStore.qrCodeAscii">
+          <div v-if="wechatStore.qrCodeUrl" class="chat-qr-container">
+            <img :src="wechatStore.qrCodeUrl" alt="微信登录二维码" class="chat-qr-image" />
+          </div>
+          <div v-else-if="wechatStore.qrCodeAscii" class="chat-qr-container chat-qr-ascii">
+            <pre>{{ wechatStore.qrCodeAscii }}</pre>
+          </div>
+          <p class="chat-qr-hint">请用手机微信扫描上方二维码</p>
+        </template>
+        <!-- 等待二维码 -->
+        <template v-else>
+          <div class="chat-spinner">⟳</div>
+          <h2 class="chat-wechat-title">等待二维码...</h2>
+        </template>
+
+        <div class="chat-wechat-actions">
+          <button @click="startScan" class="chat-btn-scan">
+            重新生成
+          </button>
+          <button @click="cancelScan" class="chat-btn-cancel-danger">
+            取消
+          </button>
+        </div>
+      </div>
+
+      <!-- ========== ERROR ========== -->
+      <div v-else-if="wechatStatus === 'error'" class="chat-wechat-card">
+        <div class="chat-error-icon">✗</div>
+        <h2 class="chat-wechat-title">连接失败</h2>
+        <p class="chat-wechat-desc">请查看下方日志排查问题，或重试</p>
+        <div class="chat-wechat-action">
+          <button @click="retryConnection" class="chat-btn-scan">
+            重试
+          </button>
+        </div>
+      </div>
+
+      <!-- ========== DISCONNECTED: 插件未安装 ========== -->
+      <div v-else-if="isWechatInstalled === false" class="chat-wechat-card">
+        <div class="chat-wechat-icon">
+          <img src="@assets/send-msg.png" alt="wechat" />
+        </div>
+        <h2 class="chat-wechat-title">一键安装微信插件</h2>
+        <p class="chat-wechat-desc">安装后扫码连接微信，让 AI 自动回复消息</p>
+
+        <div class="chat-install-steps">
+          <p class="chat-install-steps-title">流程：</p>
+          <p>1. 点击安装，自动下载微信插件</p>
+          <p>2. 安装完成后出现二维码</p>
+          <p>3. 用手机微信扫码即可连接</p>
+        </div>
+
+        <div class="chat-wechat-action">
+          <button @click="startInstall" class="chat-btn-install-primary">
+            🚀 开始安装
+          </button>
+        </div>
+      </div>
+
+      <!-- ========== DISCONNECTED: 插件已安装 ========== -->
       <div v-else class="chat-wechat-card">
         <div class="chat-wechat-icon">
           <img src="@assets/send-msg.png" alt="wechat" />
         </div>
-        <h2 class="chat-wechat-title">{{ '一键安装微信插件' }}</h2>
-        <div class="chat-wechat-status">
-          <span class="chat-status-badge">
-            <img src="@assets/installed.png" style="width: 20px;height: 20px;">
-            <span>{{ statusText }}</span>
-          </span>
-        </div>
-        <p class="chat-wechat-desc">{{ wechatDesc }}</p>
+        <h2 class="chat-wechat-title">连接微信</h2>
+        <p class="chat-wechat-status-installed">✅ 插件已安装</p>
+        <p class="chat-wechat-desc">扫码连接后，在微信中给 AI 发消息即可对话</p>
 
-        <div class="chat-wechat-action">
+        <div class="chat-wechat-actions">
           <button @click="startScan" class="chat-btn-scan">
-            <span class="iconfont icon-clawiconfontscan"></span>
-            扫码连接
+            🔗 扫码连接
+          </button>
+          <button @click="updatePlugin" class="chat-btn-update">
+            🔄 联网更新
+          </button>
+          <button @click="uninstallAndReinstall" class="chat-btn-reinstall">
+            🗑️ 卸载重装
           </button>
         </div>
       </div>
@@ -121,14 +154,14 @@ import { useWechatStore } from '../stores/wechat';
 
 const { showToast } = useToast();
 const wechatStore = useWechatStore();
-const activeChatTab = ref('wechat');  
-const wechatDesc = ref('安装后扫码连接微信，让AI自动回复消息');
-const statusIcon = ref('');
-const statusText = ref('检测中...'); 
+const activeChatTab = ref('wechat');
+const wechatStatus = ref('disconnected'); // disconnected | installing | scanning | connected | error
+const isWechatInstalled = ref(null); // null=检测中, true/false=安装状态
 
-onMounted(async () => { 
+onMounted(async () => {
   window.uclaw.ipcOnWeChatStatus(handleWechatStatus);
   checkWeChatStatus();
+  checkInstallStatus();
 });
 
 onUnmounted(() => {
@@ -137,83 +170,80 @@ onUnmounted(() => {
 
 function handleWechatStatus(status) {
   console.log('WeChat status changed:', status);
+  // 'refreshing' 是短暂的过渡状态，UI 上等同 scanning
+  wechatStatus.value = status === 'refreshing' ? 'scanning' : status;
   switch (status) {
     case 'disconnected':
-      wechatStore.setScanStep('idle');
       wechatStore.setConnected(false);
       wechatStore.setConnecting(false);
-      statusText.value = '插件已安装';
       break;
     case 'installing':
-      wechatStore.setScanStep('loading');
-      statusText.value = '正在安装...';
+      wechatStore.setConnecting(false);
       break;
     case 'scanning':
-      wechatStore.setScanStep('loading');
-      wechatStore.setConnecting(true);
-      statusText.value = '扫码中...';
-      break;
     case 'refreshing':
-      wechatStore.setScanStep('refreshing');
-      statusText.value = '二维码更新中...';
+      wechatStore.setConnecting(true);
       break;
     case 'connected':
-      wechatStore.setScanStep('success');
       wechatStore.setConnected(true);
       wechatStore.setConnecting(false);
-      statusText.value = '已连接';
+      checkInstallStatus();
       break;
     case 'error':
-      wechatStore.setScanStep('idle');
       wechatStore.setConnected(false);
       wechatStore.setConnecting(false);
-      statusText.value = '连接错误';
       break;
   }
 }
 
 async function checkWeChatStatus() {
   try {
-    const wechatStatus = await window.uclaw.ipcGetWeChatStatus(); 
+    const wechatStatus = await window.uclaw.ipcGetWeChatStatus();
     handleWechatStatus(wechatStatus);
   } catch (e) {
-    statusIcon.value = '❌';
-    statusText.value = '检测失败';
+    console.error('检测微信状态失败:', e);
   }
+}
+
+async function checkInstallStatus() {
+  try {
+    isWechatInstalled.value = await window.uclaw.isWechatPluginInstalled();
+  } catch (e) {
+    console.error('检测安装状态失败:', e);
+    isWechatInstalled.value = false;
+  }
+}
+
+function retryConnection() {
+  handleWechatStatus('disconnected');
 }
  
  
-async function startScan() { 
-  wechatStore.clearQrCode();  
-  
+async function startScan() {
+  wechatStore.clearQrCode();
+
   window.uclaw.ipcOnWeChatQrUrl((url) => {
     console.log('WeChat QR URL received:', url);
     wechatStore.setQrCode(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`, '');
-    wechatStore.setScanStep('qr');
   });
 
   try {
     const result = await window.uclaw.startWeChatScan();
     if (result?.error) {
       showToast(result.error, true);
-      wechatStore.setScanStep('idle');
       wechatStore.clearQrCode();
     } else {
       const output = result?.stdout || result?.stderr || '';
       const urlMatch = output.match(/https:\/\/liteapp\.weixin\.qq\.com\/q\/[^\s]+/);
       if (urlMatch) {
         wechatStore.setQrCode(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(urlMatch[0])}`, '');
-        wechatStore.setScanStep('qr');
       } else if (output.includes('data:image')) {
         wechatStore.setQrCode('', output.trim());
-        wechatStore.setScanStep('qr');
       }
     }
   } catch (e) {
     showToast('扫码启动失败', true);
-    wechatStore.setScanStep('idle');
     wechatStore.clearQrCode();
-  } finally {
   }
 }
 
@@ -228,11 +258,45 @@ async function disconnectWeChat() {
   } catch (e) {
     console.error('断开微信失败:', e);
     showToast('断开失败: ' + e.message, true);
-    wechatStore.clearQrCode(); 
+    wechatStore.clearQrCode();
     return;
   }
-  wechatStore.setScanStep('idle');
-  wechatStore.clearQrCode(); 
+  wechatStore.clearQrCode();
+}
+
+async function startInstall() {
+  await startScan();
+  checkInstallStatus();
+}
+
+async function updatePlugin() {
+  try {
+    showToast('正在联网更新微信插件...');
+    const result = await window.uclaw.updateWeChatPlugin();
+    if (result?.success) {
+      showToast('微信插件更新成功');
+    } else {
+      showToast(result?.error || '更新失败', true);
+    }
+  } catch (e) {
+    showToast('更新失败: ' + e.message, true);
+  }
+  checkInstallStatus();
+}
+
+async function uninstallAndReinstall() {
+  try {
+    showToast('正在卸载并重新安装微信插件...');
+    const result = await window.uclaw.uninstallAndReinstallWeChat();
+    if (result?.success) {
+      showToast('微信插件重新安装成功');
+    } else {
+      showToast(result?.error || '重装失败', true);
+    }
+  } catch (e) {
+    showToast('重装失败: ' + e.message, true);
+  }
+  checkInstallStatus();
 }
 
 </script>
@@ -386,6 +450,54 @@ async function disconnectWeChat() {
   justify-content: center;
 }
 
+.chat-wechat-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.chat-install-steps {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: left;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.chat-install-steps-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.chat-wechat-status-installed {
+  font-size: 14px;
+  color: #22c55e;
+  margin-bottom: 8px;
+}
+
+.chat-btn-install-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 32px;
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #15803d;
+  }
+}
+
 .chat-btn-install,
 .chat-btn-scan {
   display: flex;
@@ -403,6 +515,42 @@ async function disconnectWeChat() {
 
   &:hover {
     opacity: 0.85;
+  }
+}
+
+.chat-btn-update {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  background: var(--surface-container-high);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--surface-variant);
+  }
+}
+
+.chat-btn-reinstall {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  background: rgba(220, 38, 38, 0.1);
+  color: #f87171;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(220, 38, 38, 0.2);
   }
 }
 
@@ -466,6 +614,52 @@ async function disconnectWeChat() {
   font-size: 24px;
   font-weight: bold;
   margin: 0 auto 16px;
+}
+
+.chat-error-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(220, 38, 38, 0.15);
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 auto 16px;
+}
+
+.chat-spinner {
+  font-size: 40px;
+  color: #22c55e;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+
+.chat-qr-hint {
+  font-size: 14px;
+  color: #86efac;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.chat-btn-cancel-danger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(220, 38, 38, 0.1);
+  color: #f87171;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(220, 38, 38, 0.2);
+  }
 }
 
 .chat-qr-container {

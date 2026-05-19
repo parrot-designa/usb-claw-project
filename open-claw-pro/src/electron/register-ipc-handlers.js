@@ -661,6 +661,20 @@ function registerWechatIPCHandler({ gateway }){
     return { ok: true };
   });
 
+  ipcMain.handle('is-wechat-plugin-installed', () => {
+    return getWechatManagerInstance().isPluginInstalled();
+  });
+
+  ipcMain.handle('update-wechat-plugin', async () => {
+    const manager = getWechatManagerInstance();
+    return manager.installPlugin({ usbRoot: getAppRoot(), forceOnline: true });
+  });
+
+  ipcMain.handle('uninstall-reinstall-wechat', async () => {
+    const manager = getWechatManagerInstance();
+    return manager.installPlugin({ usbRoot: getAppRoot() });
+  });
+
 }
 
 export { registerIPCHandlers,registerWechatIPCHandler };

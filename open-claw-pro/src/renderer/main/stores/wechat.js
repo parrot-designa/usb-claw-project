@@ -4,7 +4,6 @@ import { ref } from 'vue';
 export const useWechatStore = defineStore('wechat', () => {
   const connected = ref(false);
   const connecting = ref(false);
-  const scanStep = ref('idle'); // 'idle' | 'loading' | 'qr' | 'refreshing' | 'success'
   const qrCodeUrl = ref('');
   const qrCodeAscii = ref('');
 
@@ -14,10 +13,6 @@ export const useWechatStore = defineStore('wechat', () => {
 
   function setConnecting(value) {
     connecting.value = value;
-  }
-
-  function setScanStep(step) {
-    scanStep.value = step;
   }
 
   function setQrCode(url, ascii) {
@@ -30,24 +25,14 @@ export const useWechatStore = defineStore('wechat', () => {
     qrCodeAscii.value = '';
   }
 
-  function setRefreshing(value) {
-    if (value) {
-      scanStep.value = 'refreshing';
-      clearQrCode();
-    }
-  }
-
   return {
     connected,
     connecting,
-    scanStep,
     qrCodeUrl,
     qrCodeAscii,
     setConnected,
     setConnecting,
-    setScanStep,
     setQrCode,
     clearQrCode,
-    setRefreshing,
   };
 });
