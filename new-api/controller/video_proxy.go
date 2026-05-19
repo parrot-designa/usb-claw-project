@@ -203,3 +203,83 @@ func writeVideoDataURL(c *gin.Context, dataURL string) error {
 	_, err = c.Writer.Write(videoBytes)
 	return err
 }
+
+// VideoTaskProxy 视频任务状态透传接口
+// GET /v1/videos/generations/:task_id
+// 从 DB 查询任务获取渠道信息，然后透传到上游 API，直接返回上游响应
+func VideoTaskProxy(c *gin.Context) {
+	taskID := c.Param("task_id")
+	if taskID == "" {
+		videoProxyError(c, http.StatusBadRequest, "invalid_request_error", "task_id is required")
+		return
+	}
+
+	userID := c.GetInt("id")
+	task, exists, err := model.GetByTaskId(userID, taskID)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 查询任务失败 %s: %s", taskID, err.Error()))
+		videoProxyError(c, http.StatusInternalServerError, "server_error", "Failed to query task")
+		return
+	}
+	if !exists || task == nil {
+		videoProxyError(c, http.StatusNotFound, "invalid_request_error", "Task not found")
+		return
+	}
+
+	channel, err := model.CacheGetChannel(task.ChannelId)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 获取渠道失败 task=%s: %s", taskID, err.Error()))
+		videoProxyError(c, http.StatusInternalServerError, "server_error", "Failed to retrieve channel")
+		return
+	}
+
+	baseURL := channel.GetBaseURL()
+	if baseURL == "" {
+		baseURL = "https://api.openai.com"
+	}
+
+	upstreamID := task.GetUpstreamTaskID()
+	fetchURL := fmt.Sprintf("%s/v1/videos/generations/%s", baseURL, upstreamID)
+
+	proxy := channel.GetSetting().Proxy
+	client, err := service.GetHttpClientWithProxy(proxy)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 创建客户端失败: %s", err.Error()))
+		videoProxyError(c, http.StatusInternalServerError, "server_error", "Failed to create proxy client")
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 30*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fetchURL, nil)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 创建请求失败: %s", err.Error()))
+		videoProxyError(c, http.StatusInternalServerError, "server_error", "Failed to create request")
+		return
+	}
+
+	req.Header.Set("Authorization", "Bearer "+channel.Key)
+
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 透传 URL: %s", fetchURL))
+
+	resp, err := client.Do(req)
+	if err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 请求上游失败: %s", err.Error()))
+		videoProxyError(c, http.StatusBadGateway, "server_error", "Failed to fetch task status")
+		return
+	}
+	defer resp.Body.Close()
+
+	// 透传响应头
+	for key, values := range resp.Header {
+		for _, value := range values {
+			c.Writer.Header().Add(key, value)
+		}
+	}
+
+	c.Writer.WriteHeader(resp.StatusCode)
+	if _, err = io.Copy(c.Writer, resp.Body); err != nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 透传响应失败: %s", err.Error()))
+	}
+}
