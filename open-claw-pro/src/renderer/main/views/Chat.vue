@@ -325,8 +325,7 @@ async function startInstall() {
   margin-bottom: 10px;
 }
 
-.chat-log-lines {
-  background: #1e1e1e;
+.chat-log-lines { 
   border-radius: 6px;
   padding: 10px 12px;
   max-height: 200px;
