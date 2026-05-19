@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
@@ -214,7 +215,14 @@ func VideoTaskProxy(c *gin.Context) {
 		return
 	}
 
+	// 🔍 打印请求参数
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] ========== 请求参数 =========="))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 请求URL: %s", c.Request.URL.String()))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] task_id参数: %s", taskID))
+
 	userID := c.GetInt("id")
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] userID: %d", userID))
+
 	task, exists, err := model.GetByTaskId(userID, taskID)
 	if err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 查询任务失败 %s: %s", taskID, err.Error()))
@@ -222,9 +230,19 @@ func VideoTaskProxy(c *gin.Context) {
 		return
 	}
 	if !exists || task == nil {
+		logger.LogError(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] ❌ 本地DB未找到任务: taskID=%s, userID=%d", taskID, userID))
 		videoProxyError(c, http.StatusNotFound, "invalid_request_error", "Task not found")
 		return
 	}
+
+	// 🔍 打印 DB 中查到的任务信息
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] ✅ 本地DB找到任务:"))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   task.TaskID (公开ID): %s", task.TaskID))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   task.PrivateData.UpstreamTaskID (上游ID): %s", task.PrivateData.UpstreamTaskID))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   task.Platform: %s", task.Platform))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   task.ChannelId: %d", task.ChannelId))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   task.Status: %s", task.Status))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   task.Action: %s", task.Action))
 
 	channel, err := model.CacheGetChannel(task.ChannelId)
 	if err != nil {
@@ -234,6 +252,8 @@ func VideoTaskProxy(c *gin.Context) {
 	}
 
 	baseURL := channel.GetBaseURL()
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   channel.Type: %d", channel.Type))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   channel.BaseURL (原始): %s", channel.GetBaseURL()))
 	if baseURL == "" {
 		baseURL = "https://api.openai.com"
 	}
@@ -241,7 +261,17 @@ func VideoTaskProxy(c *gin.Context) {
 	upstreamID := task.GetUpstreamTaskID()
 	fetchURL := fmt.Sprintf("%s/v1/videos/generations/%s", baseURL, upstreamID)
 
+	// 🔍 打印上游请求信息
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] ========== 上游请求 =========="))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   上游URL: %s", fetchURL))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   上游task_id: %s", upstreamID))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   API Key前8位: %s...", channel.Key[:min(8, len(channel.Key))]))
+
 	proxy := channel.GetSetting().Proxy
+	if proxy != "" {
+		logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   代理: %s", proxy))
+	}
+
 	client, err := service.GetHttpClientWithProxy(proxy)
 	if err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 创建客户端失败: %s", err.Error()))
@@ -261,15 +291,19 @@ func VideoTaskProxy(c *gin.Context) {
 
 	req.Header.Set("Authorization", "Bearer "+channel.Key)
 
-	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 透传 URL: %s", fetchURL))
-
 	resp, err := client.Do(req)
 	if err != nil {
-		logger.LogError(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 请求上游失败: %s", err.Error()))
+		logger.LogError(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] ❌ 请求上游失败: %s", err.Error()))
 		videoProxyError(c, http.StatusBadGateway, "server_error", "Failed to fetch task status")
 		return
 	}
 	defer resp.Body.Close()
+
+	// 🔍 打印上游响应
+	respBodyBytes, _ := io.ReadAll(resp.Body)
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] ========== 上游响应 =========="))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   状态码: %d", resp.StatusCode))
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy]   响应体: %s", string(respBodyBytes)))
 
 	// 透传响应头
 	for key, values := range resp.Header {
@@ -279,7 +313,8 @@ func VideoTaskProxy(c *gin.Context) {
 	}
 
 	c.Writer.WriteHeader(resp.StatusCode)
-	if _, err = io.Copy(c.Writer, resp.Body); err != nil {
+	if _, err = io.Copy(c.Writer, bytes.NewReader(respBodyBytes)); err != nil {
 		logger.LogError(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] 透传响应失败: %s", err.Error()))
 	}
+	logger.LogInfo(c.Request.Context(), fmt.Sprintf("[VideoTaskProxy] ========== 结束 =========="))
 }
