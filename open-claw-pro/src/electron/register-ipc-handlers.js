@@ -640,10 +640,8 @@ function registerWechatIPCHandler({ gateway }){
   initWechat();
 
   
-  ipcMain.handle('openclaw-channels-login', async (_, { channel }) => {  
-    return new Promise((resolve) => { 
-      getWechatManagerInstance().startLogin();
-    });
+  ipcMain.handle('openclaw-channels-login', async (_, { channel }) => {
+    return getWechatManagerInstance().startLogin();
   });
 
   ipcMain.handle('get-wechat-status', () => {
