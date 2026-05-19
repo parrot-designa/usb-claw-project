@@ -462,6 +462,10 @@ async function ensureOpenClawDirectories() {
         load: {
           extraDirs: [appSkillsDir]
         }
+      },
+      meta:{ 
+        lastTouchedVersion: '2026.3.24',
+        lastTouchedAt: new Date().toISOString(),
       }
     };
     fs.writeFileSync(configPath, JSON.stringify(initialConfig, null, 2), 'utf-8');
