@@ -73,38 +73,14 @@
 
           <div class="form-row">
             <div class="form-item form-col">
-              <label class="form-label">分辨率</label>
-              <select v-model="selectedResolution" class="option-select">
-                <option value="SD">SD</option>
-                <option value="HD">HD</option>
-                <option value="FHD">FHD</option>
-              </select>
-            </div>
-            <div class="form-item form-col">
-              <label class="form-label">时长(秒)</label>
-              <select v-model="selectedDuration" class="option-select">
-                <option value="3">3秒</option>
-                <option value="5">5秒</option>
-                <option value="10">10秒</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-item form-col">
-              <label class="form-label">FPS</label>
-              <select v-model="selectedFps" class="option-select">
-                <option value="24">24</option>
-                <option value="30">30</option>
-                <option value="60">60</option>
-              </select>
+              <label class="form-label">时长</label>
+              <div class="fixed-value">8秒（固定）</div>
             </div>
             <div class="form-item form-col">
               <label class="form-label">比例</label>
               <select v-model="selectedAspectRatio" class="option-select">
-                <option v-for="ratio in currentAspectRatios" :key="ratio.value" :value="ratio.value">
-                  {{ ratio.label }} ({{ ratio.pixels }})
-                </option>
+                <option value="16:9">16:9（横屏）</option>
+                <option value="9:16">9:16（竖屏）</option>
               </select>
             </div>
           </div>
@@ -276,9 +252,6 @@ const historyVideos = computed(() => {
 const inputText = ref('');
 const videoModels = ref([]);
 const selectedModel = ref('');
-const selectedResolution = ref('HD');
-const selectedDuration = ref('5');
-const selectedFps = ref('30');
 const selectedAspectRatio = ref('16:9');
 const generating = ref(false);
 const pendingTasks = ref(0);
@@ -296,44 +269,6 @@ const editInput = ref(null);
 // 全屏视频预览
 const showPreview = ref(false);
 const previewUrl = ref('');
-
-// 分辨率和比例映射
-const resolutionAspectMap = {
-  'SD': [
-    { value: '1:1', label: '1:1', pixels: '512x512' },
-    { value: '16:9', label: '16:9', pixels: '640x360' },
-    { value: '9:16', label: '9:16', pixels: '360x640' },
-  ],
-  'HD': [
-    { value: '1:1', label: '1:1', pixels: '1024x1024' },
-    { value: '16:9', label: '16:9', pixels: '1280x720' },
-    { value: '9:16', label: '9:16', pixels: '720x1280' },
-    { value: '4:3', label: '4:3', pixels: '1024x768' },
-    { value: '3:4', label: '3:4', pixels: '768x1024' },
-  ],
-  'FHD': [
-    { value: '1:1', label: '1:1', pixels: '1920x1920' },
-    { value: '16:9', label: '16:9', pixels: '1920x1080' },
-    { value: '9:16', label: '9:16', pixels: '1080x1920' },
-  ],
-};
-
-const currentAspectRatios = computed(() => {
-  return resolutionAspectMap[selectedResolution.value] || resolutionAspectMap['HD'];
-});
-
-const videoSize = computed(() => {
-  const ratioOption = currentAspectRatios.value.find(opt => opt.value === selectedAspectRatio.value);
-  return ratioOption?.pixels || '1280x720';
-});
-
-// 监听 resolution 变化
-watch(selectedResolution, (newRes) => {
-  const validRatios = (resolutionAspectMap[newRes] || []).map(opt => opt.value);
-  if (!validRatios.includes(selectedAspectRatio.value)) {
-    selectedAspectRatio.value = validRatios[0] || '16:9';
-  }
-});
 
 const currentSession = computed(() => {
   return sessions.value.find(s => s.id === currentSessionId.value && !s.deleted);
@@ -515,13 +450,6 @@ function closeEditModal() {
   editingTitle.value = '';
 }
 
-// 从 resolution+ratio 解析出 width/height
-function parseSize() {
-  const sizeStr = videoSize.value;
-  const [w, h] = sizeStr.split('x').map(Number);
-  return { width: w || 1280, height: h || 720 };
-}
-
 async function generateVideo() {
   const text = inputText.value.trim();
   if (!text) return;
@@ -535,7 +463,6 @@ async function generateVideo() {
   generating.value = true;
 
   const msgType = referenceImages.value.length > 0 ? 'image-to-video' : 'text-to-video';
-  const { width, height } = parseSize();
 
   const optimisticMsg = {
     role: 'ai',
@@ -562,10 +489,8 @@ async function generateVideo() {
     const requestBody = {
       model: selectedModel.value,
       prompt: text,
-      duration: parseFloat(selectedDuration.value),
-      width,
-      height,
-      fps: parseInt(selectedFps.value),
+      duration: 8,
+      aspect_ratio: selectedAspectRatio.value,
       n: 1,
     };
     if (referenceImages.value.length > 0) {
@@ -1189,6 +1114,15 @@ function handleClearHistory() {
     outline: none;
     border-color: var(--blue);
   }
+}
+
+.fixed-value {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-variant);
+  font-size: 14px;
+  color: var(--text-secondary);
 }
 
 .option-select {
