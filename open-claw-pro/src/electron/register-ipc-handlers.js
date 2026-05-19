@@ -8,7 +8,7 @@ import {
   checkNetwork,
   detectUSBStatus, 
 } from './activation.js';
-import { getGatewayEnv, getMediaDir, getNodeBin, getNpmBin, getOpenClawPath, getPaths, readLicenseFile, writeLicenseFile, writeOpenClawConfig} from './paths.js';
+import { getGatewayEnv, getMediaDir, getMediaImageDir, getMediaVideoDir, getNodeBin, getNpmBin, getOpenClawPath, getPaths, readLicenseFile, writeLicenseFile, writeOpenClawConfig} from './paths.js';
 import skillNameMap from './skill-name-map.js';
 import net from 'net';
 import { GATEWAY_DEFAULT_PORT, API_BASE } from './utils/env.js';
@@ -174,13 +174,13 @@ function registerIPCHandlers({ gateway }) {
   // Download and persist image to local media directory
   ipcMain.handle('save-media-image', async (_, { url, taskId }) => {
     try {
-      const mediaDir = getMediaDir();
-      if (!fs.existsSync(mediaDir)) {
-        fs.mkdirSync(mediaDir, { recursive: true });
+      const imageDir = getMediaImageDir();
+      if (!fs.existsSync(imageDir)) {
+        fs.mkdirSync(imageDir, { recursive: true });
       }
       const ext = url.match(/\.(png|jpg|jpeg|webp)(?:\?|$)/i)?.[1] || 'png';
       const filename = `${taskId}.${ext}`;
-      const filepath = path.join(mediaDir, filename);
+      const filepath = path.join(imageDir, filename);
 
       const response = await fetch(url);
       const arrayBuffer = await response.arrayBuffer();
@@ -522,6 +522,36 @@ function registerIPCHandlers({ gateway }) {
     }
   });
 
+  ipcMain.handle('open-media-image-folder', async () => {
+    try {
+      const imageDir = getMediaImageDir();
+      if (!fs.existsSync(imageDir)) {
+        fs.mkdirSync(imageDir, { recursive: true });
+      }
+      const { shell } = await import('electron');
+      await shell.openPath(imageDir);
+      return { ok: true };
+    } catch (err) {
+      console.error('[open-media-image-folder] failed:', err);
+      return { ok: false, error: err.message };
+    }
+  });
+
+  ipcMain.handle('open-media-video-folder', async () => {
+    try {
+      const videoDir = getMediaVideoDir();
+      if (!fs.existsSync(videoDir)) {
+        fs.mkdirSync(videoDir, { recursive: true });
+      }
+      const { shell } = await import('electron');
+      await shell.openPath(videoDir);
+      return { ok: true };
+    } catch (err) {
+      console.error('[open-media-video-folder] failed:', err);
+      return { ok: false, error: err.message };
+    }
+  });
+
   // Image sessions persistence
   ipcMain.handle('save-image-sessions', async (_, { sessions, currentSessionId }) => {
     try {
@@ -587,13 +617,13 @@ function registerIPCHandlers({ gateway }) {
   // Save video to local media directory
   ipcMain.handle('save-media-video', async (_, { url, taskId }) => {
     try {
-      const mediaDir = getMediaDir();
-      if (!fs.existsSync(mediaDir)) {
-        fs.mkdirSync(mediaDir, { recursive: true });
+      const videoDir = getMediaVideoDir();
+      if (!fs.existsSync(videoDir)) {
+        fs.mkdirSync(videoDir, { recursive: true });
       }
       const ext = url.match(/\.(mp4|webm|mov|avi)(?:\?|$)/i)?.[1] || 'mp4';
       const filename = `${taskId}.${ext}`;
-      const filepath = path.join(mediaDir, filename);
+      const filepath = path.join(videoDir, filename);
 
       const response = await fetch(url);
       const arrayBuffer = await response.arrayBuffer();

@@ -99,4 +99,6 @@ contextBridge.exposeInMainWorld('uclaw', {
   ipcLoadMessageJson: () => ipcRenderer.invoke('load-message-json'),
   ipcSaveMessageJson: (messages) => ipcRenderer.invoke('save-message-json', { messages }),
   ipcOpenMediaFolder: () => ipcRenderer.invoke('open-media-folder'),
+  ipcOpenMediaImageFolder: () => ipcRenderer.invoke('open-media-image-folder'),
+  ipcOpenMediaVideoFolder: () => ipcRenderer.invoke('open-media-video-folder'),
 });

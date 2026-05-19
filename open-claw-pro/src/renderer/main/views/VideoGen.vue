@@ -782,7 +782,7 @@ function handleDeleteHistory(id) {
 }
 
 async function handleOpenMediaFolder() {
-  await window.uclaw.ipcOpenMediaFolder();
+  await window.uclaw.ipcOpenMediaVideoFolder();
 }
 
 function handleClearHistory() {
