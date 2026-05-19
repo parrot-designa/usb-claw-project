@@ -553,6 +553,59 @@ function registerIPCHandlers({ gateway }) {
     }
   });
 
+  // Video sessions persistence
+  ipcMain.handle('save-video-sessions', async (_, { sessions, currentSessionId }) => {
+    try {
+      const dir = path.join(dataRoot, '.openclaw', 'chat-history');
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      const file = path.join(dir, 'video-sessions.json');
+      fs.writeFileSync(file, JSON.stringify({ sessions, currentSessionId }, null, 2), 'utf-8');
+      return { ok: true };
+    } catch (err) {
+      console.error('[save-video-sessions] failed:', err);
+      return { ok: false, error: err.message };
+    }
+  });
+
+  ipcMain.handle('load-video-sessions', async () => {
+    try {
+      const file = path.join(dataRoot, '.openclaw', 'chat-history', 'video-sessions.json');
+      if (!fs.existsSync(file)) {
+        return { ok: true, data: { sessions: [], currentSessionId: null } };
+      }
+      const content = fs.readFileSync(file, 'utf-8');
+      const data = JSON.parse(content);
+      return { ok: true, data };
+    } catch (err) {
+      console.error('[load-video-sessions] failed:', err);
+      return { ok: true, data: { sessions: [], currentSessionId: null } };
+    }
+  });
+
+  // Save video to local media directory
+  ipcMain.handle('save-media-video', async (_, { url, taskId }) => {
+    try {
+      const mediaDir = getMediaDir();
+      if (!fs.existsSync(mediaDir)) {
+        fs.mkdirSync(mediaDir, { recursive: true });
+      }
+      const ext = url.match(/\.(mp4|webm|mov|avi)(?:\?|$)/i)?.[1] || 'mp4';
+      const filename = `${taskId}.${ext}`;
+      const filepath = path.join(mediaDir, filename);
+
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      fs.writeFileSync(filepath, Buffer.from(arrayBuffer));
+      console.log('[save-media-video] saved:', filepath);
+      return { ok: true, filepath };
+    } catch (e) {
+      console.error('save-media-video failed:', e.message);
+      return { ok: false, error: e.message };
+    }
+  });
+
   // Image generation via gateway
   ipcMain.handle('generate-image', async (_, { prompt, model, size, quality }) => {
     try {

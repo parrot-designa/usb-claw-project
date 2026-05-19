@@ -86,10 +86,15 @@ contextBridge.exposeInMainWorld('uclaw', {
   // Image sessions
   ipcSaveImageSessions: (sessions, currentSessionId) => ipcRenderer.invoke('save-image-sessions', { sessions, currentSessionId }),
   ipcLoadImageSessions: () => ipcRenderer.invoke('load-image-sessions'),
+  // Video sessions
+  ipcSaveVideoSessions: (sessions, currentSessionId) => ipcRenderer.invoke('save-video-sessions', { sessions, currentSessionId }),
+  ipcLoadVideoSessions: () => ipcRenderer.invoke('load-video-sessions'),
   // Image generation
   generateImage: (params) => ipcRenderer.invoke('generate-image', params),
   // Save image to local media directory
   ipcSaveMediaImage: ({ url, taskId }) => ipcRenderer.invoke('save-media-image', { url, taskId }),
+  // Save video to local media directory
+  ipcSaveMediaVideo: ({ url, taskId }) => ipcRenderer.invoke('save-media-video', { url, taskId }),
   // 历史作品 message.json 读写
   ipcLoadMessageJson: () => ipcRenderer.invoke('load-message-json'),
   ipcSaveMessageJson: (messages) => ipcRenderer.invoke('save-message-json', { messages }),

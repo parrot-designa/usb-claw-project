@@ -33,6 +33,7 @@ import { fetchAllModels, useModelsStore } from './stores/models';
 import { fetchUserInfo, useUserStore } from './stores/user';
 import { fetchAllSkills } from './stores/skills';
 import { preloadAllImageSessions } from './stores/imageGen';
+import { preloadAllVideoSessions } from './stores/videoGen';
 import { useGatewayStore } from './stores/gateway';
 import { useWechatStore } from './stores/wechat';
 import { useEnvCheck } from './composables/useEnvCheck';
@@ -53,6 +54,7 @@ async function doInit() {
   await fetchAllModels();
   fetchAllSkills();
   preloadAllImageSessions();
+  preloadAllVideoSessions();
   runAllChecks();
   gatewayStore.setEnvCheckResults(JSON.parse(JSON.stringify(checkItems.value)));
 }

@@ -122,6 +122,11 @@ export async function apiRequest(path, options = {}) {
     requestHeaders['Authorization'] = `Bearer ${userToken}`;
   }
 
+  // 视频生成接口需要携带用户 token
+  if (userToken && path.startsWith('/v1/video')) {
+    requestHeaders['Authorization'] = `Bearer ${userToken}`;
+  }
+
   // 上传接口需要携带 New-Api-User header
   if (userToken && path.startsWith('/api/upload')) {
     const userStore = useUserStore();

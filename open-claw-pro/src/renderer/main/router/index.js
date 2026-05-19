@@ -8,6 +8,7 @@ import Settings from '../views/Settings.vue';
 import EnvCheck from '../views/EnvCheck.vue';
 import Recharge from '../views/Recharge.vue';
 import ImageGen from '../views/ImageGen.vue';
+import VideoGen from '../views/VideoGen.vue';
 import Activate from '../views/Activate.vue';
 
 const routes = [
@@ -18,6 +19,7 @@ const routes = [
   { path: '/skill', name: 'skill', component: Skill },
   { path: '/chat', name: 'chat', component: Chat },
   { path: '/image-gen', name: 'image-gen', component: ImageGen },
+  { path: '/video-gen', name: 'video-gen', component: VideoGen },
   { path: '/contact', name: 'contact', component: Contact },
   { path: '/settings', name: 'settings', component: Settings },
   { path: '/recharge', name: 'recharge', component: Recharge },

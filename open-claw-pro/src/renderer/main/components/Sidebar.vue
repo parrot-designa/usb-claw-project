@@ -50,6 +50,14 @@
         <span>AI图片工具</span>
       </router-link>
       <router-link
+        to="/video-gen"
+        class="sidebar-nav-item"
+        :class="{ active: $route.path === '/video-gen' }"
+      >
+        <span class="iconfont icon-clawicon_shipinshengcheng"></span>
+        <span>AI视频工具</span>
+      </router-link>
+      <router-link
         to="/contact"
         class="sidebar-nav-item"
         :class="{ active: $route.path === '/contact' }" 
