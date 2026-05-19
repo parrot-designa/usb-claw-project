@@ -133,7 +133,14 @@ func (a *TaskAdaptor) BuildRequestURL(info *relaycommon.RelayInfo) (string, erro
 	if info.Action == constant.TaskActionRemix {
 		return fmt.Sprintf("%s/v1/videos/%s/remix", a.baseURL, info.OriginTaskID), nil
 	}
-	return fmt.Sprintf("%s/v1/videos", a.baseURL), nil
+	// 使用原始请求路径转发，兼容 /v1/video/generations 和 /v1/videos/generations
+	if info.RequestURLPath != "" {
+		if strings.HasPrefix(info.RequestURLPath, "/v1/videos/generations") ||
+			strings.HasPrefix(info.RequestURLPath, "/v1/video/generations") {
+			return fmt.Sprintf("%s%s", a.baseURL, info.RequestURLPath), nil
+		}
+	}
+	return fmt.Sprintf("%s/v1/videos/generations", a.baseURL), nil
 }
 
 // BuildRequestHeader sets required headers.
@@ -263,7 +270,7 @@ func (a *TaskAdaptor) FetchTask(baseUrl, key string, body map[string]any, proxy 
 		return nil, fmt.Errorf("invalid task_id")
 	}
 
-	uri := fmt.Sprintf("%s/v1/videos/%s", baseUrl, taskID)
+	uri := fmt.Sprintf("%s/v1/videos/generations/%s", baseUrl, taskID)
 
 	req, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {
