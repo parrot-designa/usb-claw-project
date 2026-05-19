@@ -563,11 +563,6 @@ watch(() => userStore.userInfo, (newToken) => {
     apiKeyValue.value = newToken.token.key;
   }
 }, { immediate: true,deep: true });
-
-watch(() => modelsStore.selectedModels,(selectedModels)=>{
-  console.log("已选模型==>",selectedModels);
-}, { immediate: true,deep: true })
-
  
 function toggleOfficialPw() {
   showPw.value = !showPw.value;
