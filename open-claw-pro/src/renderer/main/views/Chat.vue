@@ -160,6 +160,12 @@ const activeChatTab = ref('wechat');
 
 onMounted(async () => {
   checkInstalled();
+
+  // 全局监听微信二维码 URL（只注册一次）
+  window.uclaw.ipcOnWeChatQrUrl((url) => {
+    console.log('WeChat QR URL received:', url);
+    setQrCode(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`, '');
+  });
 });
 
 function retryConnection() {
@@ -169,11 +175,6 @@ function retryConnection() {
  
 async function startScan() {
   clearQrCode();
-
-  window.uclaw.ipcOnWeChatQrUrl((url) => {
-    console.log('WeChat QR URL received:', url);
-    setQrCode(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`, '');
-  });
 
   try {
     const result = await window.uclaw.startWeChatScan();
