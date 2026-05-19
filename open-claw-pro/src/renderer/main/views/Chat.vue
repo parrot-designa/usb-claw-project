@@ -199,6 +199,7 @@ async function startScan() {
       }
     }
   } catch (e) {
+    console.log("扫码启动失败==》",e)
     showToast('扫码启动失败', true);
     clearQrCode();
   }
