@@ -225,7 +225,7 @@ async function startInstall() {
 }
 
 async function reinstall() {
-  const confirmed = await window.uclaw.ipcShowConfirmDialog(
+  const confirmed = await window.showConfirmVue(
     '卸载重装',
     '确定卸载微信插件并重新安装？\n这会删除插件文件和配置，需要重新扫码连接'
   );

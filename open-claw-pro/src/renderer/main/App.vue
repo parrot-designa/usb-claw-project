@@ -15,6 +15,7 @@
       </div>
     </div>
     <Toast />
+    <ConfirmDialog />
     <LoadingOverlay />
   </div>
 </template>
@@ -26,6 +27,7 @@ import Sidebar from './components/Sidebar.vue';
 import Header from './components/Header.vue';
 import MenuBar from './components/MenuBar.vue';
 import Toast from './components/Toast.vue';
+import ConfirmDialog from './components/ConfirmDialog.vue';
 import LoadingOverlay from './components/LoadingOverlay.vue';
 import { fetchAllModels, useModelsStore } from './stores/models';
 import { fetchUserInfo, useUserStore } from './stores/user';
