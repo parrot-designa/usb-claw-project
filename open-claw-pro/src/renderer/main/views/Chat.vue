@@ -133,8 +133,11 @@
       </div>
 
       <!-- 统一日志面板：未安装状态不显示 -->
-      <div v-if="isInstalled !== false && logs.length" class="chat-install-logs">
-        <div v-for="(log, i) in logs" :key="i" class="chat-install-log-line">{{ log }}</div>
+      <div v-if="isInstalled !== false && logs.length" class="chat-wechat-card chat-log-card">
+        <h3 class="chat-log-title">运行日志</h3>
+        <div class="chat-log-lines">
+          <div v-for="(log, i) in logs" :key="i" class="chat-log-line">{{ log }}</div>
+        </div>
       </div>
 
       <div class="chat-tip-card">
@@ -358,17 +361,27 @@ async function uninstallAndReinstall() {
   margin-bottom: 16px;
 }
 
-.chat-install-logs {
+.chat-log-card {
+  text-align: left;
+}
+
+.chat-log-title {
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'Manrope', sans-serif;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.chat-log-lines {
   background: #1e1e1e;
   border-radius: 6px;
   padding: 10px 12px;
   max-height: 200px;
   overflow-y: auto;
-  text-align: left;
-  margin-bottom: 16px;
 }
 
-.chat-install-log-line {
+.chat-log-line {
   font-family: 'Consolas', 'Courier New', monospace;
   font-size: 12px;
   color: #a0a0a0;
