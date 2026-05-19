@@ -124,7 +124,7 @@
       </div>
 
       <!-- 统一日志面板：未安装状态不显示 -->
-      <div v-if="isInstalled !== false && logs.length" class="chat-wechat-card chat-log-card">
+      <div v-if="logs.length" class="chat-wechat-card chat-log-card">
         <h3 class="chat-log-title">运行日志</h3>
         <div class="chat-log-lines">
           <div v-for="(log, i) in logs" :key="i" class="chat-log-line">{{ log }}</div>
@@ -155,13 +155,13 @@ import { useWechatStore } from '../stores/wechat';
 const { showToast } = useToast();
 const wechatStore = useWechatStore();
 const { status, logs, qrCodeUrl, qrCodeAscii, isInstalled } = storeToRefs(wechatStore);
-const { checkInstalled, clearQrCode, setQrCode, clearLogs } = wechatStore;
+const { checkInstalled, clearQrCode, setQrCode, clearLogs, setStatus } = wechatStore;
 const activeChatTab = ref('wechat');
 
 onMounted(async () => {
   checkInstalled();
 
-  // 全局监听微信二维码 URL（只注册一次）
+  // 全局监听微信二维码 URL（只注册一次，微信状态由 App.vue 统一监听）
   window.uclaw.ipcOnWeChatQrUrl((url) => {
     console.log('WeChat QR URL received:', url);
     setQrCode(`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`, '');
@@ -169,11 +169,14 @@ onMounted(async () => {
 });
 
 function retryConnection() {
+  setStatus('scanning');
+  clearQrCode();
   window.uclaw.ipcGetWeChatStatus();
 }
  
  
 async function startScan() {
+  setStatus('scanning');
   clearQrCode();
 
   try {
