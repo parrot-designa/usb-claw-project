@@ -337,8 +337,7 @@ class WechatManager extends EventEmitter {
         .replace(/\x1B\][^\x07]*\x07/g, '')
         .replace(/\x1B[^a-zA-Z]*[a-zA-Z]/g, '')
         .replace(/[\x00-\x09\x0B\x0C\x0E-\x1F]/g, '');
-
-      console.log(`[wechat] ${source}: ${text}`); 
+ 
       this.emit('log', source === 'stderr' ? `[stderr] ${clean}` : clean);
 
       // Match any URL containing weixin or qrcode
