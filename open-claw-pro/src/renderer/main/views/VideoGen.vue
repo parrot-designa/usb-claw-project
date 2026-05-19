@@ -494,7 +494,7 @@ async function generateVideo() {
       n: 1,
     };
     if (referenceImages.value.length > 0) {
-      requestBody.image = referenceImages.value[0];
+      requestBody.image_urls = [...referenceImages.value];
     }
 
     const taskResult = await apiRequest('/v1/video/generations', {
