@@ -486,8 +486,7 @@ function saveRecommendConfig() {
   const updatedModels = [...modelsStore.selectedModels];
   updatedModels.push({ ...modelInfo, isCurrent: updatedModels.length === 0 });
   modelsStore.setSelectedModels(updatedModels);
-  showToast('模型添加成功');
-  // showRestartCardNotice();
+  showToast('模型添加成功'); 
   closeRecommendForm();
 }
 
