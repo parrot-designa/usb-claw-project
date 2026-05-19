@@ -4,7 +4,7 @@
       <span class="iconfont icon-clawa-huihua2"></span>
       <span class="session-title">会话列表</span>
       <span class="header-right">
-        <span class="header-hint">点击生成图片，即可会话</span>
+        <span class="header-hint">点击生成视频，即可会话</span>
         <span class="iconfont arrow" :class="{ expanded }"></span>
       </span>
     </div>
