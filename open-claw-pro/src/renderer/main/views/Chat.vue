@@ -60,7 +60,7 @@
               <span class="iconfont icon-clawiconfontscan"></span>扫码连接
             </button>
             <button @click="reinstall" class="chat-btn-reinstall">
-              卸载重装
+              <span class="iconfont icon-clawshanchu"></span>卸载重装
             </button>
           </div>
         </template>
