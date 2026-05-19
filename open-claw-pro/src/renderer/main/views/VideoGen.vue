@@ -522,8 +522,9 @@ async function generateVideo() {
     let videoUrl = null;
     let status = 'queued';
 
-    if (taskResult.url) {
-      videoUrl = taskResult.url;
+    const initialResultData = taskResult.result?.data?.[0];
+    if (initialResultData?.url) {
+      videoUrl = initialResultData.url;
       status = 'completed';
     }
 
@@ -598,12 +599,13 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
         msg.status = newStatus;
         msg.progress = newProgress;
         msg.error = result.error?.message || null;
-        if (newStatus === 'completed' && result.url) {
-          msg.videoUrl = result.url;
+        const pollResultData = result.result?.data?.[0];
+        if (newStatus === 'completed' && pollResultData?.url) {
+          msg.videoUrl = pollResultData.url;
           msg.loadedTime = formatTime();
           msg.loadDuration = Math.round((Date.now() - msg.startTime) / 1000);
           msg.loadStatus = 'success';
-          saveVideoToMedia(result.url, taskId, msg);
+          saveVideoToMedia(pollResultData.url, taskId, msg);
           clearInterval(timer);
           pollingTimers.value.delete(taskId);
           pendingTasks.value--;

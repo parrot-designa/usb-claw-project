@@ -70,7 +70,29 @@
               </button>
             </div>
           </div>
-          
+
+        </div>
+      </div>
+      <!-- 视频区域 -->
+      <div v-if="videoUrl" class="bubble-video-wrapper">
+        <video
+          :src="videoUrl"
+          class="bubble-video"
+          controls
+          preload="metadata"
+          @loadedmetadata="onVideoLoaded"
+          @error="onVideoError"
+        ></video>
+        <div v-if="videoReady" class="video-actions">
+          <button class="image-action-btn" @click.stop="emit('preview', videoUrl)" title="全屏预览">
+            <span class="iconfont icon-clawzhedie"></span>
+          </button>
+          <button class="image-action-btn" @click.stop="emit('regenerate', props.bubble)" title="重新生成">
+            <span class="iconfont icon-clawshuaxin"></span>
+          </button>
+          <button class="image-action-btn" @click.stop="emit('download', videoUrl)" title="下载">
+            <span class="iconfont icon-clawxiazai"></span>
+          </button>
         </div>
       </div>
     </div>
@@ -109,13 +131,24 @@ const imageUrls = computed(() => {
   if (Array.isArray(props.bubble.imageUrl)) return props.bubble.imageUrl;
   return [props.bubble.imageUrl];
 });
+const videoUrl = computed(() => props.bubble.videoUrl || null);
+const isVideo = computed(() => {
+  const type = props.bubble.type || '';
+  return type === 'text-to-video' || type === 'image-to-video';
+});
 const referenceImages = computed(() => props.bubble.referenceImages || []);
 const error = computed(() => props.bubble.error);
 const status = computed(() => props.bubble.status);
 
 const bubbleType = computed(() => {
   const type = props.bubble.type || 'text-to-image';
-  return type === 'image-to-image' ? '图生图' : '文生图';
+  const typeMap = {
+    'text-to-image': '文生图',
+    'image-to-image': '图生图',
+    'text-to-video': '文生视频',
+    'image-to-video': '图生视频',
+  };
+  return typeMap[type] || '文生图';
 });
 
 const isLoading = computed(() => {
@@ -147,6 +180,7 @@ const elapsedSeconds = ref(0);
 let timer = null;
 const imageLoaded = ref({});
 const imageError = ref({});
+const videoReady = ref(false);
 
 function onImageLoad(index) {
   imageLoaded.value[index] = true;
@@ -156,6 +190,14 @@ function onImageLoad(index) {
 function onImageError(index) {
   imageError.value[index] = true;
   imageLoaded.value[index] = false;
+}
+
+function onVideoLoaded() {
+  videoReady.value = true;
+}
+
+function onVideoError() {
+  videoReady.value = false;
 }
 
 function updateElapsedTime() {
@@ -510,6 +552,36 @@ function regenerateSingle(url) {
 
   .iconfont {
     font-size: 12px;
+  }
+}
+
+.bubble-video-wrapper {
+  margin-top: 8px;
+  margin-left: 52px;
+  position: relative;
+
+  &:hover {
+    .video-actions {
+      opacity: 1;
+    }
+  }
+
+  .bubble-video {
+    width: 100%;
+    max-width: 320px;
+    border-radius: 8px;
+    display: block;
+  }
+
+  .video-actions {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 1;
   }
 }
 
