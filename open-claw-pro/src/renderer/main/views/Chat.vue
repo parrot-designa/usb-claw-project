@@ -179,11 +179,11 @@ function retryConnection() {
 }
  
  
-async function startScan() { 
+function startScan() { 
   clearQrCode();
 
   try {
-    const result = await window.uclaw.startWeChatScan();
+    const result =  window.uclaw.startWeChatScan();
     if (result?.error) {
       showToast(result.error, true);
       clearQrCode();
