@@ -113,7 +113,7 @@
           <img src="@assets/send-msg.png" alt="wechat" />
         </div>
         <h2 class="chat-wechat-title">连接微信</h2>
-        <p class="chat-wechat-status-installed">✅ 插件已安装</p>
+        <p class="chat-wechat-status-installed"><img src="@assets/installed.png" alt="installed" />插件已安装</p>
         <p class="chat-wechat-desc">扫码连接后，在微信中给 AI 发消息即可对话</p>
 
         <div class="chat-wechat-actions">
@@ -436,6 +436,15 @@ async function startInstall() {
   font-size: 14px;
   color: #22c55e;
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img{
+    width: 16px;
+    height: 16px;
+    margin-right:8px;
+  }
 }
 
 .chat-btn-install-primary {
