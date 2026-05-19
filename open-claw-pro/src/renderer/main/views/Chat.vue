@@ -802,7 +802,6 @@ async function reInstall() {
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
-  margin: 16px auto 0;
 
   &:hover {
     background: var(--surface-variant);
