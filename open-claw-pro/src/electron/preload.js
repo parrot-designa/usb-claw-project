@@ -28,9 +28,7 @@ contextBridge.exposeInMainWorld('uclaw', {
   // WeChat plugin
   ipcGetWeChatStatus: () => ipcRenderer.invoke('get-wechat-status'), 
   // Start WeChat scan (check gateway then get QR code)
-  startWeChatScan: async () => {
-    return ipcRenderer.invoke('wechat-start-login');
-  },
+  startWeChatScan: () =>  ipcRenderer.invoke('wechat-start-login'),
   // WeChat QR code URL listener
   ipcOnWeChatQrUrl: (callback) => ipcRenderer.on('wechat-qr-url', (_, url) => callback(url)),
   // WeChat scan result listener 
