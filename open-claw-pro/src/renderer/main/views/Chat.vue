@@ -46,9 +46,6 @@
         <div class="chat-spinner">⟳</div>
         <h2 class="chat-wechat-title">正在安装微信插件...</h2>
         <p class="chat-wechat-desc">首次连接需要安装，请稍候</p>
-        <div v-if="logs.length" class="chat-install-logs">
-          <div v-for="(log, i) in logs" :key="i" class="chat-install-log-line">{{ log }}</div>
-        </div>
       </div>
 
       <!-- ========== SCANNING ========== -->
@@ -84,9 +81,6 @@
         <div class="chat-error-icon">✗</div>
         <h2 class="chat-wechat-title">连接失败</h2>
         <p class="chat-wechat-desc">请查看下方日志排查问题，或重试</p>
-        <div v-if="logs.length" class="chat-install-logs">
-          <div v-for="(log, i) in logs" :key="i" class="chat-install-log-line">{{ log }}</div>
-        </div>
         <div class="chat-wechat-action">
           <button @click="retryConnection" class="chat-btn-scan">
             重试
@@ -136,6 +130,11 @@
             🗑️ 卸载重装
           </button>
         </div>
+      </div>
+
+      <!-- 统一日志面板：未安装状态不显示 -->
+      <div v-if="isInstalled !== false && logs.length" class="chat-install-logs">
+        <div v-for="(log, i) in logs" :key="i" class="chat-install-log-line">{{ log }}</div>
       </div>
 
       <div class="chat-tip-card">
