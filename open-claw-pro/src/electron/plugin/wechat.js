@@ -376,6 +376,7 @@ class WechatManager extends EventEmitter {
     this.loginProcess.stderr.on('data', (data) => processOutput(data, 'stderr'));
 
     this.loginProcess.on('exit', (code) => {
+      this.emit('log', `[weixin exit error] ${code}`);
       this.loginProcess = null;
       if (code === 0 && this.status === 'scanning') {
         this.status = 'connected';
