@@ -452,7 +452,7 @@ async function startInstall() {
   align-items: center;
   gap: 8px;
   padding: 10px 32px;
-  background: #16a34a;
+  background: #07C160;
   color: white;
   border: none;
   border-radius: 8px;
@@ -462,7 +462,7 @@ async function startInstall() {
   transition: all 0.2s;
 
   &:hover {
-    background: #15803d;
+    background: #06AD56;
   }
 }
 
@@ -472,7 +472,7 @@ async function startInstall() {
   align-items: center;
   gap: 8px;
   padding: 8px 20px;
-  background: var(--secondary);
+  background: #07C160;
   color: white;
   border: none;
   border-radius: 8px;
@@ -482,7 +482,7 @@ async function startInstall() {
   transition: all 0.2s;
 
   &:hover {
-    opacity: 0.85;
+    background: #06AD56;
   }
 }
 
@@ -574,8 +574,8 @@ async function startInstall() {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(5, 150, 105, 0.15);
-  color: #059669;
+  background: rgba(7, 193, 96, 0.15);
+  color: #07C160;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -601,8 +601,8 @@ async function startInstall() {
 .chat-spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(34, 197, 94, 0.2);
-  border-top-color: #22c55e;
+  border: 3px solid rgba(7, 193, 96, 0.2);
+  border-top-color: #07C160;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   margin: 0 auto 12px;
@@ -610,7 +610,7 @@ async function startInstall() {
 
 .chat-qr-hint {
   font-size: 14px;
-  color: #86efac;
+  color: #07C160;
   margin-top: 8px;
   margin-bottom: 16px;
 }
