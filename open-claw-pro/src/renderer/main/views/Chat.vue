@@ -356,7 +356,6 @@ async function reInstall() {
 
 .chat-log-lines { 
   border-radius: 6px;
-  padding: 10px 12px;
   max-height: 200px;
   overflow-y: auto;
 }
