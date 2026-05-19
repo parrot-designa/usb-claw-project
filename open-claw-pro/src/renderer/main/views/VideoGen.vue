@@ -575,8 +575,8 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
 
     try {
       const result = await apiRequest(`/v1/videos/generations/${taskId}`, {
-        method: 'GET',
-        params: {
+        method: 'POST',
+        body: {
           model: model
         }
       });
