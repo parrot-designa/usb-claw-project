@@ -40,16 +40,23 @@ app.whenReady().then(async () => {
     } catch(e) { /* no orphans, that's fine */ console.log("finding OpenClawPro error",e)}
     try {
       console.log("finding port start")
-      // Also try killing by port
-      const netstat = execSync(`netstat -ano | findstr "${GATEWAY_DEFAULT_PORT}" | findstr LISTENING`, { encoding: 'utf-8' });
-      console.log("finding port result",netstat)
+      // 查找占端口的进程，findstr 没匹配时返回 exit 1，execSync 会抛异常
+      const netstat = execSync(`netstat -ano | findstr :${GATEWAY_DEFAULT_PORT} | findstr LISTENING`, { encoding: 'utf-8', shell: true });
+      console.log("finding port result", netstat)
       const pid = netstat.trim().split(/\s+/).pop();
       if (pid && pid !== '0') {
         execSync(`taskkill /f /pid ${pid} 2>nul`, { stdio: 'ignore' });
         console.log(`[startup] killed orphaned process on port ${GATEWAY_DEFAULT_PORT} (pid ${pid})`);
       }
       console.log("finding port end")
-    } catch(e) { /* port not in use, good */ console.log("finding port error",e) }
+    } catch(e) {
+      // findstr 没找到匹配 → 端口未被占用，正常情况
+      if (e.status === 1 && e.stdout === '') {
+        console.log(`[startup] port ${GATEWAY_DEFAULT_PORT} is free`);
+      } else {
+        console.error("finding port error", e.message);
+      }
+    }
   }
 
   createSplash();

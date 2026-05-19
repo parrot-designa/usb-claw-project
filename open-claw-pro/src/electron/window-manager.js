@@ -187,8 +187,7 @@ export function createWindow(gateway) {
     }
   });
 
-  mainWindow.webContents.on('did-start-loading', () => {
-    console.log(`Page started loading`);
+  mainWindow.webContents.on('did-start-loading', () => { 
   });
 
   mainWindow.webContents.on('did-finish-load', () => {
