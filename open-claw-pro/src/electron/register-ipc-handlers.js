@@ -637,11 +637,15 @@ function registerIPCHandlers({ gateway }) {
 }
 
 function registerWechatIPCHandler({ gateway }){
-  initWechat();
-
+  initWechat(); 
   
-  ipcMain.handle('openclaw-channels-login', async (_, { channel }) => {
-    return getWechatManagerInstance().startLogin();
+  ipcMain.handle('wechat-start-login', () => {
+    const wechatManager = getWechatManagerInstance();
+    console.log('[wechat] start-login called, manager exists:', !!wechatManager);
+    if (!wechatManager) return { success: false, error: 'no manager' };
+    const result = wechatManager.startLogin();
+    console.log('[wechat] startLogin result:', result);
+    return result;
   });
 
   ipcMain.handle('get-wechat-status', () => {
