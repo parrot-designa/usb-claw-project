@@ -83,17 +83,6 @@
           @loadedmetadata="onVideoLoaded"
           @error="onVideoError"
         ></video>
-        <div v-if="videoReady" class="video-actions">
-          <button class="image-action-btn" @click.stop="emit('preview', videoUrl)" title="全屏预览">
-            <span class="iconfont icon-clawzhedie"></span>
-          </button>
-          <button class="image-action-btn" @click.stop="emit('regenerate', props.bubble)" title="重新生成">
-            <span class="iconfont icon-clawshuaxin"></span>
-          </button>
-          <button class="image-action-btn" @click.stop="emit('download', videoUrl)" title="下载">
-            <span class="iconfont icon-clawxiazai"></span>
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -567,8 +556,7 @@ function regenerateSingle(url) {
   }
 
   .bubble-video {
-    width: 100%;
-    max-width: 320px;
+    width: 100%; 
     border-radius: 8px;
     display: block;
   }
