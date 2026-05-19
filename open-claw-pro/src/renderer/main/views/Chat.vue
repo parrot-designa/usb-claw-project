@@ -118,7 +118,7 @@
 
         <div class="chat-wechat-actions">
           <button @click="startScan" class="chat-btn-scan">
-            🔗 扫码连接
+            <span class="iconfont icon-clawiconfontscan"></span>扫码连接
           </button>
         </div>
       </div>
