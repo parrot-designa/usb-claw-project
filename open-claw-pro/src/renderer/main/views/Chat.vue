@@ -30,9 +30,9 @@
         <p class="chat-wechat-desc">在微信中给 AI 发消息即可对话</p>
         <div class="chat-wechat-actions">
           <button @click="startScan" class="chat-btn-scan">
-            🔄 重新扫码
+            重新扫码
           </button>
-          <button @click="disconnectWeChat" class="chat-btn-disconnect">
+          <button @click="cancelScan" class="chat-btn-disconnect">
             断开连接
           </button> 
         </div>
@@ -198,20 +198,8 @@ async function startScan() {
 
 async function cancelScan() {
   await window.uclaw.cancelWeChatScan(); 
-}
-
-async function disconnectWeChat() {
-  try {
-    await window.uclaw.ipcDisconnectWeChat();
-    showToast('微信已断开');
-  } catch (e) {
-    console.error('断开微信失败:', e);
-    showToast('断开失败: ' + e.message, true);
-    clearQrCode();
-    return;
-  }
-  clearQrCode();
-}
+} 
+ 
 
 async function startInstall() {
   clearLogs();

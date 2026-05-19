@@ -38,9 +38,7 @@ contextBridge.exposeInMainWorld('uclaw', {
   ipcOnWeChatStatus: (callback) => ipcRenderer.on('wechat-status', (_, status) => callback(status)),
   ipcOffWeChatStatus: (callback) => ipcRenderer.removeListener('wechat-status', callback),
   // Cancel WeChat scan
-  cancelWeChatScan: () => ipcRenderer.invoke('openclaw-wechat-cancel'),
-  // Disconnect WeChat
-  ipcDisconnectWeChat: () => ipcRenderer.invoke('openclaw-wechat-disconnect'),
+  cancelWeChatScan: () => ipcRenderer.invoke('openclaw-wechat-cancel'), 
   // Check if WeChat plugin is installed
   isWechatPluginInstalled: () => ipcRenderer.invoke('is-wechat-plugin-installed'),
   // Update WeChat plugin (force online install)

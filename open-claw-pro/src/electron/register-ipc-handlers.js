@@ -621,13 +621,7 @@ function registerIPCHandlers({ gateway }) {
       }
       currentWeChatProcess = null;
     }, 1000);
-  };
- 
-
-  ipcMain.handle('openclaw-wechat-disconnect', async () => {
-
-    return { ok: true };
-  });
+  }; 
 
   // 自定义窗口控制
   ipcMain.on('window-minimize', () => {

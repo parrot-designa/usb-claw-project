@@ -397,12 +397,6 @@ class WechatManager extends EventEmitter {
       this.loginProcess.kill();
       this.loginProcess = null;
     }
-    // If connected, explicitly disconnect the channel so gateway stops routing messages
-    if (this.status === 'connected' || this.status === 'scanning') {
-      try {
-        this._exec(`channels disconnect --channel ${CHANNEL_ID}`, { silent: true, timeout: 5000 });
-      } catch {}
-    }
     this.status = 'disconnected';
     this.emit('status', this.status);
   }
