@@ -34,10 +34,7 @@
           </button>
           <button @click="disconnectWeChat" class="chat-btn-disconnect">
             断开连接
-          </button>
-          <button @click="uninstallAndReinstall" class="chat-btn-reinstall">
-            🗑️ 卸载重装
-          </button>
+          </button> 
         </div>
       </div>
 
@@ -122,12 +119,6 @@
         <div class="chat-wechat-actions">
           <button @click="startScan" class="chat-btn-scan">
             🔗 扫码连接
-          </button>
-          <button @click="updatePlugin" class="chat-btn-update">
-            🔄 联网更新
-          </button>
-          <button @click="uninstallAndReinstall" class="chat-btn-reinstall">
-            🗑️ 卸载重装
           </button>
         </div>
       </div>
@@ -235,36 +226,7 @@ async function startInstall() {
     showToast('安装失败: ' + e.message, true);
   }
 }
-
-async function updatePlugin() {
-  try {
-    showToast('正在联网更新微信插件...');
-    const result = await window.uclaw.updateWeChatPlugin();
-    if (result?.success) {
-      showToast('微信插件更新成功');
-    } else {
-      showToast(result?.error || '更新失败', true);
-    }
-  } catch (e) {
-    showToast('更新失败: ' + e.message, true);
-  }
-  checkInstalled();
-}
-
-async function uninstallAndReinstall() {
-  try {
-    showToast('正在卸载并重新安装微信插件...');
-    const result = await window.uclaw.uninstallAndReinstallWeChat();
-    if (result?.success) {
-      showToast('微信插件重新安装成功');
-    } else {
-      showToast(result?.error || '重装失败', true);
-    }
-  } catch (e) {
-    showToast('重装失败: ' + e.message, true);
-  }
-  checkInstalled();
-}
+ 
 
 </script>
 
