@@ -40,7 +40,7 @@
 
       <!-- ========== INSTALLING ========== -->
       <div v-else-if="status === 'installing'" class="chat-wechat-card">
-        <div class="chat-spinner">⟳</div>
+        <div class="chat-spinner"></div>
         <h2 class="chat-wechat-title">正在安装微信插件...</h2>
         <p class="chat-wechat-desc">首次连接需要安装，请稍候</p>
       </div>
@@ -59,7 +59,7 @@
         </template>
         <!-- 等待二维码 -->
         <template v-else>
-          <div class="chat-spinner">⟳</div>
+          <div class="chat-spinner"></div>
           <h2 class="chat-wechat-title">等待二维码...</h2>
         </template>
 
@@ -599,10 +599,13 @@ async function startInstall() {
 }
 
 .chat-spinner {
-  font-size: 40px;
-  color: #22c55e;
-  animation: spin 0.8s linear infinite;
-  margin-bottom: 12px;
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(34, 197, 94, 0.2);
+  border-top-color: #22c55e;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto 12px;
 }
 
 .chat-qr-hint {
