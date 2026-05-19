@@ -59,6 +59,9 @@
             <button @click="startScan" class="chat-btn-scan">
               <span class="iconfont icon-clawiconfontscan"></span>扫码连接
             </button>
+            <button @click="reinstall" class="chat-btn-reinstall">
+              卸载重装
+            </button>
           </div>
         </template>
       </div>
@@ -220,7 +223,17 @@ async function startInstall() {
     showToast('安装失败: ' + e.message, true);
   }
 }
- 
+
+async function reinstall() {
+  try {
+    await window.uclaw.uninstallAndReinstallWeChat();
+    checkInstalled();
+    showToast('卸载重装完成');
+  } catch (e) {
+    showToast('卸载重装失败: ' + e.message, true);
+  }
+}
+
 
 </script>
 
