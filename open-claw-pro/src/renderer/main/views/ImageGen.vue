@@ -1087,6 +1087,7 @@ function handleClearHistory() {
   padding: 16px;
   height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .empty-bubbles {
