@@ -124,13 +124,12 @@
               <div class="empty-bubbles-icon">
                 <span class="iconfont icon-clawicon_shipinshengcheng"></span>
               </div>
-              <h3 class="empty-bubbles-title">开始创作</h3>
-              <p class="empty-bubbles-desc">在左侧填写描述 → 点"生成视频"<br/>每次生成会自动新建会话，保存到 U 盘</p>
+              <h3 class="empty-bubbles-title">AI 视频生成</h3>
+              <p class="empty-bubbles-desc">用 Veo 3 生成短视频<br/>描述越详细，效果越好</p>
               <ul class="empty-bubbles-tips">
-                <li>文生视频：不传参考图，从文字生成</li>
-                <li>图生视频：上传参考图 + 描述修改</li>
-                <li>继续修改：点结果视频的按钮→图到左侧参考图</li>
-                <li>右键视频：复制到剪贴板</li>
+                <li>💡 镜头：广角 / 特写 / 俯视</li>
+                <li>💡 动作：缓慢移动 / 快速奔跑</li>
+                <li>💡 氛围：黄昏光 / 赛博朋克</li>
               </ul>
             </div>
           </div>
@@ -663,7 +662,7 @@ async function pollTaskStatus(taskId, msgIndex, sessionId, model) {
         showToast('视频生成失败: 网络连接异常', true);
       }
     }
-  }, 3000);
+  }, 5000);
 
   pollingTimers.value.set(taskId, timer);
 }
