@@ -15,7 +15,7 @@
       </div>
 
       <!-- 添加按钮 / 拖拽区域 -->
-      <div class="add-image-btn" @click="triggerFileInput">
+      <div v-if="images.length < max" class="add-image-btn" @click="triggerFileInput">
         <span>+</span>
         <span>{{ isDragOver ? '松开即可上传' : '拖拽或点击上传' }}</span>
       </div>
@@ -44,6 +44,10 @@ const props = defineProps({
   images: {
     type: Array,
     default: () => []
+  },
+  max: {
+    type: Number,
+    default: Infinity
   }
 });
 
@@ -96,8 +100,19 @@ function onFileSelected(e) {
 async function handleFiles(files) {
   const MAX_SIZE = 10 * 1024 * 1024;
   const newImages = [...props.images];
+  const remaining = props.max - newImages.length;
 
-  for (const file of files) {
+  if (remaining <= 0) {
+    showToast(`最多只能上传 ${props.max} 张参考图`, true);
+    return;
+  }
+
+  const filesToProcess = Array.from(files).slice(0, remaining);
+  if (files.length > remaining) {
+    showToast(`最多只能上传 ${props.max} 张参考图，已自动截取前 ${remaining} 张`, true);
+  }
+
+  for (const file of filesToProcess) {
     if (!file.type.startsWith('image/')) continue;
 
     // Check file size

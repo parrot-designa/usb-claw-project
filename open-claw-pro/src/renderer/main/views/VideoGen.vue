@@ -46,8 +46,8 @@
         <!-- 中部：表单区域 -->
         <div class="form-area">
           <div class="form-item">
-            <label class="form-label">参考图</label>
-            <ReferenceImages v-model:images="referenceImages" />
+            <label class="form-label">参考图（{{ referenceImages.length }}/3）</label>
+            <ReferenceImages v-model:images="referenceImages" :max="3" />
           </div>
 
           <div class="form-item">
