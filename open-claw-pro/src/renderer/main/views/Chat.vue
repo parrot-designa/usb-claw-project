@@ -319,7 +319,7 @@ async function reInstall() {
   font-weight: 400;
   font-family: 'Manrope', sans-serif;
   color: var(--text-primary);
-  margin-bottom: 8px;
+  margin-bottom: 18px;
 }
 
 .chat-wechat-status {
